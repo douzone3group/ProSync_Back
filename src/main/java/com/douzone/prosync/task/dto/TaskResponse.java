@@ -1,12 +1,12 @@
 package com.douzone.prosync.task.dto;
 
 import com.douzone.prosync.status.TaskStatus;
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class TaskResponse {
 
@@ -22,19 +22,31 @@ public class TaskResponse {
         private String endDate;
         private TaskStatus taskStatus;
 
-        private Timestamp createdAt;
-        private Timestamp modifiedAt;
+        private LocalDateTime createdAt;
+        private LocalDateTime modifiedAt;
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
-    @AllArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class SimpleResponse {
-
         private Integer taskId;
         private String classification;
         private String title;
-        private Timestamp createdAt;
+        private LocalDateTime createdAt;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class GetTasksResponse {
+        private Integer taskId;
+        private String classification;
+        private String title;
+        private String startDate;
+        private String endDate;
+        private TaskStatus taskStatus;
+        private LocalDateTime modifiedAt;
     }
 }

@@ -9,15 +9,16 @@ import java.util.Optional;
 @Mapper
 public interface TaskMybatisMapper {
 
-    void save(Task task);
+    void save(@Param("task") Task task, @Param("projectId") Integer projectId);
 
     @Select("select * from task where task_id=#{taskId} and is_deleted is null")
     Optional<Task> findById(Integer taskId);
 
 
     List<Task> findTasksWithPagination(@Param("projectId") Integer projectId,
-                                      @Param("offset") int offset,
-                                      @Param("size") int size);
+                                       @Param("offset") int offset,
+                                       @Param("size") int size,
+                                       @Param("search") String search);
 
     @Delete("delete from task where task_id=#{taskId}")
     void deleteById(Integer taskId);
@@ -28,7 +29,7 @@ public interface TaskMybatisMapper {
 
     void update(Task task);
 
-    int getTaskCount(Integer projectId);
+    int findTaskCount(@Param("projectId") Integer projectId, @Param("search") String search);
 
     int findExistsTask(Integer taskId);
 }

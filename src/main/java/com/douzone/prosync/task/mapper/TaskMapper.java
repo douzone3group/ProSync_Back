@@ -19,5 +19,5 @@ public interface TaskMapper {
 
     TaskResponse.GetTaskResponse taskToGetTaskResponse(Task task);
 
-    List<TaskResponse.GetTaskResponse> tasksToGetTaskResponse(List<Task> tasks);
+    List<TaskResponse.GetTasksResponse> tasksToGetTasksResponse(List<Task> tasks);
 }

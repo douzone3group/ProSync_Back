@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.task.repository.TaskMybatisMapper">
-    <insert id="save" useGeneratedKeys="true" keyProperty="taskId">
-        insert into task(classification, title, detail, start_date, end_date, task_status, created_at)
-        values (#{classification}, #{title}, #{detail}, #{startDate}, #{endDate}, #{taskStatus}, now())
+    <insert id="save" useGeneratedKeys="true" keyProperty="task.taskId">
+        insert into task(project_id, classification, title, detail, start_date, end_date, task_status, created_at, modified_at)
+        values (#{projectId}, #{task.classification}, #{task.title}, #{task.detail}, #{task.startDate}, #{task.endDate}, #{task.taskStatus}, now(), now())
     </insert>
     <update id="update">
         update task
@@ -18,15 +18,33 @@
     </update>
     <select id="findTasksWithPagination" resultType="Task">
         select * from task
-        where project_id=#{projectId}
-        and is_deleted is null
+         <where>
+             <choose>
+                 <when test="search != null and search != ''">
+                    and project_id=#{projectId}
+                    and is_deleted is null
+                    and (title like concat('%', #{search}, '%')
+                    or task_status like concat('%', #{search}, '%'))
+                </when>
+                 <otherwise>
+                     and project_id=#{projectId}
+                     and is_deleted is null
+                 </otherwise>
+             </choose>
+        </where>
         order by task_id desc
-        limit #{offset}, ${size}
+        limit #{offset}, #{size}
     </select>
-    <select id="getTaskCount" resultType="int">
+    <select id="findTaskCount" resultType="int">
         select count(*) from task
-        where project_id=#{projectId}
-        and is_deleted is null
+        <where>
+            project_id=#{projectId}
+            and is_deleted is null
+            <if test="search != null and search != ''">
+                and (title like concat('%', #{search}, '%')
+                or task_status like concat('%', #{search}, '%'))
+            </if>
+        </where>
     </select>
     <select id="findExistsTask" resultType="int">
         select count(*) from task

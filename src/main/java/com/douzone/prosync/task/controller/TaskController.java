@@ -35,7 +35,7 @@ public class TaskController {
      */
     @PostMapping("/projects/{project-id}/tasks")
     public ResponseEntity postTask(@PathVariable("project-id") Integer projectId, @RequestBody @Valid TaskRequest.PostDto dto) {
-        Task task = taskService.createTask(mapper.postDtoToTask(dto), null);
+        Task task = taskService.createTask(mapper.postDtoToTask(dto), projectId, null);
         return new ResponseEntity<>(mapper.taskToSimpleResponse(task), HttpStatus.CREATED);
     }
 
@@ -47,7 +47,6 @@ public class TaskController {
                                     @RequestBody @Valid TaskRequest.PatchDto dto) {
         dto.setTaskId(taskId);
         taskService.updateTask(mapper.patchDtoToTask(dto), null);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -66,14 +65,16 @@ public class TaskController {
      * @param page : 조회할 페이지 번호
      * @param size : 페이지당 보여질 요소 개수
      * @return 프로젝트 한건에 해당하는 업무 리스트를 페이지 형식으로 리턴합니다.
-     * //TODO: 필터링추가
      */
     @GetMapping("/projects/{project-id}/tasks")
-    public ResponseEntity getTaskList(@PathVariable("project-id") Integer projectId, @RequestParam @Positive int page, @RequestParam @Positive int size) {
-        Map<String, Object> map = taskService.findTaskList(projectId, page-1, size, null);
+    public ResponseEntity getTaskList(@PathVariable("project-id") Integer projectId,
+                                      @RequestParam @Positive int page,
+                                      @RequestParam @Positive int size,
+                                      @RequestParam(required = false) String search) {
+        Map<String, Object> map = taskService.findTaskList(projectId, page-1, size, search, null);
         List<Task> tasks = (List<Task>) map.get("tasks");
         PageInfo pageInfo = (PageInfo) map.get("pageInfo");
-        return new ResponseEntity<>(new PageResponseDto<>(mapper.tasksToGetTaskResponse(tasks), pageInfo), HttpStatus.OK);
+        return new ResponseEntity<>(new PageResponseDto<>(mapper.tasksToGetTasksResponse(tasks), pageInfo), HttpStatus.OK);
     }
 
     /**

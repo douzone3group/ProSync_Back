@@ -49,11 +49,4 @@ public class TaskRequest {
             this.taskStatus = taskStatus.toUpperCase();
         }
     }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    public static class SimpleDto {
-        private Integer taskId;
-    }
 }
