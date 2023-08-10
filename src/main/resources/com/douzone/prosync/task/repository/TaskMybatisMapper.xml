@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.prosync.task.repository.TaskMybatisMapper">
+    <insert id="save" useGeneratedKeys="true" keyProperty="taskId">
+        insert into task(classification, title, detail, start_date, end_date, task_status, created_at)
+        values (#{classification}, #{title}, #{detail}, #{startDate}, #{endDate}, #{taskStatus}, now())
+    </insert>
+    <update id="update">
+        update task
+        set classification=#{classification},
+            title=#{title},
+            detail=#{detail},
+            start_date=#{startDate},
+            end_date=#{endDate},
+            modified_at=now()
+        where task_id=#{taskId} and is_deleted is null
+    </update>
+    <select id="findTasksWithPagination" resultType="Task">
+        select * from task
+        where project_id=#{projectId}
+        and is_deleted is null
+        order by task_id desc
+        limit #{offset}, ${size}
+    </select>
+    <select id="getTaskCount" resultType="int">
+        select count(*) from task
+        where project_id=#{projectId}
+        and is_deleted is null
+    </select>
+    <select id="findExistsTask" resultType="int">
+        select count(*) from task
+        where task_id=#{taskId}
+        and is_deleted is null
+    </select>
+</mapper>
