@@ -1,9 +1,9 @@
 package com.douzone.prosync.security.auth;
 
+import com.douzone.prosync.member.entity.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 public class MemberDetails implements UserDetails {
@@ -31,7 +31,7 @@ public class MemberDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getUsername();
+        return member.getEmail();
     }
 
     @Override

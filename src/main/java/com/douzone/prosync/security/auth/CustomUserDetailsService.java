@@ -1,15 +1,12 @@
 package com.douzone.prosync.security.auth;
 
-import com.example.jwttutorial.entity.Member;
-import com.example.jwttutorial.repository.UserRepository;
+import com.douzone.prosync.member.repository.MemberRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
-import java.lang.reflect.Member;
 
 
 // UserDetailsService를 implements하고 UserRepository를 주입받는다.
@@ -25,10 +22,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(final String username) {
-        return memberRepository.findByUsername(username)
+    public UserDetails loadUserByUsername(final String email) {
+        return memberRepository.findByEmail(email)
                 .map(member ->  new MemberDetails(member))
-                .orElseThrow(() -> new UsernameNotFoundException(username + " -> 데이터베이스에서 찾을 수 없습니다."));
+                .orElseThrow(() -> new UsernameNotFoundException(email + " -> 데이터베이스에서 찾을 수 없습니다."));
     }
 
 

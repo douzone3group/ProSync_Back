@@ -1,11 +1,19 @@
 package com.douzone.prosync.security.auth;
 
+import com.douzone.prosync.member.dto.MemberResponse;
+import com.douzone.prosync.member.entity.Member;
+import com.douzone.prosync.member.repository.MemberRepository;
+import com.douzone.prosync.security.exception.DuplicateMemberException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.douzone.prosync.member.dto.MemberRequest.*;
+import static com.douzone.prosync.member.dto.MemberResponse.*;
+
 @Service
 public class MemberService {
+
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -14,27 +22,33 @@ public class MemberService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * 회원가입 로직
+     */
     @Transactional
-    public MemberDto signup(MemberDto memberDto) {
-        if (memberRepository.findByUsername(memberDto.getUsername()).orElse(null) != null) {
+    public Member signup(PostDto memberDto) {
+        if (memberRepository.findByEmail(memberDto.getEmail()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
 
-
-        Member user = Member.builder()
-                .username(memberDto.getUsername())
+        // Todo : 이미지 넣어주기
+        Member member = Member.builder()
+                .email(memberDto.getEmail())
                 .password(passwordEncoder.encode(memberDto.getPassword()))
                 .nickname(memberDto.getNickname())
-                .activated(true)
+                .isDeleted(memberDto.isDeleted())
+                .intro(memberDto.getIntro())
                 .build();
 
-        return MemberDto.from(memberRepository.save(user));
+        return memberRepository.save(member);
     }
 
-    // username을 기준으로 정보를 가져온다.
+    /**
+     * Member pk로 조회하기
+     */
     @Transactional(readOnly = true)
-    public MemberDto getUserWithAuthorities(String username) {
-        return MemberDto.from(memberRepository.findByUsername(username).orElse(null));
+    public Member getMemberById(Long memberId) {
+        return (memberRepository.findById(memberId).orElse(null));
     }
 
 
