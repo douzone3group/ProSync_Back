@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.prosync.project.repository.ProjectMybatisMapper">
+    <insert id="insertProject" useGeneratedKeys="true" keyProperty="projectId" >
+        insert into project (name,intro,created_at,start_date,end_date,modified_at,progress,publicyn,project_image)
+        values (#{name}, #{intro}, now(), #{startDate}, #{endDate}, now(), #{progress}, #{publicyn}, #{projectImage})
+    </insert>
+
+    <update id="updateProject">
+
+    </update>
+
+    <select id="findProjectById">
+
+    </select>
+
+    <select id="findAllProjects">
+
+    </select>
+
+    <delete id="deleteProject">
+
+    </delete>
+</mapper>
