@@ -1,20 +1,24 @@
 package com.douzone.prosync.task.entity;
 
-import com.douzone.prosync.status.TaskStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.sql.Timestamp;
 
-//TODO:프로젝트와 연결
+//TODO: getter, setter 제거
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Getter
 @Setter
 public class Task {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer taskId;
     private String classification;
     private String title;
@@ -22,11 +26,11 @@ public class Task {
     private String startDate;
     private String endDate;
 
-    //TODO : erd 추가 확인
-    private TaskStatus taskStatus;
+    //TODO : 업무 상태 로직 변경
+    private String taskStatus;
 
     private Timestamp createdAt;
     private Timestamp modifiedAt;
     private Boolean isDeleted;
-
+    private Integer projectId;
 }

@@ -1,6 +1,5 @@
 package com.douzone.prosync.task.mapper;
 
-import com.douzone.prosync.task.dto.TaskRequest;
 import com.douzone.prosync.task.dto.TaskResponse;
 import com.douzone.prosync.task.entity.Task;
 import org.mapstruct.Mapper;
@@ -11,11 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface TaskMapper {
 
-    Task postDtoToTask(TaskRequest.PostDto dto);
-
-    Task patchDtoToTask(TaskRequest.PatchDto dto);
-
-    TaskResponse.SimpleResponse taskToSimpleResponse(Task task);
+    TaskResponse.SimpleResponse taskToSimpleResponse(Integer taskId);
 
     TaskResponse.GetTaskResponse taskToGetTaskResponse(Task task);
 

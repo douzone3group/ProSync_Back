@@ -16,25 +16,6 @@
             modified_at=now()
         where task_id=#{taskId} and is_deleted is null
     </update>
-    <select id="findTasksWithPagination" resultType="Task">
-        select * from task
-         <where>
-             <choose>
-                 <when test="search != null and search != ''">
-                    and project_id=#{projectId}
-                    and is_deleted is null
-                    and (title like concat('%', #{search}, '%')
-                    or task_status like concat('%', #{search}, '%'))
-                </when>
-                 <otherwise>
-                     and project_id=#{projectId}
-                     and is_deleted is null
-                 </otherwise>
-             </choose>
-        </where>
-        order by task_id desc
-        limit #{offset}, #{size}
-    </select>
     <select id="findTaskCount" resultType="int">
         select count(*) from task
         <where>
