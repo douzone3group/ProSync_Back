@@ -1,18 +1,17 @@
 package com.douzone.prosync.member.mapper;
 
+import com.douzone.prosync.member.dto.MemberDto;
 import com.douzone.prosync.member.dto.MemberRequest;
 import com.douzone.prosync.member.entity.Member;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 @Mapper
 public interface MemberMapper {
 
-
-    void save(Member member);
+// Todo: 엔티티 사용하지말고 Dto로 넣기
+    void save(MemberDto member);
 
     // 회원 업데이트 및 삭제여부를 수정할 수 있다.
     void update(MemberRequest.PatchDto updateParam);

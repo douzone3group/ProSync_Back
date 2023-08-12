@@ -1,9 +1,10 @@
 package com.douzone.prosync.member.dto;
 
-import com.douzone.prosync.member.entity.Member;
 import lombok.*;
 
-import java.sql.Timestamp;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class MemberRequest {
 
@@ -13,14 +14,21 @@ public class MemberRequest {
     @AllArgsConstructor
     @Builder
     public static class PostDto {
+
+        @Email
         private String email;
+
+        @NotBlank @NotNull
         private String password;
-        private String nickname;
+
+        @NotBlank @NotNull
+        private String name;
+
+        @NotBlank @NotNull
         private String intro;
 
         // Todo: 파일 image 연결
         // private String image;
-
 
     }
 

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com/douzone/prosync/member/mapper/MemberMapper">
-    <insert id="save" useGeneratedKeys="true" keyProperty="member_id">
-        insert into member (email, password, name,created_at,modified_at,is_deleted,intro)
-        values (#{email}, #{password}, #{name},#{createAt},#{modifiedAt},#{isDeleted},#{intro})
+<mapper namespace="com.douzone.prosync.member.mapper.MemberMapper">
+    <insert id="save" useGeneratedKeys="true" keyProperty="memberId">
+        insert into Member (email, password, name,created_at,modified_at,is_deleted,intro,profile_image)
+        values (#{email}, #{password}, #{name},#{createdAt},#{modifiedAt},#{isDeleted},#{intro},#{profileImage})
     </insert>
 
     <update id="update">
-        update member
+        update Member
         set password=#{password},
             name=#{name},
             is_deleted=#{isDeleted},

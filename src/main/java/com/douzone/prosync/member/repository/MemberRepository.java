@@ -1,23 +1,28 @@
 package com.douzone.prosync.member.repository;
 
+import com.douzone.prosync.member.dto.MemberDto;
 import com.douzone.prosync.member.dto.MemberRequest;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class MemberRepository {
 
     private final MemberMapper memberMapper;
 
-    public Member save(Member member) {
+    public Member save(MemberDto member) {
         memberMapper.save(member);
-        return member;
+        log.info("member의 id는 {}", member.getMemberId());
+        return  memberMapper.findById(member.getMemberId()).orElse(null);
+
     }
 
     // 회원 업데이트 및 삭제여부를 수정할 수 있다.

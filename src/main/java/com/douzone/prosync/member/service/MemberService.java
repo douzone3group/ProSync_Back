@@ -1,6 +1,6 @@
-package com.douzone.prosync.security.auth;
+package com.douzone.prosync.member.service;
 
-import com.douzone.prosync.member.dto.MemberResponse;
+import com.douzone.prosync.member.dto.MemberDto;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
 import com.douzone.prosync.security.exception.DuplicateMemberException;
@@ -8,8 +8,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+
 import static com.douzone.prosync.member.dto.MemberRequest.*;
-import static com.douzone.prosync.member.dto.MemberResponse.*;
+import static com.fasterxml.jackson.databind.util.ClassUtil.name;
 
 @Service
 public class MemberService {
@@ -27,18 +30,24 @@ public class MemberService {
      */
     @Transactional
     public Member signup(PostDto memberDto) {
+
+        // 중복 검사
         if (memberRepository.findByEmail(memberDto.getEmail()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
 
         // Todo : 이미지 넣어주기
-        Member member = Member.builder()
+        MemberDto member = MemberDto.builder()
                 .email(memberDto.getEmail())
                 .password(passwordEncoder.encode(memberDto.getPassword()))
-                .nickname(memberDto.getNickname())
-                .isDeleted(memberDto.isDeleted())
+                .name(memberDto.getName())
                 .intro(memberDto.getIntro())
-                .build();
+                .createdAt(Timestamp.from(Instant.now()))
+                .modifiedAt(Timestamp.from(Instant.now()))
+                .profileImage("강욱")
+                .isDeleted(false).build();
+
+
 
         return memberRepository.save(member);
     }

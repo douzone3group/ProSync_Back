@@ -51,9 +51,9 @@ public class SecurityConfig {
         // 로그인 API, 회원가입 API는 토큰이 없는 상태에서 요청이 들어오기 때문에 모두 permitAll 설정을 한다.
         http
                 .authorizeRequests()
-                .mvcMatchers("/api/hello").permitAll()
+                .mvcMatchers("/members/**").permitAll()
                 .mvcMatchers("/api/hello", "/api/authenticate", "/api/signup").permitAll()
-                .requestMatchers(PathRequest.toH2Console()).permitAll()
+//                .requestMatchers(PathRequest.toH2Console()).permitAll()
                 .anyRequest().authenticated();
 
         http
@@ -74,12 +74,12 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // enable h2-console
-                .headers(headers ->
-                        headers.frameOptions(options ->
-                                options.sameOrigin()
-                        )
-                )
+//                // enable h2-console
+//                .headers(headers ->
+//                        headers.frameOptions(options ->
+//                                options.sameOrigin()
+//                        )
+//                )
 
                 // JwtFilter를 addFilterBefore로 등록했던 JwtSecurityConfig 클래스도 적용해준다.
                 .apply(new JwtSecurityConfig(tokenProvider));
