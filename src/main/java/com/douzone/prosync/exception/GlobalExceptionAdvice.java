@@ -4,6 +4,9 @@ import com.douzone.prosync.security.exception.DuplicateMemberException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -30,6 +33,16 @@ public class GlobalExceptionAdvice {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.of(ErrorCode.DUPLICATED_USER_ID.name()));
     }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<?> applicationHandler(AuthenticationException e) {
+        log.error("Error occurs {}", e.toString());
+        // Unauthorized : 401번 인증 실패
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.of(ErrorCode.UNAUTHORIZED.name()));
+    }
+
+
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> applicationHandler(RuntimeException e) {

@@ -12,7 +12,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 import static com.douzone.prosync.member.dto.MemberRequest.*;
-import static com.fasterxml.jackson.databind.util.ClassUtil.name;
 
 @Service
 public class MemberService {

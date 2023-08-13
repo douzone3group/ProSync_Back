@@ -11,6 +11,18 @@ public class MemberRequest {
     @Getter
     @Setter
     @NoArgsConstructor
+    public static class LoginDto {
+
+        private String email;
+        private String password;
+
+    }
+
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class PostDto {

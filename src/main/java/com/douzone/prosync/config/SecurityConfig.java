@@ -44,7 +44,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.csrf().disable(); // 토큰 방식을 사용하기 위해 csrf 설정은 disable
 //        http.cors(Customizer.withDefaults());
 //        http.headers().frameOptions().disable();
 
@@ -52,8 +51,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests()
                 .mvcMatchers("/members/**").permitAll()
-                .mvcMatchers("/api/hello", "/api/authenticate", "/api/signup").permitAll()
-//                .requestMatchers(PathRequest.toH2Console()).permitAll()
+                .mvcMatchers("/login", "/api/authenticate", "/api/signup").permitAll()
                 .anyRequest().authenticated();
 
         http
@@ -72,14 +70,14 @@ public class SecurityConfig {
                 // 세션을 사용하지 않기 때문에 STATELESS로 설정
                 http.sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
+
+        http
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/removeToken") // 여기에 원하는 URL을 지정
                 )
 
-//                // enable h2-console
-//                .headers(headers ->
-//                        headers.frameOptions(options ->
-//                                options.sameOrigin()
-//                        )
-//                )
 
                 // JwtFilter를 addFilterBefore로 등록했던 JwtSecurityConfig 클래스도 적용해준다.
                 .apply(new JwtSecurityConfig(tokenProvider));

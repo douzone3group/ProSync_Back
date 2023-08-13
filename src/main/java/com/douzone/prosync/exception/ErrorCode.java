@@ -16,8 +16,7 @@ public enum ErrorCode {
     // MEMBER
     DUPLICATED_USER_ID(HttpStatus.CONFLICT, "User ID is duplicated"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not founded"),
-    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Password is invalid"),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"User Authentication is failed"),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Token is invalid"),
     INVALID_REFRESH_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "RefreshToken is invalid"),
 
