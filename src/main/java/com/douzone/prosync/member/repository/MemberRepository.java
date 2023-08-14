@@ -1,28 +1,37 @@
 package com.douzone.prosync.member.repository;
 
 import com.douzone.prosync.member.dto.MemberRequest;
+import com.douzone.prosync.member.dto.MemberRequest.PatchDto;
+import com.douzone.prosync.member.dto.MemberResponse;
 import com.douzone.prosync.member.entity.Member;
+import com.douzone.prosync.member.dto.MemberDto;
 import com.douzone.prosync.member.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.ibatis.annotations.Param;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class MemberRepository {
 
     private final MemberMapper memberMapper;
 
-    public Member save(Member member) {
+    public Member save(MemberDto member) {
         memberMapper.save(member);
-        return member;
+        log.error("member의 id는 {}", member.getMemberId());
+        return  memberMapper.findById(member.getMemberId()).orElse(null);
     }
 
     // 회원 업데이트 및 삭제여부를 수정할 수 있다.
-    public void update(MemberRequest.PatchDto updateParam) {
-        memberMapper.update(updateParam);
+    public void update(MemberDto memberDto) {
+        memberMapper.update(memberDto);
+    }
+
+    public Optional<MemberResponse.GetMemberResponse> getMemberOne(Long memberId){
+       return memberMapper.getMemberOne(memberId);
     }
 
     public Optional<Member> findById(Long memberId) {
@@ -31,6 +40,7 @@ public class MemberRepository {
 
     public Optional<Member>  findByEmail(String email) {
         return memberMapper.findByEmail(email);
+
     };
 
 
