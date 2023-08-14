@@ -1,6 +1,7 @@
 package com.douzone.prosync.security.jwt;
 
 import com.douzone.prosync.security.auth.MemberDetails;
+import com.douzone.prosync.security.exception.ExpiredTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -73,6 +74,7 @@ public class TokenProvider implements InitializingBean {
             logger.info("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
             logger.info("만료된 JWT 토큰입니다.");
+            throw new ExpiredTokenException("만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException e) {
             logger.info("지원되지 않는 JWT 토큰입니다.");
         } catch (IllegalArgumentException e) {

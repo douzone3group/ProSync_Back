@@ -1,5 +1,6 @@
 package com.douzone.prosync.config;
 
+import com.douzone.prosync.redis.RedisService;
 import com.douzone.prosync.security.jwt.JwtAccessDeniedHandler;
 import com.douzone.prosync.security.jwt.JwtAuthenticationEntryPoint;
 import com.douzone.prosync.security.jwt.JwtSecurityConfig;
@@ -27,12 +28,15 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+    private final RedisService redisService;
+
     private final CorsFilter corsFilter;
 
-    public SecurityConfig(TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler, CorsFilter corsFilter) {
+    public SecurityConfig(TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler, RedisService redisService, CorsFilter corsFilter) {
         this.tokenProvider = tokenProvider;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
+        this.redisService = redisService;
         this.corsFilter = corsFilter;
     }
 
@@ -80,7 +84,7 @@ public class SecurityConfig {
 
 
                 // JwtFilter를 addFilterBefore로 등록했던 JwtSecurityConfig 클래스도 적용해준다.
-                .apply(new JwtSecurityConfig(tokenProvider));
+                .apply(new JwtSecurityConfig(tokenProvider,redisService));
 
         return http.build();
     }
