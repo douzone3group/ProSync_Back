@@ -13,7 +13,10 @@ public class MemberRequest {
     @NoArgsConstructor
     public static class LoginDto {
 
+        @Email
         private String email;
+
+        @NotBlank @NotNull
         private String password;
 
     }
@@ -49,7 +52,7 @@ public class MemberRequest {
     @NoArgsConstructor
     public static class PatchDto {
 
-        private Long memberId;
+
         private String password;
         private String nickname;
         private boolean isDeleted;

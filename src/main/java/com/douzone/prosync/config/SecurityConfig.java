@@ -55,7 +55,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests()
                 .mvcMatchers("/members/**").permitAll()
-                .mvcMatchers("/login", "/api/authenticate", "/api/signup").permitAll()
+                .mvcMatchers("/login", "/api/authenticate", "/mail").permitAll()
                 .anyRequest().authenticated();
 
         http

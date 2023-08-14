@@ -57,14 +57,7 @@ public class MemberController {
 //    public ResponseEntity modifyMember() {
 //
 //    }
-//
-//    /**
-//     * 회원 삭제
-//     */
-//    @DeleteMapping("/{memberId}")
-//    public ResponseEntity removeMember() {
-//
-//    }
+
 //
 //    /**
 //     * 회원정보 조회
@@ -73,6 +66,8 @@ public class MemberController {
 //    public ResponseEntity getMemberInfo() {
 //
 //    }
+
+    // Todo : 회원탈퇴 시 회원관련 토큰들 제거해줘야한다.
 //
 
     /**
@@ -112,7 +107,7 @@ public class MemberController {
         redisService.removeRefreshToken(request.getHeader(HEADER_DEVICE_FINGERPRINT)+"_"+principal.getName());
 
         // Todo : return 값 어떻게 줄지 생각해야한다.
-        return new ResponseEntity(principal.getName(), HttpStatus.OK);
+        return new ResponseEntity(principal.getName()+" 삭제완료", HttpStatus.OK);
     }
 
 

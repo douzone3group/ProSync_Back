@@ -24,6 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(final String email) {
         return memberRepository.findByEmail(email)
+                .filter(member -> !member.isDeleted())
                 .map(member ->  new MemberDetails(member))
                 .orElseThrow(() -> new UsernameNotFoundException(email + " -> 데이터베이스에서 찾을 수 없습니다."));
     }
