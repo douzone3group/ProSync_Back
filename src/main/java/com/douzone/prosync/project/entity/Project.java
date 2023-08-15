@@ -2,21 +2,30 @@ package com.douzone.prosync.project.entity;
 
 import lombok.*;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 
+
+
+@Getter
+@Entity
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Project {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer projectId;
     private String name;
     private String intro;
 
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
     private String startDate;
     private String endDate;
-    private String modifiedAt;
+    private LocalDateTime modifiedAt;
 
     private Float progress;
     private Boolean publicyn;

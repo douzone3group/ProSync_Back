@@ -1,9 +1,12 @@
 package com.douzone.prosync.project.repository;
+import com.douzone.prosync.project.dto.ProjectRequest;
 import com.douzone.prosync.project.entity.Project;
 import org.apache.ibatis.annotations.Mapper;
 
 
+
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface ProjectMybatisMapper {
@@ -12,14 +15,14 @@ public interface ProjectMybatisMapper {
     List<Project> findAllProjects();
 
     // 프로젝트 단일 조회
-    Project findProjectById(Integer id);
+    Optional<Project> findProjectById(Integer projectId);
 
     // 프로젝트 생성
-    void insertProject(Project project);
+    void createProject(ProjectRequest.PostDto dto);
 
     // 프로젝트 수정
-    int updateProject(Project project);
+    void updateProject(ProjectRequest.PatchDto dto);
 
     // 프로젝트 삭제
-    int deleteProject(Long id);
+    void deleteProject(Integer projectId);
 }
