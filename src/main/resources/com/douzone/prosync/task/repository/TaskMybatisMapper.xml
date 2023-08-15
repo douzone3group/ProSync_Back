@@ -3,8 +3,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.task.repository.TaskMybatisMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="task.taskId">
-        insert into task(project_id, classification, title, detail, start_date, end_date, task_status, created_at, modified_at)
-        values (#{projectId}, #{task.classification}, #{task.title}, #{task.detail}, #{task.startDate}, #{task.endDate}, #{task.taskStatus}, now(), now())
+        insert into task(project_id, classification, title, detail, start_date, end_date, task_status, created_at,
+                         modified_at)
+        values (#{projectId}, #{task.classification}, #{task.title}, #{task.detail}, #{task.startDate}, #{task.endDate},
+                #{task.taskStatus}, #{task.createdAt}, #{task.createdAt})
     </insert>
     <update id="update">
         update task
@@ -13,8 +15,10 @@
             detail=#{detail},
             start_date=#{startDate},
             end_date=#{endDate},
-            modified_at=now()
-        where task_id=#{taskId} and is_deleted is null
+            task_status=#{taskStatus},
+            modified_at=#{modifiedAt}
+        where task_id = #{taskId}
+          and is_deleted is null
     </update>
     <select id="findTaskCount" resultType="int">
         select count(*) from task
@@ -28,8 +32,9 @@
         </where>
     </select>
     <select id="findExistsTask" resultType="int">
-        select count(*) from task
-        where task_id=#{taskId}
-        and is_deleted is null
+        select count(*)
+        from task
+        where task_id = #{taskId}
+          and is_deleted is null
     </select>
 </mapper>

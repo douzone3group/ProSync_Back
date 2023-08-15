@@ -1,6 +1,7 @@
 package com.douzone.prosync.task.repository;
 
-import com.douzone.prosync.task.dto.TaskRequest;
+import com.douzone.prosync.task.dto.request.TaskPatchDto;
+import com.douzone.prosync.task.dto.request.TaskPostDto;
 import com.douzone.prosync.task.entity.Task;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,7 @@ public class TaskRepository {
 
     private final TaskMybatisMapper taskMapper;
 
-    public Integer save(TaskRequest.PostDto dto, Integer projectId) {
+    public Integer save(TaskPostDto dto, Integer projectId) {
         taskMapper.save(dto, projectId);
         return dto.getTaskId();
     }
@@ -32,8 +33,8 @@ public class TaskRepository {
         taskMapper.delete(taskId);
     }
 
-    public void update(Task task) {
-        taskMapper.update(task);
+    public void update(TaskPatchDto dto) {
+        taskMapper.update(dto);
     }
 
     public boolean isDeletedTask(Integer taskId) {
