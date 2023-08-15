@@ -5,7 +5,6 @@ import com.douzone.prosync.security.jwt.JwtAccessDeniedHandler;
 import com.douzone.prosync.security.jwt.JwtAuthenticationEntryPoint;
 import com.douzone.prosync.security.jwt.JwtSecurityConfig;
 import com.douzone.prosync.security.jwt.TokenProvider;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -55,7 +54,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests()
                 .mvcMatchers("/members/**").permitAll()
-                .mvcMatchers("/login", "/api/authenticate", "/mail").permitAll()
+                .mvcMatchers("/login", "/api/authenticate", "/send_verification","/verify_code").permitAll()
                 .anyRequest().authenticated();
 
         http

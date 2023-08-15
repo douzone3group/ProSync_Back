@@ -1,11 +1,14 @@
 package com.douzone.prosync.member.controller;
 
-import com.douzone.prosync.constant.ConstantPool;
+import com.douzone.prosync.mail.MailService;
+import com.douzone.prosync.mail.dto.CertificationCodeDto;
+import com.douzone.prosync.mail.dto.MailDto;
+import com.douzone.prosync.mail.exception.CertificationFailException;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.service.MemberService;
 import com.douzone.prosync.redis.RedisService;
 import com.douzone.prosync.security.auth.MemberDetails;
-import com.douzone.prosync.security.jwt.JwtFilter;
+import com.douzone.prosync.security.exception.DuplicateMemberException;
 import com.douzone.prosync.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -38,8 +41,44 @@ public class MemberController {
 
     private final RedisService redisService;
 
+    private final MailService mailService;
+
     /**
-     * 회원가입
+     * 사용자의 이메일을 받아 인증번호를 전송하고 Redis에 인증번호를 저장하는 로직
+     */
+    @PostMapping("/send_verification")
+    public ResponseEntity mailInvalidateAndSend(@Valid @RequestBody MailDto mail) {
+        // email이 DB에 등록되어 있는지 확인한다.
+        if (memberService.duplicateInspection(mail.getEmail())) {
+            throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
+        }
+
+        String number = mailService.sendMail(mail.getEmail());
+
+        // Redis에 key값은 "email: 사용자 email" 형태로 인증번호 저장
+        redisService.setEmailCertificationNumber(mail.getEmail(),number);
+
+        return new ResponseEntity(number, HttpStatus.OK);
+    }
+
+    /**
+     * 사용자에게 이메일과 인증번호를 받아 Redis에 있는지 확인하는 로직
+     */
+    @PostMapping("/verify_code")
+    public ResponseEntity verifyCertificationNumber(@Valid @RequestBody CertificationCodeDto code) {
+        String number = redisService.getEmailCertificationNumber(code.getEmail());
+
+        if (number==null || !number.equals(code.getCertificationNumber())) {
+            throw new CertificationFailException("인증번호 불일치");
+        }
+
+        redisService.removeEmailCertificationNumber(code.getEmail());
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+
+    /**
+     * 회원가입 성공 로직
      */
     @PostMapping("/members")
     public ResponseEntity signUp(@Valid @RequestBody PostDto postDto) {
@@ -89,7 +128,7 @@ public class MemberController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(AUTHORIZATION_HEADER, "Bearer " + jwt);
 
-        // "장치지문_pk"을 key값으로 refreshToken을 Redis에 저장한다.
+        // "device:장치지문_pk"을 key값으로 refreshToken을 Redis에 저장한다.
         redisService.setRefreshToken(request.getHeader(HEADER_DEVICE_FINGERPRINT)
                 +"_"+(((MemberDetails) authentication.getPrincipal()).getMemberId()));
 

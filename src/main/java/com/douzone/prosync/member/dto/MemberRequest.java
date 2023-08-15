@@ -36,14 +36,6 @@ public class MemberRequest {
         @NotBlank @NotNull
         private String password;
 
-        @NotBlank @NotNull
-        private String name;
-
-        @NotBlank @NotNull
-        private String intro;
-
-        // Todo: 파일 image 연결
-        // private String image;
 
     }
 

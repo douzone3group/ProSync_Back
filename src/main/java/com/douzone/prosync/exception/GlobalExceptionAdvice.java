@@ -1,15 +1,18 @@
 package com.douzone.prosync.exception;
 
+import com.douzone.prosync.mail.exception.CertificationFailException;
 import com.douzone.prosync.security.exception.DuplicateMemberException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailSendException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.mail.MessagingException;
 import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice
@@ -47,6 +50,31 @@ public class GlobalExceptionAdvice {
         log.error("Error occurs {}", e.toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR.name()));
+    }
+
+    // 메일 인증 오류
+
+    @ExceptionHandler(MailSendException.class)
+    public ResponseEntity<?> handleEmailFailure(MailSendException e) {
+        log.error("Error occurs {}", e.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(ErrorCode.INVALID_EMAIL.name()));
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<?> handleEmailFailure(MessagingException e) {
+        log.error("Error occurs {}", e.toString());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.of(ErrorCode.EMAIL_NOT_SENT.name()));
+    }
+
+    // 인증번호 오류
+
+    @ExceptionHandler(CertificationFailException.class)
+    public ResponseEntity<?> certificationFail(CertificationFailException e) {
+        log.error("Error occurs {}", e.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(ErrorCode.EMAIL_NOT_SENT.name()));
     }
 
     @ExceptionHandler

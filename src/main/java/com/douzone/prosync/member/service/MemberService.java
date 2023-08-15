@@ -30,20 +30,21 @@ public class MemberService {
     @Transactional
     public Member signup(PostDto memberDto) {
 
-        // 중복 검사
-        if (memberRepository.findByEmail(memberDto.getEmail()).orElse(null) != null) {
+
+        // 중복검사
+        if (duplicateInspection(memberDto.getEmail())) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
 
-        // Todo : 이미지 넣어주기
+        // Todo : 기본 이미지 넣어주기
         MemberDto member = MemberDto.builder()
                 .email(memberDto.getEmail())
                 .password(passwordEncoder.encode(memberDto.getPassword()))
-                .name(memberDto.getName())
-                .intro(memberDto.getIntro())
+                .name("")
+                .intro("")
                 .createdAt(Timestamp.from(Instant.now()))
                 .modifiedAt(Timestamp.from(Instant.now()))
-                .profileImage("강욱")
+                .profileImage("")
                 .isDeleted(false).build();
 
 
@@ -60,5 +61,12 @@ public class MemberService {
     }
 
 
+    /**
+     * Email로 Member 중복검사하기
+     */
+    public boolean duplicateInspection(String email) {
+
+        return !(memberRepository.findByEmail(email).orElse(null)==null);
+    }
 
 }
