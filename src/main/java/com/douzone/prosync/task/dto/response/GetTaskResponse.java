@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-@ApiModel("[RESPONSE] TASK - GET")
+@ApiModel("GetTaskResponse")
 public class GetTaskResponse {
 
         @ApiModelProperty(value = "업무식별자", example = "1")

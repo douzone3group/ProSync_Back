@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@ApiModel("[RESPONSE] TASK - POST/PATCH/DELETE")
+@ApiModel("TaskSimpleResponse")
 public class TaskSimpleResponse {
 
     @ApiModelProperty(value = "업무식별자", example = "1")
