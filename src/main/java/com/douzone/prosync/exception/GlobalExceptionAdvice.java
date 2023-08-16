@@ -74,7 +74,7 @@ public class GlobalExceptionAdvice {
     public ResponseEntity<?> certificationFail(CertificationFailException e) {
         log.error("Error occurs {}", e.toString());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.of(ErrorCode.EMAIL_NOT_SENT.name()));
+                .body(ErrorResponse.of(ErrorCode.CERTIFICATION_NUMBER_MISMATCH.name()));
     }
 
     @ExceptionHandler

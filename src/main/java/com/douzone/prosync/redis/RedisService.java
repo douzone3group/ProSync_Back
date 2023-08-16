@@ -49,7 +49,7 @@ public class RedisService {
     }
 
     public void removeEmailCertificationNumber(String key) {
-        redisTemplate.delete("email"+key);
+        redisTemplate.delete("email:"+key);
     }
 
 

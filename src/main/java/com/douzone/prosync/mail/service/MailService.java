@@ -1,6 +1,7 @@
-package com.douzone.prosync.mail;
+package com.douzone.prosync.mail.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -8,18 +9,22 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Service
-@RequiredArgsConstructor
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-    private static final String senderEmail= "rlarkddnr1686@naver.com";
+    private final String senderEmail;
     private static int number;
 
-    public static void createNumber(){
-        number = (int)(Math.random() * (90000)) + 100000;// (int) Math.random() * (최댓값-최소값+1) + 최소값
+    public MailService(JavaMailSender javaMailSender, @Value("${mail.sender}") String senderEmail) {
+        this.javaMailSender = javaMailSender;
+        this.senderEmail = senderEmail;
     }
 
-    public MimeMessage CreateMail(String mail){
+    public static void createNumber() {
+        number = (int) (Math.random() * (90000)) + 100000;// (int) Math.random() * (최댓값-최소값+1) + 최소값
+    }
+
+    public MimeMessage CreateMail(String mail) {
         createNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
 
@@ -46,7 +51,7 @@ public class MailService {
         return message;
     }
 
-    public String sendMail(String mail){
+    public String sendMail(String mail) {
         MimeMessage message = CreateMail(mail);
         javaMailSender.send(message);
 

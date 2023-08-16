@@ -1,6 +1,6 @@
 package com.douzone.prosync.member.controller;
 
-import com.douzone.prosync.mail.MailService;
+import com.douzone.prosync.mail.service.MailService;
 import com.douzone.prosync.mail.dto.CertificationCodeDto;
 import com.douzone.prosync.mail.dto.MailDto;
 import com.douzone.prosync.mail.exception.CertificationFailException;
@@ -71,7 +71,7 @@ public class MemberController {
         if (number==null || !number.equals(code.getCertificationNumber())) {
             throw new CertificationFailException("인증번호 불일치");
         }
-
+        System.out.println("인증번호 통과, 인증번호를 지웁니다.");
         redisService.removeEmailCertificationNumber(code.getEmail());
         return new ResponseEntity(HttpStatus.OK);
     }
