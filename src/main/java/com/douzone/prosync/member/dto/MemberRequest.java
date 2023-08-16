@@ -1,12 +1,29 @@
 package com.douzone.prosync.member.dto;
 
-import com.douzone.prosync.member.entity.Member;
 import lombok.*;
 
+
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
 
 public class MemberRequest {
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class LoginDto {
+
+        @Email
+        private String email;
+
+        @NotBlank @NotNull
+        private String password;
+
+    }
+
+
 
     @Getter
     @Setter
@@ -15,15 +32,26 @@ public class MemberRequest {
     @Builder
     @ToString
     public static class PostDto {
+
+        @Email
         private String email;
+        @NotBlank @NotNull
         private String password;
+
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class PatchProfileDto {
+
         private String name;
         private String intro;
 
         // Todo: 파일 image 연결
-        // private String image;
-
-
+         private String profileImage;
     }
 
     @Getter
@@ -31,54 +59,23 @@ public class MemberRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class PatchDto {
-        @NotNull
-        private Long memberId;
-        @NotNull
-        private String name;
-        @NotNull // 나중 수정
-        private String intro;
-        @NotNull
-        private String password;
-        @NotNull
-        private boolean isDeleted;
+    public static class PatchPasswordDto {
 
-        // Todo: 파일 image 연결
-        // private String image;
-    }
-
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class PatchDtoPassword {
-        @NotNull
-        private Long memberId;
-        @NotNull
         private String password;
 
-
-        // Todo: 파일 image 연결
-        // private String image;
     }
+
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class PatchDtoDelete {
-        @NotNull
-        private Long memberId;
+    public static class PatchDeletedDto {
 
-        @NotNull
         private boolean isDeleted;
 
-
-        // Todo: 파일 image 연결
-        // private String image;
     }
+
 
     @Getter
     @Setter

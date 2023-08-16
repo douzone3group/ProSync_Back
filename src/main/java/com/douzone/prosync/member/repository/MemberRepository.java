@@ -1,23 +1,26 @@
 package com.douzone.prosync.member.repository;
 
-import com.douzone.prosync.member.dto.MemberRequest;
-import com.douzone.prosync.member.dto.MemberRequest.PatchDto;
-import com.douzone.prosync.member.dto.MemberResponse;
-import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.dto.MemberDto;
+import com.douzone.prosync.member.dto.MemberRequest;
+import com.douzone.prosync.member.dto.MemberRequest.PatchDeletedDto;
+import com.douzone.prosync.member.dto.MemberRequest.PatchPasswordDto;
+import com.douzone.prosync.member.dto.MemberRequest.PatchProfileDto;
+import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class MemberRepository {
 
     private final MemberMapper memberMapper;
+
 
     public Member save(MemberDto member) {
         memberMapper.save(member);
@@ -26,14 +29,13 @@ public class MemberRepository {
     }
 
     // 회원 업데이트 및 삭제여부를 수정할 수 있다.
-    public void update(MemberDto memberDto) {
-        memberMapper.update(memberDto);
+    public void updateProfile(PatchProfileDto dto) { memberMapper.updateProfile(dto);}
+    public void updatePassword(PatchPasswordDto dto) {
+        memberMapper.updatePassword(dto);
     }
-
-    public Optional<MemberResponse.GetMemberResponse> getMemberOne(Long memberId){
-       return memberMapper.getMemberOne(memberId);
+    public void updateDeleted(PatchDeletedDto dto) {
+        memberMapper.updateDeleted(dto);
     }
-
     public Optional<Member> findById(Long memberId) {
         return memberMapper.findById(memberId);
     };

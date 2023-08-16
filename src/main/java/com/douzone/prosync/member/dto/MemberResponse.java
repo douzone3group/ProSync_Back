@@ -11,7 +11,6 @@ public class MemberResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    @ToString
     public static class GetMemberResponse {
 
         private Long memberId;
@@ -22,7 +21,7 @@ public class MemberResponse {
         private String intro;
 
         // Todo: 파일 image 연결
-        // private String image;
+        private String profileImage;
     }
 
 

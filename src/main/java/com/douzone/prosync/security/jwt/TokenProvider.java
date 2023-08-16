@@ -1,5 +1,7 @@
 package com.douzone.prosync.security.jwt;
 
+import com.douzone.prosync.security.auth.MemberDetails;
+import com.douzone.prosync.security.exception.ExpiredTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -9,18 +11,16 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 @Component
 public class TokenProvider implements InitializingBean {
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
-    private static final String AUTHORITIES_KEY = "auth";
     private final String secret;
     private final long tokenValidityInMilliseconds;
     private Key key;
@@ -39,16 +39,14 @@ public class TokenProvider implements InitializingBean {
     }
 
     public String createToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
+        // JWT 토큰에 Subject로 멤버의 id(pk)를 넣어준다.
         return Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
+                .setSubject(((MemberDetails) authentication.getPrincipal()).getMemberId().toString())
+                .claim("email",((MemberDetails) authentication.getPrincipal()).getUsername())
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
@@ -62,10 +60,10 @@ public class TokenProvider implements InitializingBean {
                 .parseClaimsJws(token)
                 .getBody();
 
+        // 서버에서 사용하는 Principal 객체에는 member의 pk 값만 저장해서 사용한다.
+        User principal = new User(claims.getSubject(), "", new ArrayList<>());
 
-        User principal = new User(claims.getSubject(), "", null);
-
-        return new UsernamePasswordAuthenticationToken(principal, token, null);
+        return new UsernamePasswordAuthenticationToken(principal, token, new ArrayList<>());
     }
 
     public boolean validateToken(String token) {
@@ -76,6 +74,7 @@ public class TokenProvider implements InitializingBean {
             logger.info("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
             logger.info("만료된 JWT 토큰입니다.");
+            throw new ExpiredTokenException("만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException e) {
             logger.info("지원되지 않는 JWT 토큰입니다.");
         } catch (IllegalArgumentException e) {
