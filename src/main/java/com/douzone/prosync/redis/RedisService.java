@@ -13,7 +13,7 @@ import static com.douzone.prosync.constant.ConstantPool.*;
 
 @Service
 @RequiredArgsConstructor
-public class RedisService {
+public class RedisService implements TokenStorageService {
 
     private final RedisTemplate redisTemplate;
 

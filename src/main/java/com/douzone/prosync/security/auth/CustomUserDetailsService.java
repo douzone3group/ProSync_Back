@@ -1,6 +1,6 @@
 package com.douzone.prosync.security.auth;
 
-import com.douzone.prosync.member.repository.MemberRepository;
+import com.douzone.prosync.member.repository.MybatisMemberRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 // 해당 정보를 기반으로 userdetails.User 객체를 생성해서 리턴한다.
 @Component("userDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
-    private final MemberRepository memberRepository;
+    private final MybatisMemberRepository memberRepository;
 
-    public CustomUserDetailsService(MemberRepository memberRepository) {
+    public CustomUserDetailsService(MybatisMemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
