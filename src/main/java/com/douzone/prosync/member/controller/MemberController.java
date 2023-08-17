@@ -160,15 +160,16 @@
 
 package com.douzone.prosync.member.controller;
 
+import com.douzone.prosync.exception.ApplicationException;
+import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.mail.service.MailService;
 import com.douzone.prosync.mail.dto.CertificationCodeDto;
 import com.douzone.prosync.mail.dto.MailDto;
-import com.douzone.prosync.mail.exception.CertificationFailException;
+import com.douzone.prosync.member.dto.request.*;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.service.MemberService;
 import com.douzone.prosync.redis.RedisService;
 import com.douzone.prosync.security.auth.MemberDetails;
-import com.douzone.prosync.security.exception.DuplicateMemberException;
 import com.douzone.prosync.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -187,7 +188,6 @@ import javax.validation.Valid;
 import java.security.Principal;
 
 import static com.douzone.prosync.constant.ConstantPool.*;
-import static com.douzone.prosync.member.dto.MemberRequest.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -211,7 +211,7 @@ public class MemberController {
     public ResponseEntity mailInvalidateAndSend(@Valid @RequestBody MailDto mail) {
         // email이 DB에 등록되어 있는지 확인한다.
         if (memberService.duplicateInspection(mail.getEmail())) {
-            throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
+            throw new ApplicationException(ErrorCode.DUPLICATED_USER_ID);
         }
 
         String number = mailService.sendMail(mail.getEmail());
@@ -230,7 +230,7 @@ public class MemberController {
         String number = redisService.getEmailCertificationNumber(code.getEmail());
 
         if (number==null || !number.equals(code.getCertificationNumber())) {
-            throw new CertificationFailException("인증번호 불일치");
+            throw new ApplicationException(ErrorCode.CERTIFICATION_NUMBER_MISMATCH);
         }
         System.out.println("인증번호 통과, 인증번호를 지웁니다.");
         redisService.removeEmailCertificationNumber(code.getEmail());
@@ -242,7 +242,7 @@ public class MemberController {
      * 회원가입 성공 로직
      */
     @PostMapping("/members")
-    public ResponseEntity signUp(@Valid @RequestBody PostDto postDto) {
+    public ResponseEntity signUp(@Valid @RequestBody MemberPostDto postDto) {
         // 중복 검사
         Member member = memberService.signup(postDto);
 
@@ -255,7 +255,7 @@ public class MemberController {
      */
     @PatchMapping("/members/profile")
     public ResponseEntity updateMemberProfile(Principal principal,
-                                           @Valid @RequestBody PatchProfileDto dto){
+                                           @Valid @RequestBody MemberPatchProfileDto dto){
         Long memberId = Long.parseLong(principal.getName());
         memberService.updateMemberProfile(memberId, dto);
         return new ResponseEntity(HttpStatus.OK);
@@ -266,7 +266,7 @@ public class MemberController {
      */
     @PatchMapping("/members/password")
     public ResponseEntity updateMemberPassword(Principal principal,
-                                               @Valid @RequestBody PatchPasswordDto dto){
+                                               @Valid @RequestBody MemberPatchPasswordDto dto){
         Long memberId = Long.parseLong(principal.getName());
         memberService.updateMemberPassword(memberId, dto);
         return new ResponseEntity(HttpStatus.OK);
@@ -277,7 +277,7 @@ public class MemberController {
      */
     @DeleteMapping("/members")
     public ResponseEntity updateMemberDelete(Principal principal,
-                                             @Valid @RequestBody PatchDeletedDto dto){
+                                             @Valid @RequestBody MemberPatchDeletedDto dto){
         Long memberId = Long.parseLong(principal.getName());
         memberService.updateMemberDelete(memberId, dto);
         return new ResponseEntity(HttpStatus.OK);
@@ -301,7 +301,7 @@ public class MemberController {
      * 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity login(@Valid @RequestBody LoginDto loginDto, HttpServletRequest request) {
+    public ResponseEntity login(@Valid @RequestBody MemberLoginDto loginDto, HttpServletRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
 

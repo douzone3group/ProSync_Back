@@ -82,9 +82,6 @@
 //}
 package com.douzone.prosync.exception;
 
-import com.douzone.prosync.mail.exception.CertificationFailException;
-import com.douzone.prosync.security.exception.DuplicateMemberException;
-import com.douzone.prosync.security.exception.NotFoundMemberException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -102,28 +99,11 @@ import javax.validation.ConstraintViolationException;
 @Slf4j
 public class GlobalExceptionAdvice {
 
-
-
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<?> applicationHandler(ApplicationException e) {
         log.error("Error occurs {}", e.toString());
         return ResponseEntity.status(e.getErrorCode().getStatus())
                 .body(ErrorResponse.of(e.getErrorCode().name()));
-    }
-
-    @ExceptionHandler(DuplicateMemberException.class)
-    public ResponseEntity<?> applicationHandler(DuplicateMemberException e) {
-        log.error("Error occurs {}", e.toString());
-        // Conflict : 409번 요청과 현재 서버의 리소스 상태가 충돌됐다는 것을 의미한다.
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ErrorResponse.of(ErrorCode.DUPLICATED_USER_ID.name()));
-    }
-
-    @ExceptionHandler(NotFoundMemberException.class)
-    public ResponseEntity<?> applicationHandler(NotFoundMemberException e){
-        log.error("error occurs {}", e.toString());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.of(ErrorCode.USER_NOT_FOUND.name()));
     }
 
     @ExceptionHandler(AuthenticationException.class)
@@ -157,15 +137,6 @@ public class GlobalExceptionAdvice {
         log.error("Error occurs {}", e.toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(ErrorCode.EMAIL_NOT_SENT.name()));
-    }
-
-    // 인증번호 오류
-
-    @ExceptionHandler(CertificationFailException.class)
-    public ResponseEntity<?> certificationFail(CertificationFailException e) {
-        log.error("Error occurs {}", e.toString());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.of(ErrorCode.CERTIFICATION_NUMBER_MISMATCH.name()));
     }
 
     @ExceptionHandler

@@ -63,7 +63,6 @@ public enum ErrorCode {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"User Authentication is failed"),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Token is invalid"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not founded"),
-    INVALID_REFRESH_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "RefreshToken is invalid"),
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "No recipient adresses"),
     EMAIL_NOT_SENT(HttpStatus.INTERNAL_SERVER_ERROR,"Email could not be sent"),
     CERTIFICATION_NUMBER_MISMATCH(HttpStatus.BAD_REQUEST,"Certification number is mismatching"),
