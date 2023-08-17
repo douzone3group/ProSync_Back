@@ -53,8 +53,7 @@ public class SecurityConfig {
         // 로그인 API, 회원가입 API는 토큰이 없는 상태에서 요청이 들어오기 때문에 모두 permitAll 설정을 한다.
         http
                 .authorizeRequests()
-                .mvcMatchers("/members/**").permitAll()
-                .mvcMatchers("/login", "/api/authenticate", "/send_verification","/verify_code").permitAll()
+                .mvcMatchers("/api/v1/login", "/api/v1/send_verification","/api/v1/verify_code","/api/v1/members").permitAll()
                 .anyRequest().authenticated();
 
         http

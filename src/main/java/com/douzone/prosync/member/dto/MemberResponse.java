@@ -1,9 +1,6 @@
 package com.douzone.prosync.member.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 
@@ -11,18 +8,18 @@ public class MemberResponse {
 
     @Getter
     @Setter
-    @NoArgsConstructor
+    @Builder
     public static class GetMemberResponse {
 
         private Long memberId;
         private String email;
-        private String nickname;
+        private String name;
         private Timestamp createdAt;
         private Timestamp modifiedAt;
         private String intro;
 
         // Todo: 파일 image 연결
-        // private String image;
+         private String profileImage;
     }
 
 

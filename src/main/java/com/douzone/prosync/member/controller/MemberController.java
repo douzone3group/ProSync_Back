@@ -31,6 +31,7 @@ import static com.douzone.prosync.member.dto.MemberRequest.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class MemberController {
 
     private final MemberService memberService;
@@ -82,32 +83,17 @@ public class MemberController {
      */
     @PostMapping("/members")
     public ResponseEntity signUp(@Valid @RequestBody PostDto postDto) {
-
+        // 중복 검사
         Member member = memberService.signup(postDto);
 
         return new ResponseEntity(member, HttpStatus.OK);
     }
 
 
-//    /**
-//     * 회원정보 수정
-//     */
-//    @PatchMapping("/{memberId}")
-//    public ResponseEntity modifyMember() {
-//
-//    }
 
-//
-//    /**
-//     * 회원정보 조회
-//     */
-//    @PatchMapping("/{memberId}")
-//    public ResponseEntity getMemberInfo() {
-//
-//    }
 
     // Todo : 회원탈퇴 시 회원관련 토큰들 제거해줘야한다.
-//
+
 
     /**
      * 로그인

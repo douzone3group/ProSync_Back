@@ -46,7 +46,7 @@ public class TokenProvider implements InitializingBean {
         // JWT 토큰에 Subject로 멤버의 id(pk)를 넣어준다.
         return Jwts.builder()
                 .setSubject(((MemberDetails) authentication.getPrincipal()).getMemberId().toString())
-                .claim("email",((MemberDetails) authentication.getPrincipal()).getUsername())
+                .claim("email", ((MemberDetails) authentication.getPrincipal()).getUsername())
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
@@ -64,6 +64,33 @@ public class TokenProvider implements InitializingBean {
         User principal = new User(claims.getSubject(), "", new ArrayList<>());
 
         return new UsernamePasswordAuthenticationToken(principal, token, new ArrayList<>());
+    }
+
+    public String expiredTokenToRenewToken(String expiredToken) {
+        Claims claims = null;
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + this.tokenValidityInMilliseconds);
+        try {
+            claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(expiredToken).getBody();
+
+            return Jwts.builder()
+                    .setClaims(claims) // 기존 claims 사용
+                    .setExpiration(new Date(System.currentTimeMillis() + 3600 * 1000)) // 1시간의 만료 시간 설정
+                    .signWith(key, SignatureAlgorithm.HS512)
+                    .compact();
+        } catch (ExpiredJwtException e) {
+            claims = e.getClaims();
+
+            return Jwts.builder()
+                    .setClaims(claims) //
+                    .setExpiration(validity)
+                    .signWith(key, SignatureAlgorithm.HS512)
+                    .compact();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to renew the token", e);
+        }
+
     }
 
     public boolean validateToken(String token) {

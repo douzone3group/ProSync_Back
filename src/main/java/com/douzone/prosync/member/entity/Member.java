@@ -31,5 +31,5 @@ public class Member {
 
 
     // Todo: 파일 image 연결
-    // private String image;
+     private String profileImage;
     }

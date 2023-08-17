@@ -58,10 +58,12 @@ public class JwtFilter extends GenericFilterBean {
             if (redisService.getRefreshToken(httpServletRequest.getHeader(HEADER_DEVICE_FINGERPRINT)
                     +"_"+httpServletRequest.getHeader(HEADER_USER_UNIQUE_IDENTIFIER))!=null) {
 
+                String renewToken = tokenProvider.expiredTokenToRenewToken(jwt);
+
+
                 Authentication authentication = tokenProvider.getAuthentication(jwt);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                String renewToken = tokenProvider.createToken(authentication);
                 httpServletResponse.setHeader(AUTHORIZATION_HEADER, "Bearer " + renewToken);
 
             }

@@ -1,9 +1,11 @@
 package com.douzone.prosync.member.service;
 
 import com.douzone.prosync.member.dto.MemberDto;
+import com.douzone.prosync.member.dto.MemberResponse;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
 import com.douzone.prosync.security.exception.DuplicateMemberException;
+import com.douzone.prosync.security.exception.NotFoundMemberException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +42,7 @@ public class MemberService {
         MemberDto member = MemberDto.builder()
                 .email(memberDto.getEmail())
                 .password(passwordEncoder.encode(memberDto.getPassword()))
+
                 .name("")
                 .intro("")
                 .createdAt(Timestamp.from(Instant.now()))
@@ -56,10 +59,24 @@ public class MemberService {
      * Member pk로 조회하기
      */
     @Transactional(readOnly = true)
-    public Member getMemberById(Long memberId) {
-        return (memberRepository.findById(memberId).orElse(null));
-    }
+    public MemberResponse.GetMemberResponse selectMember(Long memberId){
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if(member == null){
+            throw new NotFoundMemberException("회원 정보 없음.");
+        }else{
+            MemberResponse.GetMemberResponse response = MemberResponse.GetMemberResponse.builder()
+                    .email(member.getEmail())
+                    .intro(member.getIntro())
+                    .name(member.getName())
+                    .createdAt(member.getCreatedAt())
+                    .modifiedAt(member.getModifiedAt())
+                    .memberId(member.getMemberId())
+                    .profileImage(member.getProfileImage())
+                    .build();
 
+            return response;
+        }
+    }
 
     /**
      * Email로 Member 중복검사하기
