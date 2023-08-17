@@ -3,7 +3,6 @@ package com.douzone.prosync.member.service;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.member.dto.MemberDto;
-import com.douzone.prosync.member.dto.request.MemberPatchDeletedDto;
 import com.douzone.prosync.member.dto.request.MemberPatchPasswordDto;
 import com.douzone.prosync.member.dto.request.MemberPatchProfileDto;
 import com.douzone.prosync.member.dto.request.MemberPostDto;
@@ -36,7 +35,7 @@ public class MemberService {
             throw new ApplicationException(ErrorCode.DUPLICATED_USER_ID);
         }
         // Todo : 기본 이미지 넣어주기
-        MemberDto member = memberDto.of();
+        MemberDto member = memberDto.of(passwordEncoder.encode(memberDto.getPassword()));
         return memberRepository.save(member);
     }
 
@@ -57,22 +56,22 @@ public class MemberService {
      */
     public void updateMemberProfile(Long memberId, MemberPatchProfileDto dto){
         memberRepository.findById(memberId).orElseThrow(() ->new ApplicationException(ErrorCode.USER_NOT_FOUND));
-        memberRepository.updateProfile(dto);
+        memberRepository.updateProfile(memberId, dto);
     }
     /**
      * 패스워드 수정
      */
     public void updateMemberPassword(Long memberId, MemberPatchPasswordDto dto){
         memberRepository.findById(memberId).orElseThrow(()->new ApplicationException(ErrorCode.USER_NOT_FOUND));
-        memberRepository.updatePassword(dto);
+        memberRepository.updatePassword(memberId, passwordEncoder.encode(dto.getPassword()));
     }
 
     /**
      * 회원 탈퇴 처리
      */
-    public void updateMemberDelete(Long memberId, MemberPatchDeletedDto dto){
+    public void updateMemberDelete(Long memberId){
         memberRepository.findById(memberId).orElseThrow(()->new ApplicationException(ErrorCode.USER_NOT_FOUND));
-        memberRepository.updateDeleted(dto);
+        memberRepository.updateDeleted(memberId);
 
 
     }

@@ -277,9 +277,13 @@ public class MemberController {
      */
     @DeleteMapping("/members")
     public ResponseEntity updateMemberDelete(Principal principal,
-                                             @Valid @RequestBody MemberPatchDeletedDto dto){
+                                             HttpServletRequest request){
         Long memberId = Long.parseLong(principal.getName());
-        memberService.updateMemberDelete(memberId, dto);
+        memberService.updateMemberDelete(memberId);
+        // Refresh 토큰을 Redis에서 제거하는 작업
+        redisService.removeRefreshToken(request.getHeader(HEADER_DEVICE_FINGERPRINT)+"_"+principal.getName());
+
+        // Access Token은 요청을 보낸 Axios API에서 쿠키를 삭제하도록 지시한다.
         return new ResponseEntity(HttpStatus.OK);
     }
 

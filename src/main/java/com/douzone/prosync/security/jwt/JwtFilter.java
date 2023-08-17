@@ -2,6 +2,7 @@ package com.douzone.prosync.security.jwt;
 
 import com.douzone.prosync.redis.RedisService;
 import com.douzone.prosync.security.exception.ExpiredTokenException;
+import com.douzone.prosync.security.exception.FailToRenewTokenException;
 import com.douzone.prosync.security.exception.NoJwtTokenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,17 +54,23 @@ public class JwtFilter extends GenericFilterBean {
             }
         } catch (NoJwtTokenException | ExpiredTokenException e) {
 
-            // redis에 refresh 토큰이 존재할 경우 새 토큰 발급한다.
-            // Todo : 프론트 서버에서 요청에 대한 응답에 header가 있는지 확인해야한다.
-            if (redisService.getRefreshToken(httpServletRequest.getHeader(HEADER_DEVICE_FINGERPRINT)
-                    +"_"+httpServletRequest.getHeader(HEADER_USER_UNIQUE_IDENTIFIER))!=null) {
+            try {
+                // redis에 refresh 토큰이 존재할 경우 새 토큰 발급한다.
+                // Todo : 프론트 서버에서 요청에 대한 응답에 header가 있는지 확인해야한다.
+                if (redisService.getRefreshToken(httpServletRequest.getHeader(HEADER_DEVICE_FINGERPRINT)
+                        + "_" + httpServletRequest.getHeader(HEADER_USER_UNIQUE_IDENTIFIER)) != null) {
 
-                Authentication authentication = tokenProvider.getAuthentication(jwt);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    String renewToken = tokenProvider.expiredTokenToRenewToken(jwt);
 
-                String renewToken = tokenProvider.createToken(authentication);
-                httpServletResponse.setHeader(AUTHORIZATION_HEADER, "Bearer " + renewToken);
+                    Authentication authentication = tokenProvider.getAuthentication(renewToken);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
 
+
+                    httpServletResponse.setHeader(AUTHORIZATION_HEADER, "Bearer " + renewToken);
+
+                }
+            } catch (FailToRenewTokenException f) {
+                log.info("Access 토큰을 갱신하는데 실패하였습니다.");
             }
         }
 

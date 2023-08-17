@@ -1,11 +1,10 @@
 package com.douzone.prosync.member.mapper;
 
 import com.douzone.prosync.member.dto.MemberDto;
-import com.douzone.prosync.member.dto.request.MemberPatchDeletedDto;
-import com.douzone.prosync.member.dto.request.MemberPatchPasswordDto;
 import com.douzone.prosync.member.dto.request.MemberPatchProfileDto;
 import com.douzone.prosync.member.entity.Member;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Optional;
 
@@ -17,9 +16,9 @@ public interface MemberMapper {
     void save(MemberDto member);
 
     // 회원 업데이트 및 삭제여부를 수정할 수 있다.
-    void updateProfile(MemberPatchProfileDto profileDto);
-    void updatePassword(MemberPatchPasswordDto passwordDto);
-    void updateDeleted(MemberPatchDeletedDto DeletedDto);
+    void updateProfile(@Param("memberId") Long memberId,@Param("profileDto") MemberPatchProfileDto profileDto);
+    void updatePassword(@Param("memberId")Long memberId,@Param("password") String modifiedPassword);
+    void updateDeleted(Long memberId);
 
     Optional<Member> findById(Long memberId);
 
