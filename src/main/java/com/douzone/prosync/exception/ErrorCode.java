@@ -22,6 +22,8 @@ public enum ErrorCode {
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "No recipient adresses"),
     EMAIL_NOT_SENT(HttpStatus.INTERNAL_SERVER_ERROR,"Email could not be sent"),
     CERTIFICATION_NUMBER_MISMATCH(HttpStatus.BAD_REQUEST,"Certification number is mismatching"),
+  
+
 
     // PROJECT
     PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "Project not founded"),
@@ -42,3 +44,4 @@ public enum ErrorCode {
     private HttpStatus status;
     private String message;
 }
+

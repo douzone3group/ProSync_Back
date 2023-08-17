@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+
 import javax.mail.MessagingException;
 import javax.validation.ConstraintViolationException;
 
@@ -17,12 +18,14 @@ import javax.validation.ConstraintViolationException;
 @Slf4j
 public class GlobalExceptionAdvice {
 
+
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<?> applicationHandler(ApplicationException e) {
         log.error("Error occurs {}", e.toString());
         return ResponseEntity.status(e.getErrorCode().getStatus())
                 .body(ErrorResponse.of(e.getErrorCode().name()));
     }
+
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<?> applicationHandler(AuthenticationException e) {
@@ -34,12 +37,14 @@ public class GlobalExceptionAdvice {
 
 
 
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> applicationHandler(RuntimeException e) {
         log.error("Error occurs {}", e.toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR.name()));
     }
+
 
     // 메일 인증 오류
 
@@ -56,6 +61,7 @@ public class GlobalExceptionAdvice {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(ErrorCode.EMAIL_NOT_SENT.name()));
     }
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -74,3 +80,4 @@ public class GlobalExceptionAdvice {
 
 
 }
+
