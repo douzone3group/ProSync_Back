@@ -27,7 +27,11 @@ public enum ErrorCode {
 
     // TASK
     TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "Task not founded"),
-    TASK_EXISTS(HttpStatus.CONFLICT, "Task exists"),;
+    TASK_EXISTS(HttpStatus.CONFLICT, "Task exists"),
+
+    // TASK_STATUS
+    TASK_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "Task Status not founded"),;
+
     // NOTIFICATION
 
 
