@@ -2,6 +2,7 @@ package com.douzone.prosync.security.jwt;
 
 import com.douzone.prosync.security.auth.MemberDetails;
 import com.douzone.prosync.security.exception.ExpiredTokenException;
+import com.douzone.prosync.security.exception.FailToRenewTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -108,5 +109,31 @@ public class TokenProvider implements InitializingBean {
             logger.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
+    }
+    public String expiredTokenToRenewToken(String expiredToken) {
+        Claims claims = null;
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + this.tokenValidityInMilliseconds);
+        try {
+            claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(expiredToken).getBody();
+
+            return Jwts.builder()
+                    .setClaims(claims) // 기존 claims 사용
+                    .setExpiration(new Date(System.currentTimeMillis() + 3600 * 1000)) // 1시간의 만료 시간 설정
+                    .signWith(key, SignatureAlgorithm.HS512)
+                    .compact();
+        } catch (ExpiredJwtException e) {
+            claims = e.getClaims();
+
+            return Jwts.builder()
+                    .setClaims(claims) //
+                    .setExpiration(validity)
+                    .signWith(key, SignatureAlgorithm.HS512)
+                    .compact();
+
+        } catch (Exception e) {
+            throw new FailToRenewTokenException("Failed to refresh the token", e);
+        }
+
     }
 }
