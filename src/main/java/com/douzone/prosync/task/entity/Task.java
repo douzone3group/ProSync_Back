@@ -1,5 +1,7 @@
 package com.douzone.prosync.task.entity;
 
+import com.douzone.prosync.project.entity.Project;
+import com.douzone.prosync.task_status.entity.TaskStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,9 +31,6 @@ public class Task {
     private String endDate;
 
     @Column(nullable = false)
-    private String taskStatus;
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
@@ -40,9 +39,12 @@ public class Task {
     @Column
     private Boolean isDeleted;
 
-    private Integer projectId;
-//    @ManyToOne
-//    @JoinColumn(name = "project_id")
-//    private Project project;
+    @OneToOne
+    @JoinColumn(name = "taskStatusId")
+    private TaskStatus taskStatus;
+
+    @ManyToOne
+    @JoinColumn(name = "projectId")
+    private Project project;
 
 }

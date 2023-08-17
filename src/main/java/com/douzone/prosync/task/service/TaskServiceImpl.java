@@ -3,6 +3,8 @@ package com.douzone.prosync.task.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+import com.douzone.prosync.project.entity.Project;
+import com.douzone.prosync.project.service.ProjectService;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
 import com.douzone.prosync.task.dto.request.TaskPostDto;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
@@ -10,6 +12,7 @@ import com.douzone.prosync.task.dto.response.GetTasksResponse;
 import com.douzone.prosync.task.entity.Task;
 import com.douzone.prosync.task.repository.TaskJpaRepository;
 import com.douzone.prosync.task.repository.TaskRepository;
+import com.douzone.prosync.task_status.service.TaskStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,45 +32,31 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final TaskJpaRepository taskJpaRepository;
+    private final TaskStatusService taskStatusService;
+    private final ProjectService projectService;
 
     public Integer createTask(TaskPostDto dto, Integer projectId, String userEmail) {
-        // TODO : 존재하는 project 인지 검증
+        // TODO : 존재하는 project 인지 + 프로젝트 회원 맞는지?
+        Project findProject = projectService.findProject(projectId);
 
-        if (dto.getTaskStatus() == null || dto.getTaskStatus().isEmpty()) {
-            dto.setTaskStatus("NO_STATUS");
-        }
-        LocalDateTime dateTime = LocalDateTime.now();
-        dto.setCreatedAt(dateTime);
+        // check task_status of project
+        verifyTaskStatus(findProject.getProjectId(), dto.getTaskStatusId());
+
+        dto.setCreatedAt(LocalDateTime.now());
 
         return taskRepository.save(dto, projectId);
     }
 
     public void updateTask(TaskPatchDto dto, Integer taskId, String userEmail) {
 
-        Task findTask = findExistTask(taskId);
+        GetTaskResponse findTask = findExistTask(taskId);
         dto.setTaskId(taskId);
-
-        if (Optional.ofNullable(dto.getClassification()).isEmpty()) {
-            dto.setClassification(findTask.getClassification());
-        }
-        if (Optional.ofNullable(dto.getTitle()).isEmpty()) {
-            dto.setTitle(findTask.getTitle());
-        }
-        if (Optional.ofNullable(dto.getDetail()).isEmpty()) {
-            dto.setDetail(findTask.getDetail());
-        }
-        if (Optional.ofNullable(dto.getStartDate()).isEmpty()) {
-            dto.setStartDate(findTask.getStartDate());
-        }
-        if (Optional.ofNullable(dto.getEndDate()).isEmpty()) {
-            dto.setEndDate(findTask.getEndDate());
-        }
-        if (Optional.ofNullable(dto.getTaskStatus()).isEmpty()) {
-            dto.setTaskStatus(findTask.getTaskStatus());
-        }
-
         dto.setModifiedAt(LocalDateTime.now());
-        //TODO : DB에 존재하는 task_status 인지 확인
+
+        // find task_status of project
+        if (Optional.ofNullable(dto.getTaskStatusId()).isPresent()) {
+            verifyTaskStatus(findTask.getProjectId(), dto.getTaskStatusId());
+        }
 
         taskRepository.update(dto);
     }
@@ -81,31 +70,35 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional(readOnly = true)
     public GetTaskResponse findTask(Integer taskId, String userEmail) {
-        Task findTask = findExistTask(taskId);
-        return GetTaskResponse.of(findTask);
+        return findExistTask(taskId);
     }
 
     /**
      * 업무 리스트 조회
      */
     @Transactional(readOnly = true)
-    public PageResponseDto<GetTasksResponse> findTaskList(Integer projectId, Pageable pageable, String search, String userEmail) {
+    public PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Integer projectId, Pageable pageable, String search, boolean isActive, String userEmail) {
         pageable = PageRequest.of(pageable.getPageNumber() == 0 ? 0 : pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
 
         Page<Task> pages = search != null && !search.trim().isEmpty() ?
                 taskJpaRepository.findAllByProjectIdAndSearch(projectId, search, pageable) :
                 taskJpaRepository.findByProjectIdAndIsDeletedNull(projectId, pageable);
 
-        List<GetTasksResponse> res =
+        // isActive = true면 체크된 업무만 조회
+        List<GetTasksResponse> res = isActive ? pages.getContent()
+                .stream()
+                .map(task -> GetTasksResponse.of(task))
+                .filter(task -> task.getSeq() != 0)
+                .collect(Collectors.toList()) :
                 pages.getContent()
                 .stream()
-                .map(GetTasksResponse::of)
+                .map(task -> GetTasksResponse.of(task))
                 .collect(Collectors.toList());
 
-        return new PageResponseDto<GetTasksResponse>(res, pages);
+        return new PageResponseDto(GetTasksResponse.PerTasksResponse.of(res), pages);
     }
 
-    private Task findExistTask(Integer taskId) {
+    private GetTaskResponse findExistTask(Integer taskId) {
         return taskRepository.findById(taskId).orElseThrow(() -> new ApplicationException(ErrorCode.TASK_NOT_FOUND));
     }
 
@@ -117,4 +110,12 @@ public class TaskServiceImpl implements TaskService {
             throw new ApplicationException(ErrorCode.TASK_NOT_FOUND);
         }
     }
+
+    private void verifyTaskStatus(Integer projectId, Integer taskStatusId) {
+        taskStatusService.getTaskStatusByProject(projectId, false)
+                .stream()
+                .filter(status -> status.getTaskStatusId() == taskStatusId).findFirst()
+                .orElseThrow(() -> new ApplicationException(ErrorCode.TASK_STATUS_NOT_FOUND));
+    }
+
 }

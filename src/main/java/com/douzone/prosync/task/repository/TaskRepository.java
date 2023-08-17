@@ -2,7 +2,7 @@ package com.douzone.prosync.task.repository;
 
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
 import com.douzone.prosync.task.dto.request.TaskPostDto;
-import com.douzone.prosync.task.entity.Task;
+import com.douzone.prosync.task.dto.response.GetTaskResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -19,10 +19,9 @@ public class TaskRepository {
         return dto.getTaskId();
     }
 
-    public Optional<Task> findById(Integer taskId) {
+    public Optional<GetTaskResponse> findById(Integer taskId) {
         return taskMapper.findById(taskId);
     }
-
 
     public void deleteById(Integer taskId) {
         taskMapper.deleteById(taskId);
