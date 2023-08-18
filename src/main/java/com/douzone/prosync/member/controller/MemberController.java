@@ -6,11 +6,15 @@ import com.douzone.prosync.mail.dto.CertificationCodeDto;
 import com.douzone.prosync.mail.dto.MailDto;
 import com.douzone.prosync.mail.service.MailService;
 import com.douzone.prosync.member.dto.request.*;
+import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.service.MemberService;
+import com.douzone.prosync.project.dto.ProjectRequest;
 import com.douzone.prosync.redis.TokenStorageService;
 import com.douzone.prosync.security.auth.MemberDetails;
 import com.douzone.prosync.security.jwt.TokenProvider;
+import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +24,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -47,8 +52,9 @@ public class MemberController {
     /**
      * 사용자의 이메일을 받아 인증번호를 전송하고 Redis에 인증번호를 저장하는 로직
      */
+    @ApiOperation(value = "이메일 인증", notes = "사용자의 이메일을 받아 인증번호를 전송하고 Redis에 인증번호를 저장, 성공 시 상태코드 200")
     @PostMapping("/send_verification")
-    public ResponseEntity mailInvalidateAndSend(@Valid @RequestBody MailDto mail) {
+    public ResponseEntity<MailDto> mailInvalidateAndSend(@Valid @RequestBody MailDto mail) {
         // email이 DB에 등록되어 있는지 확인한다.
         if (memberService.duplicateInspection(mail.getEmail())) {
             throw new ApplicationException(ErrorCode.DUPLICATED_USER_ID);
@@ -59,12 +65,13 @@ public class MemberController {
         // Redis에 key값은 "email: 사용자 email" 형태로 인증번호 저장
         redisService.setEmailCertificationNumber(mail.getEmail(),number);
 
-        return new ResponseEntity(number, HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     /**
      * 사용자에게 이메일과 인증번호를 받아 Redis에 있는지 확인하는 로직
      */
+    @ApiOperation(value = "이메일 인증", notes = "사용자에게 이메일과 인증번호를 받아 Redis에 존재하는가 확인, 성공 시 상태코드 200")
     @PostMapping("/verify_code")
     public ResponseEntity verifyCertificationNumber(@Valid @RequestBody CertificationCodeDto code) {
         String number = redisService.getEmailCertificationNumber(code.getEmail());
@@ -81,20 +88,32 @@ public class MemberController {
     /**
      * 회원가입 성공 로직
      */
+    @ApiOperation(value = "회원가입", notes = "회원가입")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success", response = Member.class),
+            @ApiResponse(code = 404, message = "not found"),
+            @ApiResponse(code = 500, message = "server error")
+    })
     @PostMapping("/members")
-    public ResponseEntity signUp(@Valid @RequestBody MemberPostDto postDto) {
+    public ResponseEntity<Member> signUp(@Valid @RequestBody MemberPostDto postDto) {
         // 중복 검사
         Member member = memberService.signup(postDto);
 
-        return new ResponseEntity(member, HttpStatus.OK);
+        return new ResponseEntity<>(member, HttpStatus.OK);
     }
 
 
     /**
      * 회원정보 프로필 수정
      */
+    @ApiOperation(value = "프로필 수정", notes = "닉네임과 소개글, 프로필 이미지 변경이 가능함")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success", response = Member.class),
+            @ApiResponse(code = 404, message = "not found"),
+            @ApiResponse(code = 500, message = "server error")
+    })
     @PatchMapping("/members/profile")
-    public ResponseEntity updateMemberProfile(Principal principal,
+    public ResponseEntity updateMemberProfile(@ApiIgnore Principal principal,
                                            @Valid @RequestBody MemberPatchProfileDto dto){
         Long memberId = Long.parseLong(principal.getName());
         memberService.updateMemberProfile(memberId, dto);
@@ -104,19 +123,21 @@ public class MemberController {
     /**
      * 회원정보 비밀번호 수정
      */
+    @ApiOperation(value = "비밀번호 수정", notes = "비밀번호 변경, 성공 시 상태코드 200")
     @PatchMapping("/members/password")
-    public ResponseEntity updateMemberPassword(Principal principal,
+    public ResponseEntity updateMemberPassword(@ApiIgnore Principal principal,
                                                @Valid @RequestBody MemberPatchPasswordDto dto){
         Long memberId = Long.parseLong(principal.getName());
         memberService.updateMemberPassword(memberId, dto);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    /*
+    /**
      * 회원 탈퇴 처리
      */
+    @ApiOperation(value = "회원 탈퇴", notes = "회원 탈퇴 Principal 객체에서 pk 가져와서 service단에서 memberId를 조회해 탈퇴 처리함")
     @DeleteMapping("/members")
-    public ResponseEntity updateMemberDelete(Principal principal,
+    public ResponseEntity updateMemberDelete(@ApiIgnore Principal principal,
                                              HttpServletRequest request){
         Long memberId = Long.parseLong(principal.getName());
         memberService.updateMemberDelete(memberId);
@@ -130,10 +151,11 @@ public class MemberController {
     /**
      * 회원정보 조회
      */
+    @ApiOperation(value = "회원정보 조회", notes = "Principal 객체에서 memberId를 조회해서 회원 정보를 가져옴. 성공 시 상태코드 200")
     @GetMapping("/members")
-    public ResponseEntity getMemberOne(Principal principal){
+    public ResponseEntity<MemberGetResponse> getMemberOne(@ApiIgnore Principal principal){
         Long memberId = Long.parseLong(principal.getName());
-        return new ResponseEntity(memberService.selectMember(memberId), HttpStatus.OK);
+        return new ResponseEntity<>(memberService.selectMember(memberId), HttpStatus.OK);
     }
 
 
@@ -144,6 +166,7 @@ public class MemberController {
     /**
      * 로그인
      */
+    @ApiOperation(value = "로그인", notes = "로그인, 성공 시 토큰과 상태코드 200")
     @PostMapping("/login")
     public ResponseEntity login(@Valid @RequestBody MemberLoginDto loginDto, HttpServletRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -171,8 +194,9 @@ public class MemberController {
     /**
      * 로그아웃 시 토큰 제거
      */
+    @ApiOperation(value = "로그아웃 시 토큰을 제거하는 기능", notes = "")
     @GetMapping("/removeToken")
-    public ResponseEntity logout(Principal principal, HttpServletRequest request) {
+    public ResponseEntity logout(@ApiIgnore Principal principal, HttpServletRequest request) {
 
         // Refresh 토큰을 Redis에서 제거하는 작업
         redisService.removeRefreshToken(request.getHeader(HEADER_DEVICE_FINGERPRINT)+"_"+principal.getName());

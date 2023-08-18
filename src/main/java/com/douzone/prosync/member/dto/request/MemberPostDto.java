@@ -1,6 +1,7 @@
 package com.douzone.prosync.member.dto.request;
 
 import com.douzone.prosync.member.dto.MemberDto;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,9 +17,11 @@ import java.time.Instant;
 @AllArgsConstructor
 public class MemberPostDto {
 
+        @ApiModelProperty(example = "abcd@naver.com")
         @Email
         private String email;
 
+        @ApiModelProperty(example = "1234")
         @NotBlank
         @NotNull
         private String password;
