@@ -16,10 +16,10 @@ public class PageInfo {
     @ApiModelProperty(value = "페이지당 요소 개수", example = "10")
     private int size;
 
-    @ApiModelProperty(value = "총 요소 개수", example = "10")
+    @ApiModelProperty(value = "총 요소 개수", example = "1")
     private long totalElements;
 
-    @ApiModelProperty(value = "총 페이지 수", example = "10")
+    @ApiModelProperty(value = "총 페이지 수", example = "1")
     private int totalPages;
 
 }

@@ -17,6 +17,6 @@ public interface TaskService {
 
     GetTaskResponse findTask(Integer taskId, String userEmail);
 
-    PageResponseDto<GetTasksResponse> findTaskList(Integer projectId, Pageable pageable, String search, String userEmail);
+    PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Integer projectId, Pageable pageable, String search, boolean isActive, String userEmail);
 
 }
