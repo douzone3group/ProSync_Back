@@ -31,6 +31,8 @@ public class TaskServiceImpl implements TaskService {
     private final TaskJpaRepository taskJpaRepository;
 
     public Integer createTask(TaskPostDto dto, Integer projectId, String userEmail) {
+        // TODO : 존재하는 project 인지 검증
+
         if (dto.getTaskStatus() == null || dto.getTaskStatus().isEmpty()) {
             dto.setTaskStatus("NO_STATUS");
         }
@@ -100,7 +102,7 @@ public class TaskServiceImpl implements TaskService {
                 .map(GetTasksResponse::of)
                 .collect(Collectors.toList());
 
-        return new PageResponseDto(res, pages);
+        return new PageResponseDto<GetTasksResponse>(res, pages);
     }
 
     private Task findExistTask(Integer taskId) {
