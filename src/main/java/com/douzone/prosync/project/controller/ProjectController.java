@@ -17,16 +17,20 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Validated
 @Controller
-@RequestMapping("/projects")
 @RequiredArgsConstructor
+@RequestMapping("/projects")
 @Tag(name="project", description = "프로젝트 API")
 public class ProjectController {
 
@@ -40,7 +44,7 @@ public class ProjectController {
             @ApiResponse(code = 404, message = "project not found"),
             @ApiResponse(code = 500, message = "server error"),
     })
-    public ResponseEntity createProject(@RequestBody ProjectRequest.PostDto dto) {
+    public ResponseEntity createProject(@RequestBody @Valid ProjectRequest.PostDto dto) {
         Integer projectId=projectService.save(dto);
         return new ResponseEntity(new ProjectResponse.SimpleResponse(projectId), HttpStatus.CREATED);
     }
@@ -94,7 +98,7 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity updateProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
-                                        @PathVariable("project-id") Integer projectId, @RequestBody ProjectRequest.PatchDto dto) {
+                                        @PathVariable("project-id") Integer projectId, @RequestBody @Valid ProjectRequest.PatchDto dto) {
         dto.setProjectId(projectId);
         projectService.update(dto);
         return new ResponseEntity(new ProjectResponse.SimpleResponse(projectId), HttpStatus.OK);
@@ -109,7 +113,7 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity deleteProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
-                                        @PathVariable("project-id") Integer projectId) {
+                                        @PathVariable("project-id") @Positive Integer projectId) {
         projectService.delete(projectId);
         return new ResponseEntity(new ProjectResponse.SimpleResponse(projectId), HttpStatus.NO_CONTENT);
     }
