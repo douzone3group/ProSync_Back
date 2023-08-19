@@ -3,7 +3,7 @@ package com.douzone.prosync.task_status.service;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.task_status.dto.TaskStatusDto;
-import com.douzone.prosync.task_status.repository.TaskStatusRepository;
+import com.douzone.prosync.task_status.repository.TaskStatusMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,33 +16,34 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskStatusServiceImpl implements TaskStatusService {
 
-    private final TaskStatusRepository taskStatusRepository;
+    private final TaskStatusMapper taskStatusMapper;
 
-    public Integer createTaskStatus(Integer projectId, TaskStatusDto.PostDto requestBody) {
-        return taskStatusRepository.save(projectId, requestBody);
+    public Integer createTaskStatus(Integer projectId, TaskStatusDto.PostDto requestBody, Long memberId) {
+        taskStatusMapper.save(projectId, requestBody);
+        return requestBody.getTaskStatusId();
     }
 
-    public void updateTaskStatus(Integer taskStatusId, TaskStatusDto.PatchDto requestBody) {
+    public void updateTaskStatus(Integer taskStatusId, TaskStatusDto.PatchDto requestBody, Long memberId) {
         requestBody.setTaskStatusId(taskStatusId);
         verifyExistTaskStatus(taskStatusId);
-        taskStatusRepository.update(requestBody);
+        taskStatusMapper.update(requestBody);
     }
 
-    public void deleteTaskStatus(Integer taskStatusId) {
+    public void deleteTaskStatus(Integer taskStatusId, Long memberId) {
         verifyExistTaskStatus(taskStatusId);
-        taskStatusRepository.delete(taskStatusId);
+        taskStatusMapper.delete(taskStatusId);
     }
 
-    public List<TaskStatusDto.GetResponseDto> getTaskStatusByProject(Integer projectId, boolean isActive) {
-        return taskStatusRepository.findTaskStatusByProject(projectId, isActive);
+    public List<TaskStatusDto.GetResponseDto> getTaskStatusByProject(Integer projectId, boolean isActive, Long memberId) {
+        return taskStatusMapper.findTaskStatusByProject(projectId, isActive);
     }
 
-    public TaskStatusDto.GetResponseDto getTaskStatus(Integer taskStatusId) {
-        return taskStatusRepository.findTaskStatus(taskStatusId).orElseThrow(() -> new ApplicationException(ErrorCode.TASK_STATUS_NOT_FOUND));
+    public TaskStatusDto.GetResponseDto getTaskStatus(Integer taskStatusId, Long memberId) {
+        return taskStatusMapper.findTaskStatus(taskStatusId).orElseThrow(() -> new ApplicationException(ErrorCode.TASK_STATUS_NOT_FOUND));
     }
 
     private void verifyExistTaskStatus(Integer taskStatusId) {
-        if (taskStatusRepository.isDeletedTask(taskStatusId)) {
+        if (taskStatusMapper.findExistsTaskStatus(taskStatusId) == 0) {
                 throw new ApplicationException(ErrorCode.TASK_STATUS_NOT_FOUND);
         }
     }

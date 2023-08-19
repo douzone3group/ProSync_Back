@@ -30,16 +30,16 @@ public class ProjectService {
 
 
     // 프로젝트 생성
-    public Integer save(ProjectRequest.PostDto dto) {
+    public Integer save(ProjectRequest.PostDto dto, Long memberId) {
         dto.setCreatedAt(LocalDateTime.now());
 
         projectRepository.createProject(dto);
 
         // 프로젝트 생성시 기본 업무 상태 설정
-        taskStatusService.createTaskStatus(dto.getProjectId(), new TaskStatusDto.PostDto("No Status", "#edf2f4"));
-        taskStatusService.createTaskStatus(dto.getProjectId(), new TaskStatusDto.PostDto("Todo", "#588157"));
-        taskStatusService.createTaskStatus(dto.getProjectId(), new TaskStatusDto.PostDto("In Progress", "#7f4f24"));
-        taskStatusService.createTaskStatus(dto.getProjectId(), new TaskStatusDto.PostDto("Done", "#7209b7"));
+        taskStatusService.createTaskStatus(dto.getProjectId(), new TaskStatusDto.PostDto("No Status", "#edf2f4"), memberId);
+        taskStatusService.createTaskStatus(dto.getProjectId(), new TaskStatusDto.PostDto("Todo", "#588157"), memberId);
+        taskStatusService.createTaskStatus(dto.getProjectId(), new TaskStatusDto.PostDto("In Progress", "#7f4f24"), memberId);
+        taskStatusService.createTaskStatus(dto.getProjectId(), new TaskStatusDto.PostDto("Done", "#7209b7"), memberId);
 
         return dto.getProjectId();
     }
