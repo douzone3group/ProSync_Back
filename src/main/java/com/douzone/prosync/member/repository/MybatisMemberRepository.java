@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -18,19 +19,20 @@ public class MybatisMemberRepository implements MemberRepository {
     private final MemberMapper memberMapper;
 
 
+    // TODO: 에포크 시간으로 나옴, 타임스탬프 형식으로 바꿔줘야한다!
     public Member save(MemberDto member) {
         memberMapper.save(member);
-        log.error("member의 id는 {}", member.getMemberId());
+        log.debug("member의 id는 {}", member.getMemberId());
         return  memberMapper.findById(member.getMemberId()).orElse(null);
     }
 
     // 회원 업데이트 및 삭제여부를 수정할 수 있다.
-    public void updateProfile(Long memberId, MemberPatchProfileDto dto) { memberMapper.updateProfile(memberId, dto);}
+    public void updateProfile(Long memberId, MemberPatchProfileDto dto) { memberMapper.updateProfile(memberId, dto,LocalDateTime.now());}
     public void updatePassword(Long memberId,String modifiedPassword) {
-        memberMapper.updatePassword(memberId,modifiedPassword);
+        memberMapper.updatePassword(memberId,modifiedPassword,LocalDateTime.now());
     }
     public void updateDeleted(Long memberId) {
-        memberMapper.updateDeleted(memberId);
+        memberMapper.updateDeleted(memberId,LocalDateTime.now());
     }
     public Optional<Member> findById(Long memberId) {
         return memberMapper.findById(memberId);

@@ -19,7 +19,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 
         ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = mapper.writeValueAsString(ErrorResponse.of(ErrorCode.INVALID_TOKEN.name()));
+        String jsonInString = mapper.writeValueAsString(ErrorResponse.of(ErrorCode.UNAUTHORIZED.name()));
 
         response.setContentType("application/json");
         // 유효한 토큰이 아닐 시 401
