@@ -2,16 +2,14 @@ package com.douzone.prosync.task.controller;
 
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.common.SingleResponseDto;
+import com.douzone.prosync.task.dto.request.TaskMemberDto;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
 import com.douzone.prosync.task.dto.request.TaskPostDto;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
 import com.douzone.prosync.task.dto.response.GetTasksResponse;
 import com.douzone.prosync.task.dto.response.TaskSimpleResponse;
 import com.douzone.prosync.task.service.TaskService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +26,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.security.Principal;
 
 
 //TODO : token 완료 후 인증 로직 추가
@@ -53,9 +52,10 @@ public class TaskController {
     })
     public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> postTask(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") @Positive Integer projectId,
                                                                           @Parameter(description = "업무상태식별자", required = true, example = "1") @PathVariable("task-status-id") @Positive Integer taskStatusId,
-                                                                          @RequestBody @Valid TaskPostDto requestBody) {
+                                                                          @RequestBody @Valid TaskPostDto requestBody,
+                                                                          @Parameter(hidden = true) @ApiIgnore Principal principal) {
         requestBody.setTaskStatusId(taskStatusId);
-        Integer taskId = taskService.createTask(requestBody, projectId, null);
+        Integer taskId = taskService.createTask(requestBody, projectId, Long.parseLong(principal.getName()));
         return new ResponseEntity<>(new SingleResponseDto(new TaskSimpleResponse(taskId)), HttpStatus.CREATED);
     }
 
@@ -70,8 +70,9 @@ public class TaskController {
             @ApiResponse(code = 500, message = "server error")
     })
     public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> patchTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId,
-                                                                           @RequestBody @Valid TaskPatchDto requestBody) {
-        taskService.updateTask(requestBody, taskId, null);
+                                                                           @RequestBody @Valid TaskPatchDto requestBody,
+                                                                           @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        taskService.updateTask(requestBody, taskId, Long.parseLong(principal.getName()));
         return new ResponseEntity<>(new SingleResponseDto(new TaskSimpleResponse(taskId)), HttpStatus.OK);
     }
 
@@ -85,13 +86,15 @@ public class TaskController {
             @ApiResponse(code = 404, message = "task not found"),
             @ApiResponse(code = 500, message = "server error")
     })
-    public ResponseEntity deleteTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId) {
-        taskService.deleteTask(taskId, null);
+    public ResponseEntity deleteTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId,
+                                     @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        taskService.deleteTask(taskId, Long.parseLong(principal.getName()));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
      * 프로젝트 업무 리스트 조회
+     *
      * @param projectId : 프로젝트 식별자
      * @param search    : 검색 키워드
      * @param pageable  : page - 조회할 페이지 번호, size - 한페이지에 보여질 요소 개수
@@ -110,10 +113,11 @@ public class TaskController {
             @ApiImplicitParam(name = "isActive", dataType = "boolean", paramType = "query", value = "체크한 업무 보임 여부", example = "true")
     })
     public ResponseEntity<PageResponseDto<GetTasksResponse.PerTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Integer projectId,
-                                                                         @RequestParam(required = false) String search,
-                                                                         @Parameter(hidden = true) @ApiIgnore @PageableDefault(sort = "taskId", direction = Sort.Direction.DESC) Pageable pageable,
-                                                                         @RequestParam(required = false) boolean isActive) {
-        PageResponseDto pageResponseDto = taskService.findTaskList(projectId, pageable, search, isActive, null);
+                                                                                          @RequestParam(required = false) String search,
+                                                                                          @Parameter(hidden = true) @ApiIgnore @PageableDefault(sort = "taskId", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                                          @RequestParam(required = false) boolean isActive,
+                                                                                          @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        PageResponseDto pageResponseDto = taskService.findTaskList(projectId, pageable, search, isActive, Long.parseLong(principal.getName()));
         return new ResponseEntity<>(pageResponseDto, HttpStatus.OK);
     }
 
@@ -127,7 +131,32 @@ public class TaskController {
             @ApiResponse(code = 404, message = "task not found"),
             @ApiResponse(code = 500, message = "server error")
     })
-    public ResponseEntity<SingleResponseDto<GetTaskResponse>> getTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") Integer taskId) {
-        return new ResponseEntity<>(new SingleResponseDto<>(taskService.findTask(taskId, null)), HttpStatus.OK);
+    public ResponseEntity<SingleResponseDto<GetTaskResponse>> getTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") Integer taskId,
+                                                                      @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        return new ResponseEntity<>(new SingleResponseDto<>(taskService.findTask(taskId, Long.parseLong(principal.getName()))), HttpStatus.OK);
+    }
+
+    /**
+     * 업무 담당자 (복수) 설정
+     */
+    @PostMapping("/tasks/{task-id}/members")
+    @Operation(summary = "업무 담당자 지정", description = "특정 업무에 대한 담당자들을 지정합니다.", tags = "task")
+    public ResponseEntity postTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId,
+                                         @RequestBody TaskMemberDto requestBody,
+                                         @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        taskService.createTaskMember(taskId, requestBody.getMemberIds(), Long.parseLong(principal.getName()));
+        return new ResponseEntity(new TaskSimpleResponse(taskId), HttpStatus.OK);
+    }
+
+    /**
+     * 업무 담당자 삭제 (DB 삭제)
+     */
+    @DeleteMapping("/tasks/{task-id}/members")
+    @Operation(summary = "업무 담당자 삭제", description = "특정 업무에 대한 담당자들을 삭제합니다.", tags = "task")
+    public ResponseEntity deleteTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId,
+                                           @RequestBody TaskMemberDto requestBody,
+                                           @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        taskService.deleteTaskMember(taskId, requestBody.getMemberIds(), Long.parseLong(principal.getName()));
+        return new ResponseEntity(new TaskSimpleResponse(taskId), HttpStatus.OK);
     }
 }
