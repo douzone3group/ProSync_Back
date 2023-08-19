@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.prosync.task.repository.TaskMapper">
+    <insert id="save" useGeneratedKeys="true" keyProperty="task.taskId">
+        INSERT INTO task(project_id, classification, title, detail, start_date, end_date, task_status_id, created_at, modified_at)
+        VALUE (#{projectId}, #{task.classification}, #{task.title}, #{task.detail}, #{task.startDate}, #{task.endDate}, #{task.taskStatusId}, #{task.createdAt}, #{task.createdAt})
+    </insert>
+    <update id="update">
+        UPDATE task
+        <set>
+            modified_at=#{modifiedAt},
+            <if test="classification != null">
+                classification=#{classification},
+            </if>
+            <if test="title != null">
+                title=#{title},
+            </if>
+            <if test="detail != null">
+                detail=#{detail},
+            </if>
+            <if test="startDate != null">
+                start_date=#{startDate},
+            </if>
+            <if test="endDate != null">
+                end_date=#{endDate},
+            </if>
+            <if test="taskStatusId != null">
+                task_status=#{taskStatusId},
+            </if>
+        </set>
+        WHERE task_id = #{taskId}
+          AND is_deleted IS NULL
+    </update>
+    <select id="findTaskCount" resultType="int">
+        SELECT count(*) FROM task
+        <where>
+            project_id=#{projectId}
+            AND is_deleted IS NULL
+            <if test="search != null and search != ''">
+                AND (title LIKE concat('%', #{search}, '%')
+                OR task_status LIKE concat('%', #{search}, '%'))
+            </if>
+        </where>
+    </select>
+    <select id="findExistsTask" resultType="int">
+        SELECT count(*)
+        FROM task
+        WHERE task_id = #{taskId}
+          AND is_deleted IS NULL
+    </select>
+    <insert id="saveTaskMember">
+        INSERT INTO member_task(member_id, task_id)
+        VALUES
+        <foreach collection="memberIds" item="memberId" separator=",">
+            (#{memberId}, #{taskId})
+        </foreach>
+    </insert>
+    <delete id="deleteTaskMember">
+        DELETE FROM member_task
+        WHERE task_id = #{taskId} AND
+        <foreach collection="memberIds" item="memberId" separator="OR" open="(" close=")">
+            member_id = #{memberId}
+        </foreach>
+    </delete>
+</mapper>
