@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.prosync.file.repository.FileMapper">
+    <insert id="saveUserProfileImage" useGeneratedKeys="true" keyProperty="fileId">
+        insert into file(size, path, created_at, file_name)
+        values (#{size}, #{path}, #{createdAt}, #{fileName})
+    </insert>
+    <insert id="saveFileInfo" useGeneratedKeys="true" keyProperty="fileInfoId">
+        insert into file_info(table_name, table_key, file_id)
+        values (#{tableName}, #{tableKey}, #{fileId})
+    </insert>
+</mapper>

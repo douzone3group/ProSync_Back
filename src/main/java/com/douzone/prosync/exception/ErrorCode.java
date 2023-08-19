@@ -28,7 +28,6 @@ public enum ErrorCode {
 
     CRYPT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Crypt error"),
 
-
     // PROJECT
     PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "Project not founded"),
     PROJECT_EXISTS(HttpStatus.CONFLICT, "Project exists"),
