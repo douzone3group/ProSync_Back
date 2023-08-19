@@ -24,7 +24,6 @@ public enum ErrorCode {
     CERTIFICATION_NUMBER_MISMATCH(HttpStatus.BAD_REQUEST,"Certification number is mismatching"),
   
 
-
     // PROJECT
     PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "Project not founded"),
     PROJECT_EXISTS(HttpStatus.CONFLICT, "Project exists"),
@@ -34,7 +33,11 @@ public enum ErrorCode {
     TASK_EXISTS(HttpStatus.CONFLICT, "Task exists"),
 
     // TASK_STATUS
-    TASK_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "Task Status not founded"),;
+    TASK_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "Task Status not founded"),
+
+    // FILE
+    INVALID_FILE_TYPE(HttpStatus.FORBIDDEN, "Invalid file type"),
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not founded"),;
 
     // NOTIFICATION
 

@@ -3,12 +3,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.member.mapper.MemberMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="memberId">
-        insert into Member (email, password, name,created_at,modified_at,is_deleted,intro,profile_image)
+        insert into member (email, password, name,created_at,modified_at,is_deleted,intro,profile_image)
         values (#{email}, #{password}, #{name},#{createdAt},#{modifiedAt},#{isDeleted},#{intro},#{profileImage})
     </insert>
 
     <update id="updateProfile">
-        update Member
+        update member
         set name=#{profileDto.name},
             intro=#{profileDto.intro},
             profile_image=#{profileDto.profileImage},
@@ -17,14 +17,14 @@
     </update>
 
     <update id="updatePassword">
-        update Member
+        update member
         set password=#{password},
             modified_at=NOW()
         where member_id = #{memberId}
     </update>
 
     <update id="updateDeleted">
-        update Member
+        update member
         set is_deleted=true,
             modified_at=NOW()
         where member_id = #{memberId}
