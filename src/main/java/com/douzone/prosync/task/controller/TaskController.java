@@ -47,7 +47,7 @@ public class TaskController {
             @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity<TaskSimpleResponse> postTask(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") @Positive Integer projectId,
-                                   @RequestBody @Valid TaskPostDto requestBody) {
+                                                                    @RequestBody @Valid TaskPostDto requestBody) {
         Integer taskId = taskService.createTask(requestBody, projectId, null);
         return new ResponseEntity<>(new TaskSimpleResponse(taskId), HttpStatus.CREATED);
     }
@@ -63,7 +63,7 @@ public class TaskController {
             @ApiResponse(code = 500, message = "server error")
     })
     public ResponseEntity<TaskSimpleResponse> patchTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId,
-                                    @RequestBody @Valid TaskPatchDto requestBody) {
+                                                        @RequestBody @Valid TaskPatchDto requestBody) {
         taskService.updateTask(requestBody, taskId, null);
         return new ResponseEntity<>(new TaskSimpleResponse(taskId), HttpStatus.OK);
     }

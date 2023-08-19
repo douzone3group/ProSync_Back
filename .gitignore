@@ -172,4 +172,4 @@ gradle-app.setting
 
 
 ### 설정 파일(yml)
-*.yml
+#*.yml
