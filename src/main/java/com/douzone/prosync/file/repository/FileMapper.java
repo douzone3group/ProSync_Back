@@ -7,7 +7,9 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface FileMapper {
 
-    void saveUserProfileImage(File file);
+//    void saveUserProfileImage(File file);
+
+    void save(File file);
 
     void saveFileInfo(FileInfo fileInfo);
 

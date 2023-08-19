@@ -3,6 +3,7 @@ package com.douzone.prosync.file.service;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
@@ -13,6 +14,7 @@ import com.douzone.prosync.file.repository.FileMapper;
 import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,13 +48,13 @@ public class FileService {
     public String uploadUserProfileImage(MultipartFile multipartFile, Long memberId) throws IOException {
 
         String fileName = multipartFile.getOriginalFilename();
-        String ext = fileName.split("\\.")[1];
+        String extension = multipartFile.getName(); // 파일 형식
 
         SimpleDateFormat date = new SimpleDateFormat("yyyyMMddHHmmss");
         fileName += "-" + date.format(new Date());
 
         // user profile image - jpg, jpeg, png, gif 만 허용
-        if (!List.of("jpg, jpeg, png, gif").contains(ext)) {
+        if (!List.of("jpg, jpeg, png, gif").contains(extension)) {
             throw new ApplicationException(ErrorCode.INVALID_FILE_TYPE);
         }
 
@@ -93,26 +95,29 @@ public class FileService {
                 SimpleDateFormat date = new SimpleDateFormat("yyyyMMddHHmmss");
                 fileName += "-" + date.format(new Date());
 
-                File file = null;
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentType(multipartFile.getContentType());
+
                 try {
-                        file = convert(multipartFile);
-                    System.out.println(file.getName());
                     //TODO : S3 저장 확인
-                    amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, file).withCannedAcl(CannedAccessControlList.PublicRead));
+                    amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), objectMetadata
+                    ).withCannedAcl(CannedAccessControlList.PublicRead));
 
                 } catch (SdkClientException | IOException e) {
                     e.getStackTrace();
+                    System.out.println(e.getMessage());
                 }
                 String path = amazonS3Client.getUrl(bucket, fileName).toString();
                 System.out.println("path : " + path);
 
                 // save file
                 com.douzone.prosync.file.entity.File createdFile = com.douzone.prosync.file.entity.File.create(multipartFile.getSize(), path, fileName);
-                fileMapper.saveUserProfileImage(createdFile);
+                fileMapper.save(createdFile);
 
                 // save file_info
                 FileInfo fileInfo = FileInfo.create("task", taskId, createdFile.getFileId());
                 fileMapper.saveFileInfo(fileInfo);
+
                 return (FileDto.response(createdFile));
 
         }).collect(Collectors.toList());

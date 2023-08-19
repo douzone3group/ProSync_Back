@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,8 +41,8 @@ public class ProjectController {
             @ApiResponse(code = 404, message = "project not found"),
             @ApiResponse(code = 500, message = "server error"),
     })
-    public ResponseEntity createProject(@RequestBody ProjectRequest.PostDto dto) {
-        Integer projectId=projectService.save(dto);
+    public ResponseEntity createProject(@RequestBody ProjectRequest.PostDto dto, Principal principal) {
+        Integer projectId=projectService.save(dto, Long.parseLong(principal.getName()));
         return new ResponseEntity(new ProjectResponse.SimpleResponse(projectId), HttpStatus.CREATED);
     }
 

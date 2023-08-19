@@ -6,6 +6,7 @@ import com.douzone.prosync.member.entity.Member;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Mapper
@@ -16,9 +17,9 @@ public interface MemberMapper {
     void save(MemberDto member);
 
     // 회원 업데이트 및 삭제여부를 수정할 수 있다.
-    void updateProfile(@Param("memberId") Long memberId,@Param("profileDto") MemberPatchProfileDto profileDto);
-    void updatePassword(@Param("memberId")Long memberId,@Param("password") String modifiedPassword);
-    void updateDeleted(Long memberId);
+    void updateProfile(@Param("memberId") Long memberId,@Param("profileDto") MemberPatchProfileDto profileDto,@Param("modifiedAt") LocalDateTime modifiedAt);
+    void updatePassword(@Param("memberId")Long memberId,@Param("password") String modifiedPassword,@Param("modifiedAt") LocalDateTime modifiedAt);
+    void updateDeleted(@Param("memberId") Long memberId,@Param("modifiedAt") LocalDateTime modifiedAt);
 
     Optional<Member> findById(Long memberId);
 

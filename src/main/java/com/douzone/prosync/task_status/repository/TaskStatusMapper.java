@@ -17,14 +17,14 @@ public interface TaskStatusMapper {
     void update(TaskStatusDto.PatchDto dto);
 
     //soft delete
-    @Update("update task_status set is_deleted=true where task_status_id=#{taskStatusId}")
+    @Update("UPDATE task_status SET is_deleted=true WHERE task_status_id=#{taskStatusId}")
     void delete(Integer taskStatusId);
 
     List<TaskStatusDto.GetResponseDto> findTaskStatusByProject(Integer projectId, boolean isActive);
 
-    @Select("select task_status_id, color, task_status, seq " +
-            "from task_status " +
-            "where task_status_id=#{taskStatusId} and is_deleted is null")
+    @Select("SELECT task_status_id, color, task_status, seq " +
+            "FROM task_status " +
+            "WHERE task_status_id=#{taskStatusId} AND is_deleted IS NULL")
     Optional<TaskStatusDto.GetResponseDto> findTaskStatus(Integer taskStatusId);
 
     int findExistsTaskStatus(Integer taskStatusId);

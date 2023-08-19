@@ -3,12 +3,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.task_status.repository.TaskStatusMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="taskStatus.taskStatusId">
-        insert into task_status (task_status, color, project_id, created_at, modified_at, seq)
-        values (#{taskStatus.taskStatus}, #{taskStatus.color}, #{projectId}, #{taskStatus.createdAt},
+        INSERT INTO task_status (task_status, color, project_id, created_at, modified_at, seq)
+        VALUES (#{taskStatus.taskStatus}, #{taskStatus.color}, #{projectId}, #{taskStatus.createdAt},
                 #{taskStatus.createdAt}, 0);
     </insert>
     <update id="update">
-        update task_status
+        UPDATE task_status
         <set>
             modified_at=#{modifiedAt},
             <if test="taskStatus != null">
@@ -21,22 +21,22 @@
                 seq=#{seq},
             </if>
         </set>
-        where task_status_id = #{taskStatusId}
-          and is_deleted is null;
+        WHERE task_status_id = #{taskStatusId}
+          AND is_deleted IS NULL;
     </update>
     <select id="findExistsTaskStatus" resultType="int">
-        select count(*)
-        from task_status
-        where task_status_id = #{taskStatusId}
-          and is_deleted is null;
+        SELECT count(*)
+        FROM task_status
+        WHERE task_status_id = #{taskStatusId}
+          AND is_deleted IS NULL;
     </select>
     <select id="findTaskStatusByProject">
-        select task_status_id, color, task_status, seq
-        from task_status
+        SELECT task_status_id, color, task_status, seq
+        FROM task_status
         <where>
-            project_id=#{projectId} and is_deleted is null
+            project_id=#{projectId} AND is_deleted IS NULL
             <if test="isActive">
-                and seq != 0
+                AND seq != 0
             </if>
         </where>
     </select>
