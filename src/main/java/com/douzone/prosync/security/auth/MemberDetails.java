@@ -18,9 +18,6 @@ public class MemberDetails implements UserDetails {
         this.member = member;
     }
 
-    public Long getMemberId() {
-        return member.getMemberId();
-    }
 
 
     @Override
@@ -35,7 +32,7 @@ public class MemberDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getEmail();
+        return member.getMemberId().toString();
     }
 
     @Override

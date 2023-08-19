@@ -24,32 +24,32 @@ public class RedisService implements TokenStorageService {
     public String getRefreshToken(String key) {
         //opsForValue : Strings를 쉽게 Serialize / Deserialize 해주는 Interface
         ValueOperations<String, String> values = redisTemplate.opsForValue();
-        return values.get("device:"+key);
+        return values.get(key);
     }
 
 
 
-    public void setRefreshToken(String key){
+    public void setRefreshToken(String key,String value){
         ValueOperations<String, String> values = redisTemplate.opsForValue();
-        values.set("device:"+key,"0", Duration.ofSeconds(refreshTokenValidityInSeconds));
+        values.set(key,value, Duration.ofSeconds(refreshTokenValidityInSeconds));
     }
 
     public void removeRefreshToken(String key) {
-        redisTemplate.delete("device:"+key);
+        redisTemplate.delete(key);
     }
 
     public void setEmailCertificationNumber(String key, String certificationNumber) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
-        values.set("email:"+key, certificationNumber, Duration.ofSeconds(EMAIL_CERTIFICATIONNUMBER_DURATION));
+        values.set(key, certificationNumber, Duration.ofSeconds(EMAIL_CERTIFICATIONNUMBER_DURATION));
     }
 
     public String getEmailCertificationNumber(String key) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
-        return values.get("email:"+key);
+        return values.get(key);
     }
 
     public void removeEmailCertificationNumber(String key) {
-        redisTemplate.delete("email:"+key);
+        redisTemplate.delete(key);
     }
 
 

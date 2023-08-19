@@ -1,8 +1,8 @@
 package com.douzone.prosync.security.jwt;
 
+import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.redis.RedisService;
 import com.douzone.prosync.security.exception.ExpiredTokenException;
-import com.douzone.prosync.security.exception.FailToRenewTokenException;
 import com.douzone.prosync.security.exception.NoJwtTokenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +18,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 import static com.douzone.prosync.constant.ConstantPool.*;
 
@@ -27,13 +30,15 @@ public class JwtFilter extends GenericFilterBean {
 
     private final TokenProvider tokenProvider;
 
+    private final RefreshTokenProvider refreshTokenProvider;
+
     private final RedisService redisService;
+
+    private final HmacAndBase64 hmacAndBase64;
 
 
 
     // doFilter는 토큰의 인증정보를 SecurityContext에 저장하는 역할을 수행한다.
-    // Todo : Access 토큰 존재여부 및 만료기간 검증 이후 Refresh 토큰 관련 로직 작성(Refresh 존재여부 확인)이 필요
-    // 만약 access 토큰은 없고 refresh 토큰이 존재할 경우를 위해 request 요청의 헤더에 "unique-identifier"를 추가한다.
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
@@ -41,37 +46,55 @@ public class JwtFilter extends GenericFilterBean {
 
         // resolveToken을 통해 토큰을 받아와서 유효성 검증을 하고 정상 토큰이면 SecurityContext에 저장한다.
         String jwt = resolveToken(httpServletRequest);
+        String refreshToken = resolveRefreshToken(httpServletRequest);
+
         String requestURI = httpServletRequest.getRequestURI();
+        String ipAddress = httpServletRequest.getRemoteAddr();
 
         try {
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 Authentication authentication = tokenProvider.getAuthentication(jwt);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
+                log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
             } else {
-                log.info("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
+                log.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
                 throw new NoJwtTokenException("JWT 토큰이 없습니다. Refresh 토큰을 확인하겠습니다.");
             }
-        } catch (NoJwtTokenException | ExpiredTokenException e) {
+        } catch (ExpiredTokenException | NoJwtTokenException e) {
 
             try {
-                // redis에 refresh 토큰이 존재할 경우 새 토큰 발급한다.
-                // Todo : 프론트 서버에서 요청에 대한 응답에 header가 있는지 확인해야한다.
-                if (redisService.getRefreshToken(httpServletRequest.getHeader(HEADER_DEVICE_FINGERPRINT)
-                        + "_" + httpServletRequest.getHeader(HEADER_USER_UNIQUE_IDENTIFIER)) != null) {
+                if (StringUtils.hasText(refreshToken) && refreshTokenProvider.validateToken(refreshToken, ipAddress)) {
+                    Authentication authentication = tokenProvider.getAuthentication(refreshToken);
 
-                    String renewToken = tokenProvider.expiredTokenToRenewToken(jwt);
+                    // Redis에 저장된 refresh 토큰과 비교
+                    // Todo : 프론트 서버에서 요청에 대한 응답에 header가 있는지 확인해야한다.
+                    if (redisService.getRefreshToken("refresh:"+
+                            hmacAndBase64.crypt(ipAddress,"HmacSHA512")+"_"+authentication.getName()).equals(refreshToken)) {
+                        SecurityContextHolder.getContext().setAuthentication((authentication));
+                        log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}",
+                                authentication.getName(), requestURI);
 
-                    Authentication authentication = tokenProvider.getAuthentication(renewToken);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                        String renewToken = tokenProvider.createToken(authentication);
+
+                        httpServletResponse.setHeader(AUTHORIZATION_HEADER,"Bearer " + renewToken);
+                    }
 
 
-                    httpServletResponse.setHeader(AUTHORIZATION_HEADER, "Bearer " + renewToken);
-
+                } else {
+                    log.debug("유효한 Refresh 토큰이 없습니다, uri: {}", requestURI);
                 }
-            } catch (FailToRenewTokenException f) {
-                log.info("Access 토큰을 갱신하는데 실패하였습니다.");
+
+
+            } catch (ExpiredTokenException ete) {
+                log.warn("Refresh 토큰의 만료기간이 지났습니다.");
+            } catch (ApplicationException ae) {
+                log.warn("Refresh 토큰의 인증이 잘못됐습니다.");
+            } catch (NoSuchAlgorithmException| InvalidKeyException| UnsupportedEncodingException niu) {
+                log.warn("ipAddress 암호화 실패");
             }
+        } catch (ApplicationException e) {
+            log.warn("{}",e);
+            log.warn("JWT 토큰 인증에 실패하였습니다.");
         }
 
 
@@ -83,8 +106,24 @@ public class JwtFilter extends GenericFilterBean {
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 
+        log.debug("헤더의 Access 토큰 : {}", bearerToken);
+
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
+        }
+
+        return null;
+    }
+
+    // Request Header에서 리프레쉬 토큰 정보를 꺼내오기 위한 resolveRefreshToken 메소드 추가
+    private String resolveRefreshToken(HttpServletRequest request) {
+        String refreshToken = request.getHeader(REFRESH_HEADER);
+
+
+        log.debug("헤더의 Refresh 토큰 : {}", refreshToken);
+
+        if (StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")) {
+            return refreshToken.substring(7);
         }
 
         return null;
