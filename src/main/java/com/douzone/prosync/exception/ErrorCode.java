@@ -12,6 +12,7 @@ public enum ErrorCode {
     INVALID_PERMISSION(HttpStatus.UNAUTHORIZED, "Permission is invalid"),
     ACCESS_FORBIDDEN(HttpStatus.FORBIDDEN, "Access forbidden"),
     STATUS_VALUE_NOT_FOUND(HttpStatus.NOT_FOUND, "status value not founded"),
+    INVALID_VALUE(HttpStatus.FORBIDDEN, "Invalid value"),
 
     // MEMBER
     DUPLICATED_USER_ID(HttpStatus.CONFLICT, "User ID is duplicated"),

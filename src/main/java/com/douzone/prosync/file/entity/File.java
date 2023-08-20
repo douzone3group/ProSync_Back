@@ -16,9 +16,10 @@ public class File {
 
     private LocalDateTime createdAt;
 
+    private String fileName;
+
     private Boolean isDeleted;
 
-    private String fileName;
 
     public static File create(Long size, String path, String fileName) {
         return File.builder()
