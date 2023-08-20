@@ -36,7 +36,7 @@ public class TaskServiceImpl implements TaskService {
     private final ProjectService projectService;
 
     @Override
-    public Integer createTask(TaskPostDto dto, Integer projectId, Long memberId) {
+    public Long createTask(TaskPostDto dto, Integer projectId, Long memberId) {
         // TODO : 프로젝트 회원 + writer인지 확인
         Project findProject = projectService.findProject(projectId);
 
@@ -50,7 +50,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void updateTask(TaskPatchDto dto, Integer taskId, Long memberId) {
+    public void updateTask(TaskPatchDto dto, Long taskId, Long memberId) {
 
         GetTaskResponse findTask = findExistTask(taskId);
         dto.setTaskId(taskId);
@@ -65,7 +65,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteTask(Integer taskId, Long memberId) {
+    public void deleteTask(Long taskId, Long memberId) {
         verifyExistTask(taskId);
 
         //soft delete
@@ -74,7 +74,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional(readOnly = true)
     @Override
-    public GetTaskResponse findTask(Integer taskId, Long memberId) {
+    public GetTaskResponse findTask(Long taskId, Long memberId) {
         return findExistTask(taskId);
     }
 
@@ -108,7 +108,7 @@ public class TaskServiceImpl implements TaskService {
      * 업무 담당자 지정
      */
     @Override
-    public void createTaskMember(Integer taskId, List<Long> memberIds, Long memberId) {
+    public void createTaskMember(Long taskId, List<Long> memberIds, Long memberId) {
         // TODO : 프로젝트 회원 + writer 인지 검증
         // TODO : MEMBER_TASK 해당되는 값이 없을 경우 처리
         verifyExistTask(taskId);
@@ -119,21 +119,21 @@ public class TaskServiceImpl implements TaskService {
      * 업무 담당자 삭제
      */
     @Override
-    public void deleteTaskMember(Integer taskId, List<Long> memberIds, Long memberId) {
+    public void deleteTaskMember(Long taskId, List<Long> memberIds, Long memberId) {
         // TODO : 프로젝트 회원 + writer 인지 검증
         // TODO : MEMBER_TASK 해당되는 값이 없을 경우 처리
         verifyExistTask(taskId);
         taskMapper.deleteTaskMember(taskId, memberIds);
     }
 
-    private GetTaskResponse findExistTask(Integer taskId) {
+    private GetTaskResponse findExistTask(Long taskId) {
         return taskMapper.findById(taskId).orElseThrow(() -> new ApplicationException(ErrorCode.TASK_NOT_FOUND));
     }
 
     /**
      * 삭제된 task인 경우 예외 처리
      */
-    private void verifyExistTask(Integer taskId) {
+    private void verifyExistTask(Long taskId) {
         if (taskMapper.findExistsTask(taskId) == 0) {
             throw new ApplicationException(ErrorCode.TASK_NOT_FOUND);
         }

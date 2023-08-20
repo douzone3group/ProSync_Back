@@ -35,7 +35,6 @@ public class MemberServiceImpl implements MemberService{
         if (duplicateInspection(memberDto.getEmail())) {
             throw new ApplicationException(ErrorCode.DUPLICATED_USER_ID);
         }
-        // Todo : 기본 이미지 넣어주기
         MemberDto member = memberDto.of(passwordEncoder.encode(memberDto.getPassword()));
         return memberRepository.save(member);
     }

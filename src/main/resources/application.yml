@@ -64,4 +64,15 @@ jwt:
 mail:
   sender: ENC(YUA700a0yImvH49z0x6IffMPblHrkCNCj5q/JUbLjLc=)
 
+cloud:
+  aws:
+    credentials:
+      accessKey: ENC(t8vzfc2BaRuUTBVRcSQ4mRPiHpmXY5RmMDRV463RDCY=)
+      secretKey: ENC(kABepy6v0S2NLGt8fgHoyzcja0qFE4UgCiwr6zcgAMaLWv+2Wb6cZdIVJF5T1XcF6ByiPmNHahI=)
+    s3:
+      bucket: prosync-image
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
 
