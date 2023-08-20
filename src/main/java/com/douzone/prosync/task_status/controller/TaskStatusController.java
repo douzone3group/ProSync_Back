@@ -1,7 +1,6 @@
 package com.douzone.prosync.task_status.controller;
 
 import com.douzone.prosync.common.SingleResponseDto;
-import com.douzone.prosync.security.auth.MemberDetails;
 import com.douzone.prosync.task_status.dto.TaskStatusDto;
 import com.douzone.prosync.task_status.service.TaskStatusService;
 import io.swagger.annotations.ApiResponse;
@@ -12,13 +11,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -42,8 +41,8 @@ public class TaskStatusController {
     })
     public ResponseEntity<SingleResponseDto<TaskStatusDto.SimpleResponseDto>> postTaskStatus(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") @Positive Integer projectId,
                                                                                              @RequestBody @Valid TaskStatusDto.PostDto requestBody,
-                                                                                             @Parameter(hidden = true) @ApiIgnore @AuthenticationPrincipal MemberDetails memberDetails) {
-        Integer taskStatusId = taskStatusService.createTaskStatus(projectId, requestBody, memberDetails.getMemberId());
+                                                                                             @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        Integer taskStatusId = taskStatusService.createTaskStatus(projectId, requestBody, Long.parseLong(principal.getName()));
         return new ResponseEntity(new SingleResponseDto(new TaskStatusDto.SimpleResponseDto(taskStatusId)), HttpStatus.CREATED);
     }
 
@@ -59,8 +58,8 @@ public class TaskStatusController {
     })
     public ResponseEntity<SingleResponseDto<TaskStatusDto.SimpleResponseDto>> patchTaskStatus(@Parameter(description = "업무상태식별자", required = true, example = "1") @PathVariable("task-status-id") @Positive Integer taskStatusId,
                                                                                               @RequestBody @Valid TaskStatusDto.PatchDto requestBody,
-                                                                                              @Parameter(hidden = true) @ApiIgnore @AuthenticationPrincipal MemberDetails memberDetails) {
-        taskStatusService.updateTaskStatus(taskStatusId, requestBody, memberDetails.getMemberId());
+                                                                                              @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        taskStatusService.updateTaskStatus(taskStatusId, requestBody, Long.parseLong(principal.getName()));
         return new ResponseEntity(new SingleResponseDto(new TaskStatusDto.SimpleResponseDto(taskStatusId)), HttpStatus.OK);
     }
 
@@ -75,8 +74,8 @@ public class TaskStatusController {
             @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity deleteTaskStatus(@Parameter(description = "업무상태식별자", required = true, example = "1") @PathVariable("task-status-id") @Positive Integer taskStatusId,
-                                           @Parameter(hidden = true) @ApiIgnore @AuthenticationPrincipal MemberDetails memberDetails) {
-        taskStatusService.deleteTaskStatus(taskStatusId, memberDetails.getMemberId());
+                                           @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        taskStatusService.deleteTaskStatus(taskStatusId, Long.parseLong(principal.getName()));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -92,8 +91,8 @@ public class TaskStatusController {
     })
     public ResponseEntity<SingleResponseDto<List<TaskStatusDto.GetResponseDto>>> getProjectTaskStatus(@Parameter(description = "프로젝트 식별자", required = true, example = "1") @PathVariable("project-id") @Positive Integer projectId,
                                                                                                       @Parameter(description = "보여짐 체크한 업무상태 조회", required = false, example = "true") @RequestParam(required = false) boolean isActive,
-                                                                                                      @Parameter(hidden = true) @ApiIgnore @AuthenticationPrincipal MemberDetails memberDetails) {
-        return new ResponseEntity(new SingleResponseDto(taskStatusService.getTaskStatusByProject(projectId, isActive, memberDetails.getMemberId())), HttpStatus.OK);
+                                                                                                      @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        return new ResponseEntity(new SingleResponseDto(taskStatusService.getTaskStatusByProject(projectId, isActive, Long.parseLong(principal.getName()))), HttpStatus.OK);
     }
 
     /**
@@ -107,7 +106,7 @@ public class TaskStatusController {
             @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity<SingleResponseDto<TaskStatusDto.GetResponseDto>> getTaskStatus(@Parameter(description = "업무상태식별자", required = true, example = "1") @PathVariable("task-status-id") @Positive Integer taskStatusId,
-                                                                                         @Parameter(hidden = true) @ApiIgnore @AuthenticationPrincipal MemberDetails memberDetails) {
-        return new ResponseEntity(new SingleResponseDto<>(taskStatusService.getTaskStatus(taskStatusId, memberDetails.getMemberId())), HttpStatus.OK);
+                                                                                         @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        return new ResponseEntity(new SingleResponseDto<>(taskStatusService.getTaskStatus(taskStatusId, Long.parseLong(principal.getName()))), HttpStatus.OK);
     }
 }

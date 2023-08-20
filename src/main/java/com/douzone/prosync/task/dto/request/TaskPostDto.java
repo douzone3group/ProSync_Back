@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class TaskPostDto {
 
         @ApiModelProperty(hidden = true)
-        private Integer taskId;
+        private Long taskId;
 
         @ApiModelProperty(value = "분류", required = true, example = "분류")
         @NotNull

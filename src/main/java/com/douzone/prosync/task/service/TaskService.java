@@ -11,18 +11,18 @@ import java.util.List;
 
 public interface TaskService {
 
-    Integer createTask(TaskPostDto dto, Integer projectId, Long memberId);
+    Long createTask(TaskPostDto dto, Integer projectId, Long memberId);
 
-    void updateTask(TaskPatchDto dto, Integer taskId, Long memberId);
+    void updateTask(TaskPatchDto dto, Long taskId, Long memberId);
 
-    void deleteTask(Integer taskId, Long memberId);
+    void deleteTask(Long taskId, Long memberId);
 
-    GetTaskResponse findTask(Integer taskId, Long memberId);
+    GetTaskResponse findTask(Long taskId, Long memberId);
 
     PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Integer projectId, Pageable pageable, String search, boolean isActive, Long memberId);
 
-    void createTaskMember(Integer taskId, List<Long> memberIds, Long memberId);
+    void createTaskMember(Long taskId, List<Long> memberIds, Long memberId);
 
-    void deleteTaskMember(Integer taskId, List<Long> memberIds, Long memberId);
+    void deleteTaskMember(Long taskId, List<Long> memberIds, Long memberId);
 
 }
