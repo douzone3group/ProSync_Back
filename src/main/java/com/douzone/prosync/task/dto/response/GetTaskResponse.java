@@ -11,7 +11,7 @@ import lombok.Getter;
 public class GetTaskResponse {
 
         @ApiModelProperty(value = "업무식별자", example = "1")
-        private Integer taskId;
+        private Long taskId;
 
         @ApiModelProperty(value = "분류", example = "분류")
         private String classification;

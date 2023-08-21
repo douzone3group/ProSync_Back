@@ -12,6 +12,7 @@ public enum ErrorCode {
     INVALID_PERMISSION(HttpStatus.UNAUTHORIZED, "Permission is invalid"),
     ACCESS_FORBIDDEN(HttpStatus.FORBIDDEN, "Access forbidden"),
     STATUS_VALUE_NOT_FOUND(HttpStatus.NOT_FOUND, "status value not founded"),
+    INVALID_VALUE(HttpStatus.FORBIDDEN, "Invalid value"),
 
     // MEMBER
     DUPLICATED_USER_ID(HttpStatus.CONFLICT, "User ID is duplicated"),
@@ -25,7 +26,6 @@ public enum ErrorCode {
     CERTIFICATION_NUMBER_MISMATCH(HttpStatus.BAD_REQUEST,"Certification number is mismatching"),
 
     CRYPT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Crypt error"),
-  
 
 
     // PROJECT
@@ -37,7 +37,11 @@ public enum ErrorCode {
     TASK_EXISTS(HttpStatus.CONFLICT, "Task exists"),
 
     // TASK_STATUS
-    TASK_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "Task Status not founded"),;
+    TASK_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "Task Status not founded"),
+
+    // FILE
+    INVALID_FILE_TYPE(HttpStatus.FORBIDDEN, "Invalid file type"),
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not founded"),;
 
     // NOTIFICATION
 

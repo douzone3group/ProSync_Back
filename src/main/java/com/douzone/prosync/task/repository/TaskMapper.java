@@ -17,20 +17,20 @@ public interface TaskMapper {
             "LEFT JOIN task_status " +
             "ON task.task_status_id = task_status.task_status_id " +
             "WHERE task.task_id=#{taskId} and task.is_deleted IS NULL AND task_status.is_deleted IS NULL")
-    Optional<GetTaskResponse> findById(Integer taskId);
+    Optional<GetTaskResponse> findById(Long taskId);
 
     @Delete("DELETE FROM task WHERE task_id=#{taskId}")
-    void deleteById(Integer taskId);
+    void deleteById(Long taskId);
 
     //soft delete
     @Update("UPDATE task SET is_deleted=true WHERE task_id=#{taskId}")
-    void delete(Integer taskId);
+    void delete(Long taskId);
 
     void update(TaskPatchDto dto);
 
-    int findExistsTask(Integer taskId);
+    int findExistsTask(Long taskId);
 
-    void saveTaskMember(@Param("taskId") Integer taskId, @Param("memberIds") List<Long> memberIds);
+    void saveTaskMember(@Param("taskId") Long taskId, @Param("memberIds") List<Long> memberIds);
 
-    void deleteTaskMember(Integer taskId, List<Long> memberIds);
+    void deleteTaskMember(Long taskId, List<Long> memberIds);
 }

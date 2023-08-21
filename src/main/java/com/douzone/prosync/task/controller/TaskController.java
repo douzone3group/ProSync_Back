@@ -9,7 +9,10 @@ import com.douzone.prosync.task.dto.response.GetTaskResponse;
 import com.douzone.prosync.task.dto.response.GetTasksResponse;
 import com.douzone.prosync.task.dto.response.TaskSimpleResponse;
 import com.douzone.prosync.task.service.TaskService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -55,7 +58,7 @@ public class TaskController {
                                                                           @RequestBody @Valid TaskPostDto requestBody,
                                                                           @Parameter(hidden = true) @ApiIgnore Principal principal) {
         requestBody.setTaskStatusId(taskStatusId);
-        Integer taskId = taskService.createTask(requestBody, projectId, Long.parseLong(principal.getName()));
+        Long taskId = taskService.createTask(requestBody, projectId, Long.parseLong(principal.getName()));
         return new ResponseEntity<>(new SingleResponseDto(new TaskSimpleResponse(taskId)), HttpStatus.CREATED);
     }
 
@@ -69,7 +72,7 @@ public class TaskController {
             @ApiResponse(code = 404, message = "task not found"),
             @ApiResponse(code = 500, message = "server error")
     })
-    public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> patchTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId,
+    public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> patchTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
                                                                            @RequestBody @Valid TaskPatchDto requestBody,
                                                                            @Parameter(hidden = true) @ApiIgnore Principal principal) {
         taskService.updateTask(requestBody, taskId, Long.parseLong(principal.getName()));
@@ -86,7 +89,7 @@ public class TaskController {
             @ApiResponse(code = 404, message = "task not found"),
             @ApiResponse(code = 500, message = "server error")
     })
-    public ResponseEntity deleteTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId,
+    public ResponseEntity deleteTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
                                      @Parameter(hidden = true) @ApiIgnore Principal principal) {
         taskService.deleteTask(taskId, Long.parseLong(principal.getName()));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -131,7 +134,7 @@ public class TaskController {
             @ApiResponse(code = 404, message = "task not found"),
             @ApiResponse(code = 500, message = "server error")
     })
-    public ResponseEntity<SingleResponseDto<GetTaskResponse>> getTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") Integer taskId,
+    public ResponseEntity<SingleResponseDto<GetTaskResponse>> getTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") Long taskId,
                                                                       @Parameter(hidden = true) @ApiIgnore Principal principal) {
         return new ResponseEntity<>(new SingleResponseDto<>(taskService.findTask(taskId, Long.parseLong(principal.getName()))), HttpStatus.OK);
     }
@@ -141,7 +144,7 @@ public class TaskController {
      */
     @PostMapping("/tasks/{task-id}/members")
     @Operation(summary = "업무 담당자 지정", description = "특정 업무에 대한 담당자들을 지정합니다.", tags = "task")
-    public ResponseEntity postTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId,
+    public ResponseEntity postTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
                                          @RequestBody TaskMemberDto requestBody,
                                          @Parameter(hidden = true) @ApiIgnore Principal principal) {
         taskService.createTaskMember(taskId, requestBody.getMemberIds(), Long.parseLong(principal.getName()));
@@ -153,7 +156,7 @@ public class TaskController {
      */
     @DeleteMapping("/tasks/{task-id}/members")
     @Operation(summary = "업무 담당자 삭제", description = "특정 업무에 대한 담당자들을 삭제합니다.", tags = "task")
-    public ResponseEntity deleteTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId,
+    public ResponseEntity deleteTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
                                            @RequestBody TaskMemberDto requestBody,
                                            @Parameter(hidden = true) @ApiIgnore Principal principal) {
         taskService.deleteTaskMember(taskId, requestBody.getMemberIds(), Long.parseLong(principal.getName()));

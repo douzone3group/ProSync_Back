@@ -13,7 +13,7 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer taskId;
+    private Long taskId;
 
     @Column(nullable = false)
     private String classification;

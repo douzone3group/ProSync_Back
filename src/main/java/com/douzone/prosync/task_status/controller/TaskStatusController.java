@@ -1,7 +1,6 @@
 package com.douzone.prosync.task_status.controller;
 
 import com.douzone.prosync.common.SingleResponseDto;
-import com.douzone.prosync.security.auth.MemberDetails;
 import com.douzone.prosync.task_status.dto.TaskStatusDto;
 import com.douzone.prosync.task_status.service.TaskStatusService;
 import io.swagger.annotations.ApiResponse;
@@ -12,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;

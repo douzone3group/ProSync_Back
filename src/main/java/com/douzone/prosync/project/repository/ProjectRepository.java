@@ -1,5 +1,6 @@
 package com.douzone.prosync.project.repository;
 
+import com.douzone.prosync.file.basic.BasicImage;
 import com.douzone.prosync.project.dto.ProjectRequest;
 import com.douzone.prosync.project.entity.Project;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,8 @@ public class ProjectRepository {
 
     // 프로젝트 생성
     public void createProject(ProjectRequest.PostDto dto) {
-
+        dto.setProjectImage(BasicImage.BASIC_PROJECT_IMAGE.getPath()); // 기본이미지 설정
         projectMybatisMapper.createProject(dto);
-
 
     }
 
