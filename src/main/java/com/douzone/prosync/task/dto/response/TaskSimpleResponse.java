@@ -11,6 +11,6 @@ import lombok.Getter;
 public class TaskSimpleResponse {
 
     @ApiModelProperty(value = "업무식별자", example = "1")
-    private Integer taskId;
+    private Long taskId;
 
 }

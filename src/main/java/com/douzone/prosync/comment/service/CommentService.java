@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 public interface CommentService {
 
     // 댓글 생성
-    Integer save(CommentPostDto dto,  Integer taskId,Long memberId);
+    Integer save(CommentPostDto dto,  Long taskId,Long memberId);
 
     // 댓글 수정
-    void update(CommentPatchDto dto, Integer commentId, Long taskId);
+    void update(CommentPatchDto dto, Long commentId, Long taskId);
 
     // 댓글 삭제 (소프트)
-    void delete(Integer CommentId, Integer taskId, Long memberId);
+    void delete(Integer CommentId, Long taskId, Long memberId);
 
 //    // 댓글 리스트 조회
 //    Page<Comment> findCommentList(Pageable pageable);

@@ -1,9 +1,11 @@
 package com.douzone.prosync.member.dto.request;
 
+import com.douzone.prosync.file.basic.BasicImage;
 import com.douzone.prosync.member.dto.MemberDto;
-import lombok.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -16,9 +18,11 @@ import java.time.Instant;
 @AllArgsConstructor
 public class MemberPostDto {
 
+        @ApiModelProperty(example = "abcd@naver.com")
         @Email
         private String email;
 
+        @ApiModelProperty(example = "1234")
         @NotBlank
         @NotNull
         private String password;
@@ -27,10 +31,11 @@ public class MemberPostDto {
                return MemberDto.builder()
                        .email(email)
                        .password(modifiedPassword)
-                       .profileImage("default") // TODO : 이미지 꼭 넣기
-                       .name("")
+                       .profileImage(BasicImage.BASIC_USER_IMAGE.getPath())
+                       .name("닉네임을 정해주세요.")
                        .modifiedAt(Timestamp.from(Instant.now()))
                        .createdAt(Timestamp.from(Instant.now()))
+                       .intro("소개를 입력하세요.")
                        .isDeleted(false)
                        .build();
         }

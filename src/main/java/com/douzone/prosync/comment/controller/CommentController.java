@@ -40,7 +40,7 @@ public class CommentController {
             @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity<CommentSimpleResponse> PostComment(
-            @Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId,
+            @Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
             @RequestBody @Valid CommentPostDto dto,
             @Parameter(hidden = true) @ApiIgnore Principal principal) {
 
@@ -58,7 +58,7 @@ public class CommentController {
             @ApiResponse(code = 404, message = "not found"),
             @ApiResponse(code = 500, message = "server error"),
     })
-    public ResponseEntity updateComment(@Parameter(description = "업무 식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId,
+    public ResponseEntity updateComment(@Parameter(description = "업무 식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
                                         @Parameter(description = "댓글 식별자", required = true, example = "1") @PathVariable("comment-id") @Positive Integer commentId,
                                         @RequestBody @Valid CommentPatchDto dto, @ApiIgnore Principal principal) {
         dto.setCommentId(commentId);
@@ -68,7 +68,7 @@ public class CommentController {
 //
 //    // 댓글 조회
 //    @GetMapping("/tasks/{task-id}/comments")
-//    public ResponseEntity<PageResponseDto<GetCommentsResponse>> getCommentList(@Parameter(description = "업무 식별자", required = true, example = "1") @PathVariable("task-id") @Positive Integer taskId,
+//    public ResponseEntity<PageResponseDto<GetCommentsResponse>> getCommentList(@Parameter(description = "업무 식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
 //                                                                               @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = 10, sort = "commentId", direction = Sort.Direction.DESC) Pageable pageable) {
 //
 //    }
@@ -81,7 +81,7 @@ public class CommentController {
             @ApiResponse(code = 404, message = "project not found"),
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
-    public ResponseEntity deleteComment(@Parameter(description = "업무 식별자", required = true, example = "1") @PathVariable("task-id") Integer taskId,
+    public ResponseEntity deleteComment(@Parameter(description = "업무 식별자", required = true, example = "1") @PathVariable("task-id") Long taskId,
                                         @Parameter(description = "댓글 식별자", required = true, example = "1") @PathVariable("comment-id") Integer commentId,
                                         @ApiIgnore Principal principal) {
         commentService.delete(commentId,taskId,Long.valueOf(principal.getName()));

@@ -4,6 +4,7 @@ import com.douzone.prosync.member.dto.MemberDto;
 import com.douzone.prosync.member.dto.request.MemberPatchProfileDto;
 import com.douzone.prosync.member.entity.Member;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface MemberRepository {

@@ -24,7 +24,7 @@ public class CommentServiceImpl  implements CommentService{
     private final CommentRepository commentRepository;
 
     @Override
-    public Integer save(CommentPostDto dto, Integer taskId,Long memberId) {
+    public Integer save(CommentPostDto dto, Long taskId,Long memberId) {
         dto.setCreatedAt(LocalDateTime.now());
 
         GetTaskResponse findTask = taskService.findTask(taskId, null);
@@ -35,7 +35,7 @@ public class CommentServiceImpl  implements CommentService{
     }
 
     @Override
-    public void update(CommentPatchDto dto, Integer commentId, Long memberId) {
+    public void update(CommentPatchDto dto, Long commentId, Long memberId) {
         dto.setModifiedAt(LocalDateTime.now());
 
 //        commentRepository.updateComment(dto, findTask.getTaskId());
@@ -44,7 +44,7 @@ public class CommentServiceImpl  implements CommentService{
     }
 
     @Override
-    public void delete(Integer commentId, Integer taskId,Long memberId) {
+    public void delete(Integer commentId, Long taskId,Long memberId) {
         commentRepository.deleteComment(commentId,taskId, memberId);
     }
 

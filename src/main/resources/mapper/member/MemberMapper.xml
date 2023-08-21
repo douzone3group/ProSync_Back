@@ -12,21 +12,21 @@
         set name=#{profileDto.name},
             intro=#{profileDto.intro},
             profile_image=#{profileDto.profileImage},
-            modified_at=NOW()
+            modified_at=#{modifiedAt}
         where member_id = #{memberId}
     </update>
 
     <update id="updatePassword">
         update member
         set password=#{password},
-            modified_at=NOW()
+            modified_at=#{modifiedAt}
         where member_id = #{memberId}
     </update>
 
     <update id="updateDeleted">
         update member
         set is_deleted=true,
-            modified_at=NOW()
+            modified_at=#{modifiedAt}
         where member_id = #{memberId}
     </update>
 
@@ -36,7 +36,7 @@
         where member_id = #{memberId}
     </select>
 
-    <select id="findByEmail" resultType="com.douzone.prosync.member.entity.Member">
+    <select id="findByEmail" resultType="Member">
         select member_id, email, password, name, created_at,modified_at, profile_image, intro, is_deleted
         from member
         where email = #{email}

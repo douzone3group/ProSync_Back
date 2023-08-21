@@ -13,10 +13,13 @@ import springfox.documentation.service.SecurityReference;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 @Configuration
+@EnableSwagger2
 @EnableWebMvc
 public class SwaggerConfig {
 
@@ -36,7 +39,8 @@ public class SwaggerConfig {
                 //token
                 .build().securityContexts(Arrays.asList(securityContext()))
                 .securitySchemes(Collections.singletonList(apiKey()))
-                .useDefaultResponseMessages(false);
+                .useDefaultResponseMessages(false)
+                .directModelSubstitute(Timestamp.class, String.class);
     }
 
     private Set<String> getConsumeContentTypes() {

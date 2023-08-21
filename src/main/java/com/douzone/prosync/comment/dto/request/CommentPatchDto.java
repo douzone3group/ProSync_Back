@@ -26,7 +26,7 @@ public class CommentPatchDto {
 
     @NotBlank
     @ApiModelProperty(value = "업무 식별자", required = true, example = "업무 식별자")
-    private Integer taskId;
+    private Long taskId;
 
     @NotBlank
     @ApiModelProperty(value = "댓글 수정 일자", required = true, example = "댓글 수정 일자")

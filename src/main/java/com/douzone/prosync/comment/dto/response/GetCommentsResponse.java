@@ -27,6 +27,6 @@ public class GetCommentsResponse {
     private Integer memberId;
 
     @ApiModelProperty(value = "업무 식별자", example = "1")
-    private Integer taskId;
+    private Long taskId;
 
 }

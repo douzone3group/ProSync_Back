@@ -17,7 +17,7 @@ public class CommentRepository {
     private final CommentMybatisMapper commentMybatisMapper;
 
     // 댓글 생성
-    public void createComment(CommentPostDto dto,Integer taskId) {
+    public void createComment(CommentPostDto dto,Long taskId) {
 
         commentMybatisMapper.createComment(dto,taskId);
 
@@ -30,13 +30,13 @@ public class CommentRepository {
 
 
     // 프로젝트 수정
-    public void updateComment(CommentPatchDto dto, Integer taskId) {
+    public void updateComment(CommentPatchDto dto, Long taskId) {
         commentMybatisMapper.updateComment(dto,taskId);
 
     }
 
     // 프로젝트 삭제
-    public void deleteComment(Integer projectId,Integer taskId,Long memberId) {
+    public void deleteComment(Integer projectId,Long taskId,Long memberId) {
         commentMybatisMapper.deleteComment(projectId,taskId,memberId);
     }
 }

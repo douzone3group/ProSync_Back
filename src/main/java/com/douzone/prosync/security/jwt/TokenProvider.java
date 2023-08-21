@@ -1,13 +1,12 @@
 package com.douzone.prosync.security.jwt;
 
-import com.douzone.prosync.security.auth.MemberDetails;
+import com.douzone.prosync.exception.ApplicationException;
+import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.security.exception.ExpiredTokenException;
-import com.douzone.prosync.security.exception.FailToRenewTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,8 +19,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 @Component
+@Slf4j
 public class TokenProvider implements InitializingBean {
-    private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
+
     private final String secret;
     private final long tokenValidityInMilliseconds;
     private Key key;
@@ -41,13 +41,12 @@ public class TokenProvider implements InitializingBean {
 
     public String createToken(Authentication authentication) {
 
-        long now = (new Date()).getTime();
+        long now = System.currentTimeMillis();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
         // JWT 토큰에 Subject로 멤버의 id(pk)를 넣어준다.
         return Jwts.builder()
-                .setSubject(((MemberDetails) authentication.getPrincipal()).getMemberId().toString())
-                .claim("email", ((MemberDetails) authentication.getPrincipal()).getUsername())
+                .setSubject((authentication.getName()))
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
@@ -67,48 +66,26 @@ public class TokenProvider implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(principal, token, new ArrayList<>());
     }
 
-    public String expiredTokenToRenewToken(String expiredToken) {
-        Claims claims = null;
-        long now = (new Date()).getTime();
-        Date validity = new Date(now + this.tokenValidityInMilliseconds);
-        try {
-            claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(expiredToken).getBody();
-
-            return Jwts.builder()
-                    .setClaims(claims)
-                    .setExpiration(validity)
-                    .signWith(key, SignatureAlgorithm.HS512)
-                    .compact();
-        } catch (ExpiredJwtException e) {
-            claims = e.getClaims();
-
-            return Jwts.builder()
-                    .setClaims(claims) //
-                    .setExpiration(validity)
-                    .signWith(key, SignatureAlgorithm.HS512)
-                    .compact();
-
-        } catch (Exception e) {
-            throw new FailToRenewTokenException("Failed to renew the token", e);
-        }
-
-    }
 
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            logger.info("잘못된 JWT 서명입니다.");
+            log.debug("잘못된 JWT 서명입니다.");
+            throw new ApplicationException(ErrorCode.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
-            logger.info("만료된 JWT 토큰입니다.");
+            log.debug("만료된 JWT 토큰입니다.");
             throw new ExpiredTokenException("만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException e) {
-            logger.info("지원되지 않는 JWT 토큰입니다.");
+            log.debug("지원되지 않는 JWT 토큰입니다.");
+            throw new ApplicationException(ErrorCode.INVALID_TOKEN);
         } catch (IllegalArgumentException e) {
-            logger.info("JWT 토큰이 잘못되었습니다.");
+            log.debug("JWT 토큰이 잘못되었습니다.");
+            throw new ApplicationException(ErrorCode.INVALID_TOKEN);
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
 }

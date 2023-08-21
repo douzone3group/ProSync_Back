@@ -24,7 +24,7 @@ public class Comment {
     private LocalDateTime modifiedAt;
 
     private Integer memberId;
-    private Integer taskId;
+    private Long taskId;
 
     private Boolean isDeleted;
 
