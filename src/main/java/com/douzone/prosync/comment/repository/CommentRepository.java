@@ -5,6 +5,7 @@ import com.douzone.prosync.comment.dto.request.CommentPostDto;
 import com.douzone.prosync.project.entity.Project;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,14 +13,15 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class CommentRepository {
 
     private final CommentMybatisMapper commentMybatisMapper;
 
     // 댓글 생성
-    public void createComment(CommentPostDto dto,Long taskId) {
+    public void createComment(CommentPostDto dto) {
 
-        commentMybatisMapper.createComment(dto,taskId);
+        commentMybatisMapper.createComment(dto);
 
     }
 
@@ -30,13 +32,17 @@ public class CommentRepository {
 
 
     // 프로젝트 수정
-    public void updateComment(CommentPatchDto dto, Long taskId) {
-        commentMybatisMapper.updateComment(dto,taskId);
+    public void updateComment(CommentPatchDto dto) {
+
+        commentMybatisMapper.updateComment(dto);
+
+        log.info("dto.content={}", dto.getContent());
+
 
     }
 
     // 프로젝트 삭제
-    public void deleteComment(Integer projectId,Long taskId,Long memberId) {
-        commentMybatisMapper.deleteComment(projectId,taskId,memberId);
+    public void deleteComment(Integer commentId) {
+        commentMybatisMapper.deleteComment(commentId);
     }
 }

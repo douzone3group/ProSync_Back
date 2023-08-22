@@ -22,18 +22,11 @@ public class CommentPostDto {
     @ApiModelProperty(value = "댓글 내용", required = true, example = "댓글 내용")
     private String content;
 
-    @NotBlank
-    @ApiModelProperty(value = "회원 식별자", required = true, example = "회원 식별자")
-    private Integer memberId;
-
-    @NotBlank
-    @ApiModelProperty(value = "업무 식별자", required = true, example = "업무 식별자")
-    private Long taskId;
-
-    @NotBlank
     @ApiModelProperty(value = "댓글 생성 일자", required = true, example = "댓글 생성 일자")
     private LocalDateTime createdAt;
 
+    private Long memberId;
 
+    private Long taskId;
 
 }

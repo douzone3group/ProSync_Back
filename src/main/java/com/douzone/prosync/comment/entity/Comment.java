@@ -18,13 +18,13 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer commentId;
 
+
     private String content;
+
+    private Long taskId;
 
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-
-    private Integer memberId;
-    private Long taskId;
 
     private Boolean isDeleted;
 

@@ -46,7 +46,6 @@ public  class ProjectPatchDto {
     @ApiModelProperty(value = "프로젝트 이미지", required = true, example = "프로젝트 이미지")
     private String projectImage;
 
-    @NotBlank
     @ApiModelProperty(value = "프로젝트 수정 날짜", required = true, example = "프로젝트 수정 날짜")
     private LocalDateTime modifiedAt;
 }

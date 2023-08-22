@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentJpaRepository extends JpaRepository<Comment, Integer> {
 
-    Page<Comment> findAllByIsDeletedNull(Pageable pageable);
+    Page<Comment> findAllByIsDeletedNullAndTaskId(Long taskId, Pageable pageable);
+
 }
