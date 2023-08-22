@@ -1,6 +1,5 @@
 package com.douzone.prosync.redis;
 
-import com.douzone.prosync.constant.ConstantPool;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,8 +26,6 @@ public class RedisService implements TokenStorageService {
         return values.get(key);
     }
 
-
-
     public void setRefreshToken(String key,String value){
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         values.set(key,value, Duration.ofSeconds(refreshTokenValidityInSeconds));
@@ -52,7 +49,20 @@ public class RedisService implements TokenStorageService {
         redisTemplate.delete(key);
     }
 
+    public void setInviteCodeForProject(String key, String value) {
+        ValueOperations<String, String> values = redisTemplate.opsForValue();
+        values.set(key, value, Duration.ofSeconds(PROJECT_INVITE_LINK_DURATION));
+    }
 
+    //TODO: 같은 로직 메서드 공통화 ?
+    public String get(String key) {
+        ValueOperations<String, String> values = redisTemplate.opsForValue();
+        return values.get(key);
+    }
+
+    public void remove(String key) {
+        redisTemplate.delete(key);
+    }
 
 
 }
