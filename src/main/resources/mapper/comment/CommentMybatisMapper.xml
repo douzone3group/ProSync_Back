@@ -21,9 +21,8 @@
     </update>
 
     <select id="findAllComments" resultType="com.douzone.prosync.comment.entity.Comment">
-        SELECT *
-        FROM comment
-        WHERE
-            is_deleted is null
+
+
+
     </select>
 </mapper>

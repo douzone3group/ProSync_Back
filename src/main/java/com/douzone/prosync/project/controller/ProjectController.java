@@ -7,7 +7,7 @@ import com.douzone.prosync.project.dto.response.GetProjectResponse;
 import com.douzone.prosync.project.dto.response.GetProjectsResponse;
 import com.douzone.prosync.project.dto.response.ProjectSimpleResponse;
 import com.douzone.prosync.project.entity.Project;
-import com.douzone.prosync.project.service.ProjectServiceImpl;
+import com.douzone.prosync.project.service.ProjectService;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @Tag(name="project", description = "프로젝트 API")
 public class ProjectController {
 
-    private final ProjectServiceImpl projectServiceImpl;
+    private final ProjectService projectService;
 
     // 프로젝트 생성
     @PostMapping
@@ -48,7 +48,7 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity createProject(@RequestBody @Valid ProjectPostDto dto) {
-        Integer projectId = projectServiceImpl.save(dto);
+        Integer projectId = projectService.save(dto);
         return new ResponseEntity(new ProjectSimpleResponse(projectId), HttpStatus.CREATED);
     }
 
@@ -63,7 +63,7 @@ public class ProjectController {
     public ResponseEntity getProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
                                      @PathVariable("project-id") Integer projectId) {
 
-        Project project = projectServiceImpl.findProject(projectId);
+        Project project = projectService.findProject(projectId);
         return new ResponseEntity(GetProjectResponse.of(project), HttpStatus.OK);
     }
 
@@ -82,8 +82,24 @@ public class ProjectController {
             @ApiImplicitParam(name = "page", dataType = "integer", paramType = "query", value = "조회할 페이지 번호", defaultValue = "1", example = "1"),
             @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query", value = "한페이지에 보여질 요소 개수", defaultValue = "10", example = "20")})
     public ResponseEntity<PageResponseDto<GetProjectsResponse>> getProjectList(
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String name,
+
             @Parameter(hidden = true) @ApiIgnore @PageableDefault (size=8, sort="projectId", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<Project> pages = projectServiceImpl.findProjectList(pageable);
+
+        Page<Project> pages;
+
+        if(name != null && !name.trim().isEmpty()) {
+            pages = projectService.findProjectsByName(name, pageable);
+        } else if ("endDateAsc".equals(sortBy)) {
+            pages = projectService.findProjectsSortedByEndDateAsc(pageable);
+        } else if("endDateDesc".equals(sortBy)){
+            pages = projectService.findProjectsSortedByEndDateDesc(pageable);
+        } else {
+            pages = projectService.findProjectList(pageable);
+        }
+
+//        Page<Project> pages = projectService.findProjectList(pageable);
         List<Project> projects = pages.getContent();
         List<GetProjectsResponse> projectsResponse
                 = projects.stream().map(GetProjectsResponse::of).collect(Collectors.toList());
@@ -103,7 +119,7 @@ public class ProjectController {
     public ResponseEntity updateProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
                                         @PathVariable("project-id") Integer projectId, @RequestBody @Valid ProjectPatchDto dto) {
         dto.setProjectId(projectId);
-        projectServiceImpl.update(dto);
+        projectService.update(dto);
         return new ResponseEntity(new ProjectSimpleResponse(projectId), HttpStatus.OK);
     }
 
@@ -117,7 +133,7 @@ public class ProjectController {
     })
     public ResponseEntity deleteProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
                                         @PathVariable("project-id") @Positive Integer projectId) {
-        projectServiceImpl.delete(projectId);
+        projectService.delete(projectId);
         return new ResponseEntity(new ProjectSimpleResponse(projectId), HttpStatus.NO_CONTENT);
     }
 

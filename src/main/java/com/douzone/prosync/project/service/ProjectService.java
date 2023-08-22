@@ -17,4 +17,11 @@ public interface ProjectService {
     public Project findProject(Integer projectId);
 
     public Page<Project> findProjectList(Pageable pageable);
+
+    // 프로젝트 종료 임박 순 정렬
+    public Page<Project> findProjectsSortedByEndDateAsc(Pageable pageable);
+
+    public Page<Project> findProjectsSortedByEndDateDesc(Pageable pageable);
+
+    public Page<Project> findProjectsByName(String name, Pageable pageable);
 }

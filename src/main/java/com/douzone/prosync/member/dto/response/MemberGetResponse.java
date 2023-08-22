@@ -32,12 +32,15 @@ public class MemberGetResponse {
 
 
     // Todo: 만약 멤버 관리 페이지에서 멤버 리스트들을 조회할 때 simpleResponse를 작성한다.
-//    @Getter
-//    @Setter
-//    @NoArgsConstructor
-//    @AllArgsConstructor
-//    public static class SimpleResponse {
-//    }
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SimpleResponse {
+        private Long memberId;
+        private String profileImage;
+        private  String name;
+    }
 
     public static MemberGetResponse of(Member member){
         return MemberGetResponse.builder()

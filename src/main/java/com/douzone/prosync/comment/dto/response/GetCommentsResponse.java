@@ -1,6 +1,8 @@
 package com.douzone.prosync.comment.dto.response;
 
 import com.douzone.prosync.comment.entity.Comment;
+import com.douzone.prosync.member.dto.response.MemberGetResponse;
+import com.douzone.prosync.member.entity.Member;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -24,20 +26,21 @@ public class GetCommentsResponse {
     @ApiModelProperty(value = "수정일자", example = "2023-10-10")
     private String modifiedAt;
 
-    @ApiModelProperty(value = "회원 식별자", example = "1")
-    private Integer memberId;
-
     @ApiModelProperty(value = "업무 식별자", example = "1")
     private Long taskId;
 
+    // 멤버 아이디, 멤버 프로필 이미지, 멤버 이름
+    private MemberGetResponse.SimpleResponse memberInfo;
+
     public static GetCommentsResponse of(Comment comment) {
+        Member member = comment.getMember();
         return GetCommentsResponse.builder()
                 .commentId(comment.getCommentId())
                 .content(comment.getContent())
-                .memberId(comment.getCommentId())
                 .createdAt(comment.getCreatedAt().toString())
                 .modifiedAt(comment.getModifiedAt().toString())
                 .taskId(comment.getTaskId())
+                .memberInfo(new MemberGetResponse.SimpleResponse(member.getMemberId(), member.getProfileImage(), member.getName()))
                 .build();
     }
 }

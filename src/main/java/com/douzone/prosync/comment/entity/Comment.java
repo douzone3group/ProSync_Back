@@ -1,13 +1,11 @@
 package com.douzone.prosync.comment.entity;
 
 
+import com.douzone.prosync.member.entity.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -28,4 +26,7 @@ public class Comment {
 
     private Boolean isDeleted;
 
+    @ManyToOne
+    @JoinColumn(name = "memberId")
+    private Member member;
 }
