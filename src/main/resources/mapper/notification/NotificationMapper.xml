@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.prosync.notification.mapper.NotificationMapper">
+    <insert id="saveNotification" useGeneratedKeys="true" keyProperty="notificationId">
+        insert into notification (noti_code, from_member_id, insert_timestamp, content, url)
+        values (#{code}, #{fromMemberId},#{createdAt},#{content},#{url});
+    </insert>
+    <insert id="saveNotificationTarget" useGeneratedKeys="true" keyProperty="notificationTargetId">
+        insert into notification_target (notification_id, member_id,platform, is_read, is_deleted, update_user_no, is_transmitted)
+        values (#{notificationId}, #{memberId},#{platform},#{isRead},#{isDeleted},#{updateUserId},#{isTransmitted});
+    </insert>
+
+    <update id="updateIsDeleted">
+        update notification_target
+        set is_deleted =#{isDeleted}
+        where notification_target_id = #{targetId}
+    </update>
+
+    <update id="updateIsRead">
+        update notification_target
+        set is_read =#{isRead}
+        where notification_target_id = #{targetId}
+    </update>
+
+    <update id="updateIsTransmitted">
+        update notification_target
+        set is_transmitted =#{isTransmitted}
+        where notification_target_id = #{targetId}
+    </update>
+    <update id="update">
+        update notification
+        set noti_code =#{notiCode},
+            from_member_id = #{fromMemberId},
+            insert_timestamp = #{insertTime},
+            content = #{content},
+            url = #{url}
+        where notification_id = #{notificationId}
+    </update>
+
+    <select id="findById" resultType="Notification">
+        select notification_id, noti_code, from_member_id, insert_timestamp, content, url
+        from notification
+        where notification_id = #{notificationId}
+    </select>
+
+    <select id="findTargetById" resultType="NotificationTarget">
+        select notification_target_id, notification_id, member_id, platform, is_read, is_deleted, update_user_no, is_transmitted
+        from notification_target
+        where notification_target_id = #{targetId}
+    </select>
+
+    <select id="getNotificationList" resultType="NotificationResponse">
+        select t.notification_target_id,  t.is_read, n.content, n.noti_code, n.insert_timestamp, n.url
+        from notification_target t
+        LEFT JOIN notification n on t.notification_id = n.notification_id
+        <where>
+            t.member_id=#{condition.memberId}
+            <if test="condition.notiCode != null">
+                And n.noti_code = #{condition.notiCode}
+            </if>
+            <if test="condition.startDate != null">
+                AND n.insert_timestamp &gt;= #{condition.startDate}
+            </if>
+            <if test="condition.endDate != null">
+                AND n.insert_timestamp &lt;= #{condition.endDate}
+            </if>
+            <if test="condition.content != null and condition.content != '' ">
+                AND n.content like concat('%',#{condition.content},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

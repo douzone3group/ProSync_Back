@@ -155,7 +155,7 @@ public class MemberController {
             throw new ApplicationException(ErrorCode.CRYPT_ERROR);
         }
 
-        // Access Token은 요청을 보낸 Axios API에서 쿠키를 삭제하도록 지시한다.
+        // TODO: Access Token은 요청을 보낸 Axios API에서 쿠키를 삭제하도록 지시한다.
         return new ResponseEntity(HttpStatus.OK);
     }
 
