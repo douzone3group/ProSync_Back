@@ -11,6 +11,7 @@ import java.time.Duration;
 
 import static com.douzone.prosync.constant.ConstantPool.*;
 
+// 이부분은 명칭을 다르게 하는 것이 나을꺼 같습니다.
 @Service
 @RequiredArgsConstructor
 public class RedisService implements TokenStorageService {
