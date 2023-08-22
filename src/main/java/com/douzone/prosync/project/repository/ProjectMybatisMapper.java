@@ -1,5 +1,6 @@
 package com.douzone.prosync.project.repository;
-import com.douzone.prosync.project.dto.ProjectRequest;
+import com.douzone.prosync.project.dto.request.ProjectPatchDto;
+import com.douzone.prosync.project.dto.request.ProjectPostDto;
 import com.douzone.prosync.project.entity.Project;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -18,10 +19,10 @@ public interface ProjectMybatisMapper {
     Optional<Project> findProjectById(Integer projectId);
 
     // 프로젝트 생성
-    void createProject(ProjectRequest.PostDto dto);
+    void createProject(ProjectPostDto dto);
 
     // 프로젝트 수정
-    void updateProject(ProjectRequest.PatchDto dto);
+    void updateProject(ProjectPatchDto dto);
 
     // 프로젝트 삭제
     void deleteProject(Integer projectId);
