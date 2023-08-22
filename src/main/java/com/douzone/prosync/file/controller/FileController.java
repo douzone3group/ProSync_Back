@@ -29,19 +29,20 @@ public class FileController {
 
     private final FileService fileService;
 
-    @PostMapping("/members/profile")
-    @Operation(summary = "회원 프로필 변경", description = "회원 프로필을 설정합니다.", tags = "file")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successfully retrieved"),
-            @ApiResponse(code = 500, message = "server error"),
-    })
-    public ResponseEntity postUserProfile(@Parameter(description = "이미지파일(형식 : jpeg/jpg/png/gif)", required = true) @RequestParam("image") MultipartFile image,
-                                          Principal principal) throws IOException {
-        fileService.uploadUserProfileImage(image, Long.parseLong(principal.getName()));
-        return new ResponseEntity(HttpStatus.OK);
-    }
+//    @PostMapping("/members/profile")
+//    @Operation(summary = "회원 프로필 변경", description = "회원 프로필을 설정합니다.", tags = "file")
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "successfully retrieved"),
+//            @ApiResponse(code = 500, message = "server error"),
+//    })
+//    public ResponseEntity postUserProfile(@Parameter(description = "이미지파일(형식 : jpeg/jpg/png/gif)", required = true) @RequestParam("image") MultipartFile image,
+//                                          Principal principal) throws IOException {
+//        fileService.uploadUserProfileImage(image, Long.parseLong(principal.getName()));
+//        return new ResponseEntity(HttpStatus.OK);
+//    }
 
 
+    // 이 api는 필요가 없습니다.
     @PostMapping("/files/{target}/{target-id}")
     @Operation(summary = "파일 등록", description = "특정 업무나 댓글에 대한 파일을 업로드합니다.", tags = "file")
     @ApiResponses(value = {
@@ -58,6 +59,7 @@ public class FileController {
     }
 
 
+    // 이 함수는 동작하지 않을 것입니다.
     @DeleteMapping("/files/{file-id}")
     @Operation(summary = "파일 삭제", description = "특정 업무나 댓글에 대한 파일을 삭제합니다.", tags = "file")
     @ApiResponses(value = {
@@ -72,6 +74,7 @@ public class FileController {
     }
 
 
+    // 이 api는 필요가 없습니다.
     @GetMapping("/files/{target}/{target-id}")
     @Operation(summary = "파일 목록 조회", description = "특정 업무나 댓글에 대한 파일 목록을 조회합니다.", tags = "file")
     @ApiResponses(value = {

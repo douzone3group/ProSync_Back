@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface FileService {
 
-    String uploadUserProfileImage(MultipartFile multipartFile, Long memberId);
+//    String uploadUserProfileImage(MultipartFile multipartFile, Long memberId);
 
     List<FileDto> uploadFile(List<MultipartFile> multipartFiles, Long targetId, String target, Long memberId);
 

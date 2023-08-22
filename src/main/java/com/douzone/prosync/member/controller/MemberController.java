@@ -181,7 +181,7 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity login(@Valid @RequestBody MemberLoginDto loginDto, HttpServletRequest request) {
         String ipAddress = request.getRemoteAddr();
-
+        // 여기의 대부분의 내용들은 서비스 단으로 들어가는 것이 맞을꺼 같습니다.
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
 

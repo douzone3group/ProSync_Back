@@ -23,11 +23,13 @@ public class JavaMailService implements MailService {
         number = (int) (Math.random() * (90000)) + 100000;// (int) Math.random() * (최댓값-최소값+1) + 최소값
     }
 
+    // 이부분은 private 하게 처리 되는 것이 좋아 보입니다.
     public MimeMessage CreateMail(String mail) {
         createNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
 
         try {
+            // 이 부분은 dto 를 통해서 처리하는 것이 좋을꺼 같습니다.
             message.setFrom(senderEmail);
             message.setRecipients(MimeMessage.RecipientType.TO, mail);
             message.setSubject("이메일 인증");
