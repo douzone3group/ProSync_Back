@@ -46,4 +46,8 @@ public class ProjectRepository {
     public void deleteProject(Integer projectId) {
         projectMybatisMapper.deleteProject(projectId);
     }
+
+    public void saveProjectMember(Long memberId, Integer projectId) {
+        projectMybatisMapper.saveProjectMember(memberId, projectId);
+    }
 }
