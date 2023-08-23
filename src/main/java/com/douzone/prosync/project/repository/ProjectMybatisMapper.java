@@ -3,7 +3,7 @@ import com.douzone.prosync.project.dto.request.ProjectPatchDto;
 import com.douzone.prosync.project.dto.request.ProjectPostDto;
 import com.douzone.prosync.project.entity.Project;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+
 
 
 import java.util.List;
@@ -26,7 +26,4 @@ public interface ProjectMybatisMapper {
 
     // 프로젝트 삭제
     void deleteProject(Integer projectId);
-
-    // TODO : 권한아이디 NULL 값으로 두면 되는지 확인!
-    void saveProjectMember(@Param("memberId") Long memberId, @Param("projectId") Integer projectId);
 }

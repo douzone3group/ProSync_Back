@@ -12,9 +12,6 @@ public class ConstantPool {
 
 
     // EMAIL CERTIFICATIONNUMBER DURATION
-    public static final long EMAIL_CERTIFICATION_NUMBER_DURATION = 600L;
-
-    // INVITE LINK
-    public static final long PROJECT_INVITE_LINK_DURATION = 86400L; //TODO : 확인
+    public static final long EMAIL_CERTIFICATIONNUMBER_DURATION = 600L;
 
 }
