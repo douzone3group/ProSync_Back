@@ -9,11 +9,15 @@ import org.springframework.data.jpa.repository.Query;
 public interface TaskJpaRepository extends JpaRepository<Task, Integer> {
 
     @Query("SELECT t FROM Task t " +
-            "WHERE (t.projectId = :projectId AND t.isDeleted IS NULL) " +
+            "WHERE (t.project.projectId = :projectId AND t.isDeleted IS NULL) " +
             "AND (t.title LIKE %:search% " +
-            "OR t.taskStatus LIKE %:search%)"
+            "OR t.taskStatus.taskStatus LIKE %:search%)"
+            //TODO: 검색 조건 추가 (담당자)
     )
     Page<Task> findAllByProjectIdAndSearch(Integer projectId, String search, Pageable pageable);
 
+    @Query("SELECT t FROM Task t " +
+            "WHERE (t.project.projectId = :projectId AND t.isDeleted IS NULL)"
+    )
     Page<Task> findByProjectIdAndIsDeletedNull(Integer projectId, Pageable pageable);
 }

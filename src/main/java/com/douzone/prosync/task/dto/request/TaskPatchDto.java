@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class TaskPatchDto {
 
     @ApiModelProperty(hidden = true)
-    private Integer taskId;
+    private Long taskId;
 
     @ApiModelProperty(value = "분류", example = "분류")
     @Length(min = 1)
@@ -37,8 +37,8 @@ public class TaskPatchDto {
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜 형식을 확인하세요. (yyyy-mm-dd)")
     private String endDate;
 
-    @ApiModelProperty(value = "업무상태", example = "NO_STATUS")
-    private String taskStatus;
+    @ApiModelProperty(value = "업무상태식별자", example = "1")
+    private Integer taskStatusId;
 
     @ApiModelProperty(hidden = true)
     private LocalDateTime modifiedAt;

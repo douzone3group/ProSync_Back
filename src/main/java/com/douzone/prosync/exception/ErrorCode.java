@@ -12,14 +12,21 @@ public enum ErrorCode {
     INVALID_PERMISSION(HttpStatus.UNAUTHORIZED, "Permission is invalid"),
     ACCESS_FORBIDDEN(HttpStatus.FORBIDDEN, "Access forbidden"),
     STATUS_VALUE_NOT_FOUND(HttpStatus.NOT_FOUND, "status value not founded"),
+    INVALID_VALUE(HttpStatus.FORBIDDEN, "Invalid value"),
 
     // MEMBER
     DUPLICATED_USER_ID(HttpStatus.CONFLICT, "User ID is duplicated"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not founded"),
-    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Password is invalid"),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"User Authentication is failed"),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Token is invalid"),
-    INVALID_REFRESH_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "RefreshToken is invalid"),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "RefreshToken is invalid"),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not founded"),
+    INVALID_EMAIL(HttpStatus.BAD_REQUEST, "No recipient adresses"),
+    EMAIL_NOT_SENT(HttpStatus.INTERNAL_SERVER_ERROR,"Email could not be sent"),
+    CERTIFICATION_NUMBER_MISMATCH(HttpStatus.BAD_REQUEST,"Certification number is mismatching"),
+
+    CRYPT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Crypt error"),
+
 
     // PROJECT
     PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "Project not founded"),
@@ -27,7 +34,15 @@ public enum ErrorCode {
 
     // TASK
     TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "Task not founded"),
-    TASK_EXISTS(HttpStatus.CONFLICT, "Task exists"),;
+    TASK_EXISTS(HttpStatus.CONFLICT, "Task exists"),
+
+    // TASK_STATUS
+    TASK_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "Task Status not founded"),
+
+    // FILE
+    INVALID_FILE_TYPE(HttpStatus.FORBIDDEN, "Invalid file type"),
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not founded"),;
+
     // NOTIFICATION
 
 
@@ -40,3 +55,4 @@ public enum ErrorCode {
     private HttpStatus status;
     private String message;
 }
+

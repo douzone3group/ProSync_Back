@@ -1,6 +1,7 @@
 package com.douzone.prosync.project.repository;
 
-import com.douzone.prosync.project.dto.ProjectRequest;
+import com.douzone.prosync.project.dto.request.ProjectPatchDto;
+import com.douzone.prosync.project.dto.request.ProjectPostDto;
 import com.douzone.prosync.project.entity.Project;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ public class ProjectRepository {
     private final ProjectMybatisMapper projectMybatisMapper;
 
     // 프로젝트 생성
-    public void createProject(ProjectRequest.PostDto dto) {
+    public void createProject(ProjectPostDto dto) {
 
         projectMybatisMapper.createProject(dto);
 
@@ -28,14 +29,15 @@ public class ProjectRepository {
     public Optional<Project> findById(Integer projectId){
         return projectMybatisMapper.findProjectById(projectId);
     }
+
    // 프로젝트 목록 조회
-    public List<Project> findAll(ProjectRequest.PostDto dto) {
+    public List<Project> findAll(ProjectPostDto dto) {
         return projectMybatisMapper.findAllProjects();
     }
 
 
     // 프로젝트 수정
-    public void updateProject(ProjectRequest.PatchDto dto) {
+    public void updateProject(ProjectPatchDto dto) {
         projectMybatisMapper.updateProject(dto);
 
     }
