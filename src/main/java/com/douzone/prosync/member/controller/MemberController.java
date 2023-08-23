@@ -9,12 +9,13 @@ import com.douzone.prosync.member.dto.request.*;
 import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.service.MemberService;
-import com.douzone.prosync.redis.TokenStorageService;
+import com.douzone.prosync.redis.RedisService;
 import com.douzone.prosync.security.jwt.HmacAndBase64;
 import com.douzone.prosync.security.jwt.RefreshTokenProvider;
 import com.douzone.prosync.security.jwt.TokenProvider;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,11 +50,14 @@ public class MemberController {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    private final TokenStorageService redisService;
+    private final RedisService redisService;
 
     private final HmacAndBase64 hmacAndBase64;
 
     private final MailService mailService;
+
+    @Value("${jwt.refresh-token-validity-in-seconds}")
+    private long refreshTokenValidityInSeconds;
 
     /**
      * 사용자의 이메일을 받아 인증번호를 전송하고 Redis에 인증번호를 저장하는 로직
@@ -69,7 +73,7 @@ public class MemberController {
         String number = mailService.sendMail(mail.getEmail());
 
         // Redis에 key값은 "email: 사용자 email" 형태로 인증번호 저장
-        redisService.setEmailCertificationNumber("email:"+mail.getEmail(),number);
+        redisService.set("email:" + mail.getEmail(), number, EMAIL_CERTIFICATION_NUMBER_DURATION);
 
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -80,13 +84,13 @@ public class MemberController {
     @ApiOperation(value = "이메일 인증", notes = "사용자에게 이메일과 인증번호를 받아 Redis에 존재하는가 확인, 성공 시 상태코드 200")
     @PostMapping("/verify_code")
     public ResponseEntity verifyCertificationNumber(@Valid @RequestBody CertificationCodeDto code) {
-        String number = redisService.getEmailCertificationNumber("email:"+code.getEmail());
+        String number = redisService.get("email:" + code.getEmail());
 
         if (number==null || !number.equals(code.getCertificationNumber())) {
             throw new ApplicationException(ErrorCode.CERTIFICATION_NUMBER_MISMATCH);
         }
         System.out.println("인증번호 통과, 인증번호를 지웁니다.");
-        redisService.removeEmailCertificationNumber("email:"+code.getEmail());
+        redisService.remove("email:" + code.getEmail());
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -150,7 +154,7 @@ public class MemberController {
 
         try {
         // Refresh 토큰을 Redis에서 제거하는 작업
-        redisService.removeRefreshToken("refresh:"+hmacAndBase64.crypt(request.getRemoteAddr(),"HmacSHA512")+"_"+principal.getName());
+            redisService.remove("refresh:" + hmacAndBase64.crypt(request.getRemoteAddr(), "HmacSHA512") + "_" + principal.getName());
         } catch (UnsupportedEncodingException|NoSuchAlgorithmException|InvalidKeyException e) {
             throw new ApplicationException(ErrorCode.CRYPT_ERROR);
         }
@@ -200,8 +204,8 @@ public class MemberController {
 
         try {
             // "refresh:암호화된IP_pk"을 key값으로 refreshToken을 Redis에 저장한다.
-            redisService.setRefreshToken("refresh:"+hmacAndBase64.crypt(ipAddress,"HmacSHA512")
-                    +"_"+authentication.getName(),refresh);
+            redisService.set("refresh:" + hmacAndBase64.crypt(ipAddress, "HmacSHA512")
+                    + "_" + authentication.getName(), refresh, refreshTokenValidityInSeconds);
         } catch (UnsupportedEncodingException|NoSuchAlgorithmException|InvalidKeyException e) {
             throw new ApplicationException(ErrorCode.CRYPT_ERROR);
         }
@@ -220,7 +224,7 @@ public class MemberController {
 
         try {
         // Refresh 토큰을 Redis에서 제거하는 작업
-        redisService.removeRefreshToken("refresh:"+hmacAndBase64.crypt(request.getRemoteAddr(),"HmacSHA512")+"_"+principal.getName());
+            redisService.remove("refresh:" + hmacAndBase64.crypt(request.getRemoteAddr(), "HmacSHA512") + "_" + principal.getName());
         } catch (UnsupportedEncodingException|NoSuchAlgorithmException|InvalidKeyException e) {
             throw new ApplicationException(ErrorCode.CRYPT_ERROR);
         }
