@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @ApiModel("[RESPONSE] COMMENT LIST - GET")
+
 public class GetCommentsResponse {
     @ApiModelProperty(value = "댓글 식별자", example = "1")
     private Integer commentId;
