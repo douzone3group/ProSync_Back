@@ -8,18 +8,13 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProjectService {
 
-     Integer save(ProjectPostDto dto);
+    public Integer save(ProjectPostDto dto);
 
-     void update(ProjectPatchDto dto);
+    public void update(ProjectPatchDto dto);
 
-     void delete(Integer projectId);
+    public void delete(Integer projectId);
 
-     Project findProject(Integer projectId);
+    public Project findProject(Integer projectId);
 
-     Page<Project> findProjectList(Pageable pageable);
-
-     String createInviteLink(Integer projectId);
-
-    // 프로젝트_회원 테이블에 추가
-     void createProjectMember(Long memberId, String inviteCode);
+    public Page<Project> findProjectList(Pageable pageable);
 }
