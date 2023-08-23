@@ -56,4 +56,19 @@ public class ProjectServiceImpl implements ProjectService{
     public Page<Project> findProjectList(Pageable pageable) {
         return projectJpaRepository.findAllByIsDeletedNull(pageable);
     }
+
+    // 프로젝트 종료 임박 순 정렬
+    public Page<Project> findProjectsSortedByEndDateAsc(Pageable pageable) {
+        return projectJpaRepository.findAllByOrderByEndDateAsc(pageable);
+    }
+
+    // 프로젝트 종료 임박 순 반대 정렬
+    public Page<Project> findProjectsSortedByEndDateDesc(Pageable pageable) {
+        return projectJpaRepository.findAllByOrderByEndDateDesc(pageable);
+    }
+
+    //프로젝트 이름 검색 필터
+    public Page<Project> findProjectsByName(String name, Pageable pageable) {
+        return projectJpaRepository.findByNameContaining(name, pageable);
+    }
 }
