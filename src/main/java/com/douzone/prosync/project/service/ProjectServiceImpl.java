@@ -19,11 +19,13 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
 
+import static com.douzone.prosync.constant.ConstantPool.PROJECT_INVITE_LINK_DURATION;
+
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ProjectServiceImpl implements ProjectService{
+public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepository;
     private final ProjectJpaRepository projectJpaRepository;
@@ -86,14 +88,14 @@ public class ProjectServiceImpl implements ProjectService{
         Random random = new Random();
         String inviteCode = "";
 
-        for(int i=0; i<3; i++) {
+        for (int i = 0; i < 3; i++) {
             int idx = random.nextInt(25) + 65;
             inviteCode += (char) idx;
         }
         inviteCode += random.nextInt(9999) + 1000;
 
-        redisService.setInviteCodeForProject("invite_project:" + projectId, inviteCode);
-        redisService.setInviteCodeForProject("invite:" + inviteCode, projectId.toString());
+        redisService.set("invite_project:" + projectId, inviteCode, PROJECT_INVITE_LINK_DURATION);
+        redisService.set("invite:" + inviteCode, projectId.toString(), PROJECT_INVITE_LINK_DURATION);
         return inviteCode;
     }
 }
