@@ -3,15 +3,13 @@ package com.douzone.prosync.notification.controller;
 import com.douzone.prosync.notification.dto.request.NotificationListRequestDto;
 import com.douzone.prosync.notification.dto.response.NotificationResponse;
 import com.douzone.prosync.notification.mapper.NotificationMapper;
-import com.douzone.prosync.notification.repository.MapEmitterRepository;
-import com.douzone.prosync.notification.service.NotificationService;
+import com.douzone.prosync.notification.service.WebNotificationServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.security.Principal;
 
 import static com.douzone.prosync.constant.ConstantPool.*;
 
@@ -20,18 +18,22 @@ import static com.douzone.prosync.constant.ConstantPool.*;
 @RequestMapping("/api/v1")
 public class NotificationController {
 
-    private final NotificationService notificationService;
+    private final WebNotificationServiceImpl notificationService;
     private final NotificationMapper mapper;
-    private final MapEmitterRepository mapEmitterRepository;
 
+
+
+    /**
+     * 구독하기 (+ 안읽은 메시지 갯수 알림 보내주기)
+     */
+    // TODO: 토큰값을 이용하여 memberId를 사용하도록 수정
     @GetMapping(value ="/subscribe/{id}", produces = "text/event-stream")
-    public SseEmitter subscribe(@PathVariable("id") Long memberId){
-        //Long memberId = Long.parseLong(principal.getName());
-        System.out.println("씨발");
+    public SseEmitter subscribe(@PathVariable("id") String id){
+        Long memberId = Long.parseLong(id);
         return notificationService.subscribe(memberId);
     }
 
-    @GetMapping("/test")
+    @GetMapping("/notificationList")
     public PageInfo<NotificationResponse> response(@RequestBody NotificationListRequestDto requestDto){
 
         if(requestDto.getPageNum() == null){
@@ -45,9 +47,5 @@ public class NotificationController {
         return new PageInfo<>(mapper.getNotificationList(requestDto.of()), PAGE_NAVI);
     }
 
-    @GetMapping("/test2")
-    public String test1(@RequestParam("memberId") String memberId){
-        notificationService.sendToClient(mapEmitterRepository.findById(Long.valueOf(memberId)), new NotiDto("hi","https://www.youtube.com"));
-        return "hi";
-    }
+
 }

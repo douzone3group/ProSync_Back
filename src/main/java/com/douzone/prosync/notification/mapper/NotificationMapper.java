@@ -8,7 +8,6 @@ import com.douzone.prosync.notification.entity.NotificationTarget;
 import com.douzone.prosync.searchcondition.NotificationSearchCondition;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,9 +18,13 @@ public interface NotificationMapper {
 
     void saveNotificationTarget(NotificationTargetDto notificationDto);
 
+    void saveNotificationTargetList(List<NotificationTargetDto> dtoList);
+
     void updateIsDeleted(@Param("isDeleted") boolean isDeleted, @Param("targetId") Long targetId);
     void updateIsRead(@Param("isRead") boolean isRead,@Param("targetId") Long targetId);
-    void updateIsTransmitted(@Param("isTransmitted") boolean isTransmitted,@Param("targetId") Long memberId);
+    void updateIsTransmittedbyTagetId(@Param("isTransmitted") boolean isTransmitted,@Param("targetId") Long targetId);
+
+    void updateIsTransmittedbyMemberId(@Param("isTransmitted") boolean isTransmitted,@Param("memberId") Long memberId);
 
     void update(NotificationDto notificationDto);
 
@@ -29,4 +32,8 @@ public interface NotificationMapper {
 
     List<NotificationResponse> getNotificationList(@Param("condition") NotificationSearchCondition condition);
     Optional<NotificationTarget> findTargetById(Long targetId);
+
+    Integer getNotificationListCount(Long memberId);
+
+    List<NotificationTarget> getNotificationTagetListByNotificationId(Long notificationId);
 }

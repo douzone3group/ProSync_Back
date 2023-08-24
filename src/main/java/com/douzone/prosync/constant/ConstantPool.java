@@ -9,8 +9,6 @@ public class ConstantPool {
     public static final String REFRESH_HEADER = "Refresh";
 
 
-
-
     // EMAIL CERTIFICATIONNUMBER DURATION
     public static final long EMAIL_CERTIFICATIONNUMBER_DURATION = 600L;
 
@@ -23,4 +21,11 @@ public class ConstantPool {
 
     public static final int DEFAULT_PAGE_SIZE = 10;
     public static final int DEFAULT_PAGE_NUM = 1;
+
+
+    // 프론트 서버 주소
+
+    public static final String FRONT_SERVER_HOST = "http://localhost:3000/";
+
+
 }

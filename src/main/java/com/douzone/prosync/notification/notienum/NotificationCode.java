@@ -1,7 +1,7 @@
 package com.douzone.prosync.notification.notienum;
 
 public enum NotificationCode {
-    TASKASSIGNMENT("업무"), PULL("풀리퀘스트"), COMMIT("커밋");
+    TASK("업무"), PROJECT("프로젝트"), COMMENT("댓글");
 
 
     final private String code;
@@ -10,7 +10,7 @@ public enum NotificationCode {
         this.code = code;
     }
 
-    String getCode() {
+    public String getCode() {
         return code;
     }
 }

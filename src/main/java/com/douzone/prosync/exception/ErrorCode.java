@@ -41,9 +41,10 @@ public enum ErrorCode {
 
     // FILE
     INVALID_FILE_TYPE(HttpStatus.FORBIDDEN, "Invalid file type"),
-    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not founded"),;
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not founded"),
 
     // NOTIFICATION
+    CONNECTION_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "Sse Connection is failed");
 
 
     // LOG

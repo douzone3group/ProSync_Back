@@ -1,5 +1,6 @@
 package com.douzone.prosync.notification.dto;
 
+import com.douzone.prosync.notification.notienum.NotificationPlatform;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,6 +17,5 @@ public class NotificationTargetDto {
     private boolean isTransmitted;
 
 
-    // TODO:플랫폼 enum 설정하기
-    private String platform;
+    private NotificationPlatform platform;
 }

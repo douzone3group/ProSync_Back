@@ -3,6 +3,18 @@ package com.douzone.prosync.task.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+import com.douzone.prosync.member.entity.Member;
+import com.douzone.prosync.member.repository.MemberRepository;
+import com.douzone.prosync.notification.dto.NotificationDto;
+import com.douzone.prosync.notification.dto.NotificationTargetDto;
+import com.douzone.prosync.notification.dto.response.NotificationData;
+import com.douzone.prosync.notification.dto.response.NotificationResponse;
+import com.douzone.prosync.notification.entity.NotificationTarget;
+import com.douzone.prosync.notification.notienum.NotificationCode;
+import com.douzone.prosync.notification.notienum.NotificationPlatform;
+import com.douzone.prosync.notification.repository.EmitterRepository;
+import com.douzone.prosync.notification.repository.NotificationRepository;
+import com.douzone.prosync.notification.service.NotificationService;
 import com.douzone.prosync.project.entity.Project;
 import com.douzone.prosync.project.service.ProjectService;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
@@ -21,9 +33,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.douzone.prosync.constant.ConstantPool.FRONT_SERVER_HOST;
 
 @Service
 @Transactional
@@ -34,6 +49,13 @@ public class TaskServiceImpl implements TaskService {
     private final TaskJpaRepository taskJpaRepository;
     private final TaskStatusService taskStatusService;
     private final ProjectService projectService;
+
+    private final MemberRepository memberRepository;
+
+    private final NotificationRepository notificationRepository;
+
+    private final NotificationService notificationService;
+
 
     @Override
     public Long createTask(TaskPostDto dto, Integer projectId, Long memberId) {
@@ -111,8 +133,61 @@ public class TaskServiceImpl implements TaskService {
     public void createTaskMember(Long taskId, List<Long> memberIds, Long memberId) {
         // TODO : 프로젝트 회원 + writer 인지 검증
         // TODO : MEMBER_TASK 해당되는 값이 없을 경우 처리
-        verifyExistTask(taskId);
+
+        GetTaskResponse task = taskMapper.findById(taskId).orElse(null);
+        if (task == null) {
+            throw new ApplicationException(ErrorCode.TASK_NOT_FOUND);
+        }
+
         taskMapper.saveTaskMember(taskId, memberIds);
+
+        Member fromMember = memberRepository.findById(memberId).orElse(null);
+
+        // DB에서 JOIN으로 들고오지 않고 데이터를 그대로 사용하기 위해 따로 선언했습니다.
+        String content = fromMember.getEmail() + "님이 생성한 " + task.getTitle() + " 업무에 할당되셨습니다.";
+        LocalDateTime date = LocalDateTime.now();
+        String url = FRONT_SERVER_HOST + "/tasks/" + taskId;
+
+        // 알림을 저장하고 pk 값 불러오기
+        Long notificationId = notificationRepository.saveNotification(NotificationDto.builder()
+                .code(NotificationCode.TASK)
+                .fromMemberId(memberId)
+                .createdAt(date)
+                .content(content)
+                .url(url).build());
+
+
+        // 알림 타겟을 memberIds의 memberId와 알림 id를 이용하여 복수 저장하기
+        List<NotificationTargetDto> dtoList = new ArrayList<>();
+
+         memberIds.stream().map((id) ->  dtoList.add(
+            NotificationTargetDto.builder()
+                    .notificationId(notificationId)
+                    .memberId(memberId)
+                    .isRead(false)
+                    .isDeleted(false)
+                    .isTransmitted(false)
+                    .platform(NotificationPlatform.WEB).build())
+        );
+
+         notificationRepository.saveNotificationTargetList(dtoList);
+
+        List<NotificationTarget> notificationTargetList = notificationRepository.getNotificationTagetListByNotificationId(notificationId);
+
+        notificationTargetList.stream().forEach((target) -> {
+            NotificationResponse notification = new NotificationResponse(target.getNotificationId(),
+                    target.isRead(), content, NotificationCode.TASK, date, url);
+
+            try {
+                notificationService.send((target.getMemberId()),new NotificationData(notification) );
+                notificationRepository.updateIsTransmittedbyTagetId(true,target.getNotificationTargetId());
+            } catch(RuntimeException e) {
+                throw new ApplicationException(ErrorCode.CONNECTION_ERROR);
+            }
+         });
+
+
+
     }
 
     /**

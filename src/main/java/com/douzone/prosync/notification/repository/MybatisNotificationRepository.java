@@ -20,13 +20,19 @@ public class MybatisNotificationRepository implements NotificationRepository{
 
     private final NotificationMapper notificationMapper;
     @Override
-    public void saveNotification(NotificationDto notificationDto) {
+    public Long saveNotification(NotificationDto notificationDto) {
         notificationMapper.saveNotification(notificationDto);
+        return notificationDto.getNotificationId();
     }
 
     @Override
     public void saveNotificationTarget(NotificationTargetDto notificationDto) {
+        notificationMapper.saveNotificationTarget(notificationDto);
+    }
 
+    @Override
+    public void saveNotificationTargetList(List<NotificationTargetDto> dtoList) {
+         notificationMapper.saveNotificationTargetList(dtoList);
     }
 
     @Override
@@ -40,8 +46,13 @@ public class MybatisNotificationRepository implements NotificationRepository{
     }
 
     @Override
-    public void updateIsTransmitted(boolean isTransmitted, Long memberId) {
-        notificationMapper.updateIsTransmitted(isTransmitted, memberId);
+    public void updateIsTransmittedbyTagetId(boolean isTransmitted, Long targetId) {
+        notificationMapper.updateIsTransmittedbyTagetId(isTransmitted, targetId);
+    }
+
+    @Override
+    public void updateIsTransmittedbyMemberId(boolean isTransmitted, Long memberId) {
+        notificationMapper.updateIsTransmittedbyMemberId(isTransmitted, memberId);
     }
 
     @Override
@@ -60,7 +71,17 @@ public class MybatisNotificationRepository implements NotificationRepository{
     }
 
     @Override
+    public List<NotificationTarget> getNotificationTagetListByNotificationId(Long notificationId) {
+        return notificationMapper.getNotificationTagetListByNotificationId(notificationId);
+    }
+
+    @Override
     public Optional<NotificationTarget> findTargetById() {
         return Optional.empty();
+    }
+
+    @Override
+    public Integer getNotificationListCount(Long memberId) {
+        return notificationMapper.getNotificationListCount(memberId);
     }
 }

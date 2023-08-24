@@ -18,16 +18,23 @@ import java.util.Optional;
 
 
 public interface NotificationRepository {
-    void saveNotification(NotificationDto notificationDto);
+    Long saveNotification(NotificationDto notificationDto);
 
     void saveNotificationTarget(NotificationTargetDto notificationDto);
+
+    void saveNotificationTargetList(List<NotificationTargetDto> dtoList);
     void updateIsDeleted(boolean isDeleted);
     void updateIsRead(boolean isRead);
-    void updateIsTransmitted(boolean isTransmitted, Long memberId);
+    void updateIsTransmittedbyTagetId(boolean isTransmitted, Long targetId);
+    void updateIsTransmittedbyMemberId(boolean isTransmitted, Long memberId);
 
     void update(NotificationDto notificationDto);
 
     Optional<Notification> findById();
     List<NotificationResponse> getNotificationList(NotificationSearchCondition condition);
+
+    List<NotificationTarget> getNotificationTagetListByNotificationId(Long notificationId);
     Optional<NotificationTarget> findTargetById();
+
+    Integer getNotificationListCount(Long memberId);
 }

@@ -11,6 +11,14 @@
         values (#{notificationId}, #{memberId},#{platform},#{isRead},#{isDeleted},#{updateUserId},#{isTransmitted});
     </insert>
 
+    <insert id="saveNotificationTargetList" useGeneratedKeys="true" keyProperty="notificationId" parameterType="list">
+        INSERT INTO notification_target (notification_id, member_id,platform, is_read, is_deleted, update_user_no, is_transmitted)
+        VALUES
+        <foreach collection="dtoList" item="dto" separator=",">
+            (#{dto.noticationId}, #{dto.memberId}, #{dto.platform}, #{dto.isRead}, #{dto.isDeleted}, #{dto.updateUserId}, #{dto.isTransmitted})
+        </foreach>
+    </insert>
+
     <update id="updateIsDeleted">
         update notification_target
         set is_deleted =#{isDeleted}
@@ -23,11 +31,33 @@
         where notification_target_id = #{targetId}
     </update>
 
-    <update id="updateIsTransmitted">
+    <update id="updateIsTransmittedbyTagetId">
         update notification_target
         set is_transmitted =#{isTransmitted}
         where notification_target_id = #{targetId}
+        <if test="isTransmitted == true">
+            And is_transmitted =false
+        </if>
+        <if test="isTransmitted == false">
+            And is_transmitted =true
+        </if>
     </update>
+
+
+
+    <update id="updateIsTransmittedbyMemberId">
+        update notification_target
+        set is_transmitted =#{isTransmitted}
+        where member_id = #{memberId}
+        <if test="isTransmitted == true">
+            And is_transmitted =false
+        </if>
+        <if test="isTransmitted == false">
+            And is_transmitted =true
+        </if>
+    </update>
+
+
     <update id="update">
         update notification
         set noti_code =#{notiCode},
@@ -50,6 +80,13 @@
         where notification_target_id = #{targetId}
     </select>
 
+    <select id="getNotificationTagetListByNotificationId" resultType="NotificationTarget">
+        select notification_target_id, notification_id, member_id, platform, is_read, is_deleted, update_user_no, is_transmitted
+        from notification_target
+        where notification_id = #{notificationId}
+    </select>
+
+
     <select id="getNotificationList" resultType="NotificationResponse">
         select t.notification_target_id,  t.is_read, n.content, n.noti_code, n.insert_timestamp, n.url
         from notification_target t
@@ -70,4 +107,9 @@
             </if>
         </where>
     </select>
+
+    <select id="getNotificationListCount" resultType="int">
+        select count(*) from notification_target where member_id = #{memberId} and is_transmitted = false;
+    </select>
+
 </mapper>

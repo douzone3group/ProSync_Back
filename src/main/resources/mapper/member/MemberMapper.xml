@@ -41,4 +41,14 @@
         from member
         where email = #{email} and is_deleted = false
     </select>
+
+    <select id="getMeberList" resultType="Member">
+        select * from member
+        where member_id in
+        <foreach collection="memberIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+
 </mapper>
