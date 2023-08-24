@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -75,6 +76,7 @@ public class MemberController {
             @ApiResponse(code = 500, message = "server error")
     })
     @PostMapping("/members")
+    @Transactional
     public ResponseEntity<MemberSimpleResponseDto> signUp(@Valid @RequestBody MemberPostDto postDto) {
         // 중복 검사
         Member member = memberService.signup(postDto);
@@ -93,6 +95,7 @@ public class MemberController {
             @ApiResponse(code = 500, message = "server error")
     })
     @PatchMapping("/members/profile")
+    @Transactional
     public ResponseEntity<MemberSimpleResponseDto> updateMemberProfile(@ApiIgnore Principal principal,
                                                                        @Valid @RequestBody MemberPatchProfileDto dto) {
         Long memberId = Long.parseLong(principal.getName());
@@ -105,6 +108,7 @@ public class MemberController {
      */
     @ApiOperation(value = "비밀번호 수정", notes = "비밀번호 변경, 성공 시 상태코드 200")
     @PatchMapping("/members/password")
+    @Transactional
     public ResponseEntity updateMemberPassword(@ApiIgnore Principal principal,
                                                @Valid @RequestBody MemberPatchPasswordDto dto) {
         Long memberId = Long.parseLong(principal.getName());
@@ -117,6 +121,7 @@ public class MemberController {
      */
     @ApiOperation(value = "회원 탈퇴", notes = "회원 탈퇴 Principal 객체에서 pk 가져와서 service단에서 memberId를 조회해 탈퇴 처리함")
     @DeleteMapping("/members")
+    @Transactional
     public ResponseEntity updateMemberDelete(@ApiIgnore Principal principal,
                                              HttpServletRequest request) {
         Long memberId = Long.parseLong(principal.getName());
@@ -132,6 +137,7 @@ public class MemberController {
      */
     @ApiOperation(value = "회원정보 조회", notes = "Principal 객체에서 memberId를 조회해서 회원 정보를 가져옴. 성공 시 상태코드 200")
     @GetMapping("/members")
+    @Transactional(readOnly = true)
     public ResponseEntity<MemberGetResponse> getMemberOne(@ApiIgnore Principal principal) {
         Long memberId = Long.parseLong(principal.getName());
         return new ResponseEntity<>(memberService.selectMember(memberId), HttpStatus.OK);
@@ -144,6 +150,7 @@ public class MemberController {
      */
     @ApiOperation(value = "로그인", notes = "로그인, 성공 시 토큰과 상태코드 200")
     @PostMapping("/login")
+    @Transactional
     public ResponseEntity login(@Valid @RequestBody MemberLoginDto loginDto, HttpServletRequest request) {
 
         HttpHeaders httpHeaders = new HttpHeaders();

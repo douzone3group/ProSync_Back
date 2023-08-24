@@ -3,27 +3,22 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.notification.mapper.NotificationMapper">
     <insert id="saveNotification" useGeneratedKeys="true" keyProperty="notificationId">
-        insert into notification (noti_code, from_member_id, insert_timestamp, content, url)
+        insert into notification (noti_code, from_member_id, created_at, content, url)
         values (#{code}, #{fromMemberId},#{createdAt},#{content},#{url});
     </insert>
     <insert id="saveNotificationTarget" useGeneratedKeys="true" keyProperty="notificationTargetId">
-        insert into notification_target (notification_id, member_id,platform, is_read, is_deleted, update_user_no, is_transmitted)
-        values (#{notificationId}, #{memberId},#{platform},#{isRead},#{isDeleted},#{updateUserId},#{isTransmitted});
+        insert into notification_target (notification_id, member_id,platform, is_read, update_user_no, is_transmitted, created_at)
+        values (#{notificationId}, #{memberId},#{platform},#{isRead},#{updateUserId},#{isTransmitted},#{createdAt});
     </insert>
 
     <insert id="saveNotificationTargetList" useGeneratedKeys="true" keyProperty="notificationId" parameterType="list">
-        INSERT INTO notification_target (notification_id, member_id,platform, is_read, is_deleted, update_user_no, is_transmitted)
+        INSERT INTO notification_target (notification_id, member_id,platform, is_read, update_user_no, is_transmitted,created_at)
         VALUES
         <foreach collection="dtoList" item="dto" separator=",">
-            (#{dto.noticationId}, #{dto.memberId}, #{dto.platform}, #{dto.isRead}, #{dto.isDeleted}, #{dto.updateUserId}, #{dto.isTransmitted})
+            (#{dto.noticationId}, #{dto.memberId}, #{dto.platform}, #{dto.isRead}, #{dto.updateUserId}, #{dto.isTransmitted}, #{dto.createdAt})
         </foreach>
     </insert>
 
-    <update id="updateIsDeleted">
-        update notification_target
-        set is_deleted =#{isDeleted}
-        where notification_target_id = #{targetId}
-    </update>
 
     <update id="updateIsRead">
         update notification_target
@@ -62,33 +57,33 @@
         update notification
         set noti_code =#{notiCode},
             from_member_id = #{fromMemberId},
-            insert_timestamp = #{insertTime},
+            created_at = #{createdAt},
             content = #{content},
             url = #{url}
         where notification_id = #{notificationId}
     </update>
 
     <select id="findById" resultType="Notification">
-        select notification_id, noti_code, from_member_id, insert_timestamp, content, url
+        select notification_id, noti_code, from_member_id, created_at, content, url
         from notification
         where notification_id = #{notificationId}
     </select>
 
     <select id="findTargetById" resultType="NotificationTarget">
-        select notification_target_id, notification_id, member_id, platform, is_read, is_deleted, update_user_no, is_transmitted
+        select notification_target_id, notification_id, member_id, platform, is_read, update_user_no, is_transmitted, created_at
         from notification_target
         where notification_target_id = #{targetId}
     </select>
 
     <select id="getNotificationTagetListByNotificationId" resultType="NotificationTarget">
-        select notification_target_id, notification_id, member_id, platform, is_read, is_deleted, update_user_no, is_transmitted
+        select notification_target_id, notification_id, member_id, platform, is_read, update_user_no, is_transmitted, created_at
         from notification_target
         where notification_id = #{notificationId}
     </select>
 
 
     <select id="getNotificationList" resultType="NotificationResponse">
-        select t.notification_target_id,  t.is_read, n.content, n.noti_code, n.insert_timestamp, n.url
+        select t.notification_target_id,  t.is_read, n.content, n.noti_code, n.created_at, n.url
         from notification_target t
         LEFT JOIN notification n on t.notification_id = n.notification_id
         <where>
@@ -97,10 +92,10 @@
                 And n.noti_code = #{condition.notiCode}
             </if>
             <if test="condition.startDate != null">
-                AND n.insert_timestamp &gt;= #{condition.startDate}
+                AND n.created_at &gt;= #{condition.startDate}
             </if>
             <if test="condition.endDate != null">
-                AND n.insert_timestamp &lt;= #{condition.endDate}
+                AND n.created_at &lt;= #{condition.endDate}
             </if>
             <if test="condition.content != null and condition.content != '' ">
                 AND n.content like concat('%',#{condition.content},'%')
@@ -112,4 +107,11 @@
         select count(*) from notification_target where member_id = #{memberId} and is_transmitted = false;
     </select>
 
+    <delete id="deleteNotificationTarget">
+        delete from notification_target where notification_target_id = #{targetId}
+    </delete>
+
+    <delete id="deleteNotification">
+        delete from notification where notification_id = #{notificationId}
+    </delete>
 </mapper>

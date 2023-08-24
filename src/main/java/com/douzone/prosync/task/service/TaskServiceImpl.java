@@ -83,6 +83,8 @@ public class TaskServiceImpl implements TaskService {
             verifyTaskStatus(findTask.getProjectId(), dto.getTaskStatusId(), memberId);
         }
 
+
+
         taskMapper.update(dto);
     }
 
@@ -141,6 +143,8 @@ public class TaskServiceImpl implements TaskService {
 
         taskMapper.saveTaskMember(taskId, memberIds);
 
+
+
         Member fromMember = memberRepository.findById(memberId).orElse(null);
 
         // DB에서 JOIN으로 들고오지 않고 데이터를 그대로 사용하기 위해 따로 선언했습니다.
@@ -150,7 +154,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 알림을 저장하고 pk 값 불러오기
         Long notificationId = notificationRepository.saveNotification(NotificationDto.builder()
-                .code(NotificationCode.TASK)
+                .code(NotificationCode.TASK_ASSIGNMENT)
                 .fromMemberId(memberId)
                 .createdAt(date)
                 .content(content)
@@ -165,9 +169,9 @@ public class TaskServiceImpl implements TaskService {
                     .notificationId(notificationId)
                     .memberId(memberId)
                     .isRead(false)
-                    .isDeleted(false)
                     .isTransmitted(false)
-                    .platform(NotificationPlatform.WEB).build())
+                    .platform(NotificationPlatform.WEB)
+                    .createdAt(LocalDateTime.now()).build())
         );
 
          notificationRepository.saveNotificationTargetList(dtoList);
@@ -176,7 +180,7 @@ public class TaskServiceImpl implements TaskService {
 
         notificationTargetList.stream().forEach((target) -> {
             NotificationResponse notification = new NotificationResponse(target.getNotificationId(),
-                    target.isRead(), content, NotificationCode.TASK, date, url);
+                    target.isRead(), content, NotificationCode.TASK_ASSIGNMENT, date, url);
 
             try {
                 notificationService.send((target.getMemberId()),new NotificationData(notification) );
@@ -197,7 +201,11 @@ public class TaskServiceImpl implements TaskService {
     public void deleteTaskMember(Long taskId, List<Long> memberIds, Long memberId) {
         // TODO : 프로젝트 회원 + writer 인지 검증
         // TODO : MEMBER_TASK 해당되는 값이 없을 경우 처리
-        verifyExistTask(taskId);
+        GetTaskResponse task = taskMapper.findById(taskId).orElse(null);
+        if (task == null) {
+            throw new ApplicationException(ErrorCode.TASK_NOT_FOUND);
+        }
+
         taskMapper.deleteTaskMember(taskId, memberIds);
     }
 

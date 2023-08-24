@@ -4,6 +4,8 @@ import com.douzone.prosync.notification.notienum.NotificationPlatform;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 public class NotificationTargetDto {
@@ -12,9 +14,9 @@ public class NotificationTargetDto {
     private Long notificationId;
     private Long memberId;
     private boolean isRead;
-    private boolean isDeleted;
     private Long updateUserId;
     private boolean isTransmitted;
+    private LocalDateTime createdAt;
 
 
     private NotificationPlatform platform;

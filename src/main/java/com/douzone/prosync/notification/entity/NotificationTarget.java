@@ -3,6 +3,7 @@ package com.douzone.prosync.notification.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -13,7 +14,7 @@ public class NotificationTarget {
     private Long memberId;
     private String platform;
     private boolean isRead;
-    private boolean isDeleted;
     private Long updateUserNo;
     private boolean isTransmit;
+    private LocalDateTime createdAt;
 }

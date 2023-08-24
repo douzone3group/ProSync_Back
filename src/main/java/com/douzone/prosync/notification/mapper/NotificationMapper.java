@@ -20,13 +20,16 @@ public interface NotificationMapper {
 
     void saveNotificationTargetList(List<NotificationTargetDto> dtoList);
 
-    void updateIsDeleted(@Param("isDeleted") boolean isDeleted, @Param("targetId") Long targetId);
     void updateIsRead(@Param("isRead") boolean isRead,@Param("targetId") Long targetId);
     void updateIsTransmittedbyTagetId(@Param("isTransmitted") boolean isTransmitted,@Param("targetId") Long targetId);
 
     void updateIsTransmittedbyMemberId(@Param("isTransmitted") boolean isTransmitted,@Param("memberId") Long memberId);
 
     void update(NotificationDto notificationDto);
+
+    void deleteNotificationTarget(Long targetId);
+
+    void deleteNotification(Long notificationId);
 
     Optional<Notification> findById(Long notificationId);
 

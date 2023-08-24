@@ -23,17 +23,22 @@ public interface NotificationRepository {
     void saveNotificationTarget(NotificationTargetDto notificationDto);
 
     void saveNotificationTargetList(List<NotificationTargetDto> dtoList);
-    void updateIsDeleted(boolean isDeleted);
-    void updateIsRead(boolean isRead);
+
+    void updateIsRead(boolean isRead, Long targetId);
     void updateIsTransmittedbyTagetId(boolean isTransmitted, Long targetId);
     void updateIsTransmittedbyMemberId(boolean isTransmitted, Long memberId);
 
     void update(NotificationDto notificationDto);
 
+    void deleteNotificationTarget(Long targetId);
+
+    void deleteNotification(Long notificationId);
+
     Optional<Notification> findById();
     List<NotificationResponse> getNotificationList(NotificationSearchCondition condition);
 
     List<NotificationTarget> getNotificationTagetListByNotificationId(Long notificationId);
+
     Optional<NotificationTarget> findTargetById();
 
     Integer getNotificationListCount(Long memberId);

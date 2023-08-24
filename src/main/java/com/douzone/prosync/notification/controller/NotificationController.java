@@ -7,6 +7,7 @@ import com.douzone.prosync.notification.service.WebNotificationServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -28,12 +29,14 @@ public class NotificationController {
      */
     // TODO: 토큰값을 이용하여 memberId를 사용하도록 수정
     @GetMapping(value ="/subscribe/{id}", produces = "text/event-stream")
+    @Transactional
     public SseEmitter subscribe(@PathVariable("id") String id){
         Long memberId = Long.parseLong(id);
         return notificationService.subscribe(memberId);
     }
 
     @GetMapping("/notificationList")
+    @Transactional(readOnly = true)
     public PageInfo<NotificationResponse> response(@RequestBody NotificationListRequestDto requestDto){
 
         if(requestDto.getPageNum() == null){
