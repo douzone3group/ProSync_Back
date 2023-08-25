@@ -3,6 +3,7 @@ package com.douzone.prosync.task.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.project.entity.Project;
 import com.douzone.prosync.project.service.ProjectService;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
@@ -83,7 +84,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Transactional(readOnly = true)
     @Override
-    public PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Integer projectId, Pageable pageable, String search, boolean isActive, Long memberId) {
+    public PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Integer projectId, Pageable pageable, String search, boolean isActive, String view, Long memberId) {
         pageable = PageRequest.of(pageable.getPageNumber() == 0 ? 0 : pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
 
         Page<Task> pages = search != null && !search.trim().isEmpty() ?
@@ -101,7 +102,11 @@ public class TaskServiceImpl implements TaskService {
                 .map(task -> GetTasksResponse.of(task))
                 .collect(Collectors.toList());
 
-        return new PageResponseDto(GetTasksResponse.PerTasksResponse.of(res), pages);
+        // 보드뷰일 경우 task_status별 응답 리턴
+        if (view != null && view.equals("board")) {
+            return new PageResponseDto(GetTasksResponse.PerTasksResponse.of(res), pages);
+        }
+        return new PageResponseDto(res, pages);
     }
 
     /**
@@ -124,6 +129,11 @@ public class TaskServiceImpl implements TaskService {
         // TODO : MEMBER_TASK 해당되는 값이 없을 경우 처리
         verifyExistTask(taskId);
         taskMapper.deleteTaskMember(taskId, memberIds);
+    }
+
+    @Override
+    public List<MemberGetResponse.SimpleResponse> findTaskMembers(Long taskId, long memberId) {
+        return taskMapper.findTaskMembers(taskId);
     }
 
     private GetTaskResponse findExistTask(Long taskId) {

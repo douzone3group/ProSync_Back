@@ -9,4 +9,11 @@ public interface ProjectJpaRepository extends JpaRepository<Project, Integer> {
 
     Page<Project> findAllByIsDeletedNull(Pageable pageable);
 
+    Page<Project> findAllByOrderByEndDateAsc(Pageable pageable);
+
+    Page<Project> findAllByOrderByEndDateDesc(Pageable pageable);
+
+    Page<Project> findByNameContaining(String name, Pageable pageable);
+
+
 }

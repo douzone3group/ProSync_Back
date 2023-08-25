@@ -5,6 +5,7 @@ import com.douzone.prosync.comment.dto.request.CommentPostDto;
 import com.douzone.prosync.comment.dto.response.CommentSimpleResponse;
 import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
 import com.douzone.prosync.comment.entity.Comment;
+import com.douzone.prosync.comment.service.CommentService;
 import com.douzone.prosync.comment.service.CommentServiceImpl;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.project.dto.response.ProjectSimpleResponse;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CommentController {
 
-    private final CommentServiceImpl commentService;
+    private final CommentService commentService;
 
     //댓글 생성
     @PostMapping("/tasks/{task-id}/comments")
@@ -63,7 +64,7 @@ public class CommentController {
     }
 
     //     댓글 수정
-    @PatchMapping("/tasks/{task-id}/comments/{comment-id}")
+    @PatchMapping("/comments/{comment-id}")
     @Operation(summary = "댓글 수정", description = "업무에 대한 댓글을 생성합니다.", tags = "comment")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = CommentSimpleResponse.class),
@@ -71,7 +72,6 @@ public class CommentController {
             @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity updateComment(
-            @Parameter(description = "업무 식별자", required = true, example = "1") @PathVariable("task-id") Long taskId,
             @Parameter(description = "댓글 식별자", required = true, example = "1") @PathVariable("comment-id") Integer commentId,
             @RequestBody @Valid CommentPatchDto dto,
             @Parameter(hidden = true) @ApiIgnore Principal principal) {
@@ -99,6 +99,7 @@ public class CommentController {
             @Parameter(description = "업무 식별자",required = true,example = "1") @PathVariable("task-id") Long taskId,
             @Parameter(hidden = true) @ApiIgnore @PageableDefault (size=8, sort="commentId", direction = Sort.Direction.DESC) Pageable pageable){
 
+
         Page<Comment> pages = commentService.findCommentList(taskId,pageable);
         List<Comment> comments = pages.getContent();
         List<GetCommentsResponse> commentsResponses
@@ -111,7 +112,7 @@ public class CommentController {
 
 
     // 댓글 삭제
-    @DeleteMapping("/tasks/{task-id}/comments/{comment-id}")
+    @DeleteMapping("/comments/{comment-id}")
     @ApiOperation(value = "댓글 삭제", notes = "댓글을 소프트 삭제 한다", tags = "comment")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "successfully retrieved", response = CommentSimpleResponse.class),
@@ -119,7 +120,6 @@ public class CommentController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity deleteComment(
-            @Parameter(description = "업무 식별자", required = true, example = "1") @PathVariable("task-id") Long taskId,
             @Parameter(description = "댓글 식별자", required = true, example = "1") @PathVariable("comment-id") Integer commentId,
             @ApiIgnore Principal principal) {
         commentService.delete(commentId);
