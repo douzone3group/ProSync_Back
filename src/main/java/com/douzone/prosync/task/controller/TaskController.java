@@ -2,6 +2,7 @@ package com.douzone.prosync.task.controller;
 
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.common.SingleResponseDto;
+import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.task.dto.request.TaskMemberDto;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
 import com.douzone.prosync.task.dto.request.TaskPostDto;
@@ -30,6 +31,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.security.Principal;
+import java.util.List;
 
 
 //TODO : token 완료 후 인증 로직 추가
@@ -97,7 +99,6 @@ public class TaskController {
 
     /**
      * 프로젝트 업무 리스트 조회
-     *
      * @param projectId : 프로젝트 식별자
      * @param search    : 검색 키워드
      * @param pageable  : page - 조회할 페이지 번호, size - 한페이지에 보여질 요소 개수
@@ -113,14 +114,16 @@ public class TaskController {
             @ApiImplicitParam(name = "page", dataType = "integer", paramType = "query", value = "조회할 페이지 번호", defaultValue = "1", example = "1"),
             @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query", value = "한페이지에 보여질 요소 개수", defaultValue = "10", example = "20"),
             @ApiImplicitParam(name = "search", dataType = "string", paramType = "query", value = "검색키워드", example = "제목/작성자/업무상태"),
-            @ApiImplicitParam(name = "isActive", dataType = "boolean", paramType = "query", value = "체크한 업무 보임 여부", example = "true")
+            @ApiImplicitParam(name = "isActive", dataType = "boolean", paramType = "query", value = "체크한 업무 보임 여부", example = "true"),
+            @ApiImplicitParam(name = "view", dataType = "string", paramType = "query", value = "보드뷰 - 업무상태별 응답 출력", example = "board")
     })
-    public ResponseEntity<PageResponseDto<GetTasksResponse.PerTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Integer projectId,
+    public ResponseEntity<PageResponseDto<GetTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Integer projectId,
                                                                                           @RequestParam(required = false) String search,
                                                                                           @Parameter(hidden = true) @ApiIgnore @PageableDefault(sort = "taskId", direction = Sort.Direction.DESC) Pageable pageable,
                                                                                           @RequestParam(required = false) boolean isActive,
+                                                                                          @RequestParam(required = false) String view,
                                                                                           @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        PageResponseDto pageResponseDto = taskService.findTaskList(projectId, pageable, search, isActive, Long.parseLong(principal.getName()));
+        PageResponseDto pageResponseDto = taskService.findTaskList(projectId, pageable, search, isActive, view, Long.parseLong(principal.getName()));
         return new ResponseEntity<>(pageResponseDto, HttpStatus.OK);
     }
 
@@ -161,5 +164,16 @@ public class TaskController {
                                            @Parameter(hidden = true) @ApiIgnore Principal principal) {
         taskService.deleteTaskMember(taskId, requestBody.getMemberIds(), Long.parseLong(principal.getName()));
         return new ResponseEntity(new TaskSimpleResponse(taskId), HttpStatus.OK);
+    }
+
+    /**
+     * 업무 담당자 목록 조회
+     */
+    @GetMapping("/tasks/{task-id}/members")
+    @Operation(summary = "업무 담당자 목록 조회", description = "특정 업무에 대한 담당자를 전체 조회합니다.", tags = "task")
+    public ResponseEntity<SingleResponseDto<List<MemberGetResponse.SimpleResponse>>> getTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
+                                        @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        List<MemberGetResponse.SimpleResponse> res = taskService.findTaskMembers(taskId, Long.parseLong(principal.getName()));
+        return new ResponseEntity(new SingleResponseDto<>(res), HttpStatus.OK);
     }
 }

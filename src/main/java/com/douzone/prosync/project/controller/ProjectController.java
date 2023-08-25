@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -26,6 +27,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -136,6 +138,28 @@ public class ProjectController {
         projectService.delete(projectId);
         return new ResponseEntity(new ProjectSimpleResponse(projectId), HttpStatus.NO_CONTENT);
     }
+
+    /**
+     * TODO: 내 프로젝트 목록 조회 (페이지네이션으로)
+     */
+    @GetMapping("/MyProject")
+    public ResponseEntity<PageResponseDto<GetProjectsResponse>> getMemberProjects(
+            @RequestParam(defaultValue = "0") int offset,   // 1 ~ size 번째 레코드
+            @RequestParam(defaultValue = "10") int size,
+            @ApiIgnore Principal principal) {
+
+        // 현재 사용자의 프로젝트 목록을 페이징 처리
+        List<Project> projects = projectService.findByMemberIdAndIsDeletedNull(Long.valueOf(principal.getName()), offset, size);
+
+        // 현재 사용자의 전체 프로젝트 개수
+        long totalProjects = projectService.countByMemberId(Long.valueOf(principal.getName()));
+
+        //가져온 프로젝트 목록을 GetProjectsResponse DTO 객체의 목록으로 변환
+        List<GetProjectsResponse> projectsResponse = projects.stream().map(GetProjectsResponse::of).collect(Collectors.toList());
+
+        return new ResponseEntity(new PageResponseDto<>(projectsResponse, totalProjects, offset, size), HttpStatus.OK);
+    }
+
 
 
 }

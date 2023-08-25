@@ -27,6 +27,7 @@ public interface ProjectMybatisMapper {
     // 프로젝트 삭제
     void deleteProject(Integer projectId);
 
-    // TODO : 권한아이디 NULL 값으로 두면 되는지 확인!
-    void saveProjectMember(@Param("memberId") Long memberId, @Param("projectId") Integer projectId);
+    List<Long> findProjectIdsByMemberId(Long memberId);
+    List<Project> findProjectsByProjectIds(@Param("projectIds") List<Long> projectIds, @Param("offset") int offset, @Param("size") int size);
+    int countProjectsByProjectIds(@Param("projectIds") List<Long> projectIds);
 }

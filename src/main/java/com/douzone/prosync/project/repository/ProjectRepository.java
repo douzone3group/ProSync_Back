@@ -47,7 +47,15 @@ public class ProjectRepository {
         projectMybatisMapper.deleteProject(projectId);
     }
 
-    public void saveProjectMember(Long memberId, Integer projectId) {
-        projectMybatisMapper.saveProjectMember(memberId, projectId);
+    public List<Long> findProjectIdsByMemberId(Long memberId) {
+        return projectMybatisMapper.findProjectIdsByMemberId(memberId);
+    }
+
+    public List<Project> findProjectsByProjectIds(List<Long> projectIds, int offset, int size) {
+        return projectMybatisMapper.findProjectsByProjectIds(projectIds, offset, size);
+    }
+
+    public int countProjectsByProjectIds(List<Long> projectIds) {
+        return projectMybatisMapper.countProjectsByProjectIds(projectIds);
     }
 }

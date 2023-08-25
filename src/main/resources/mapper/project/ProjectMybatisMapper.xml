@@ -37,8 +37,32 @@
         set is_deleted=true
         where project_id=#{projectId} and is_deleted is null
     </update>
-    <insert id="saveProjectMember">
-        insert into member_project (member_id, project_id)
-        values (#{memberId}, #{projectId})
-    </insert>
+
+    <!-- 특정 멤버가 속한 프로젝트의 ID 목록 조회 -->
+    <select id="findProjectIdsByMemberId" resultType="java.lang.Long">
+        SELECT project_id
+        FROM member_project
+        WHERE member_id = #{memberId}
+    </select>
+
+    <!-- 특정 프로젝트 ID 목록을 기반으로 프로젝트 조회 (페이징 처리 포함) -->
+    <select id="findProjectsByProjectIds" resultType="com.douzone.prosync.project.entity.Project">
+        SELECT *
+        FROM project
+        WHERE project_id IN
+        <foreach item="item" index="index" collection="projectIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 해당 프로젝트 ID 목록에 대한 총 프로젝트 수 조회 -->
+    <select id="countProjectsByProjectIds" resultType="int">
+        SELECT COUNT(*)
+        FROM project
+        WHERE project_id IN
+        <foreach item="item" index="index" collection="projectIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

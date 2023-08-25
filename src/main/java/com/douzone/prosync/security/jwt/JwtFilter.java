@@ -68,7 +68,7 @@ public class JwtFilter extends GenericFilterBean {
 
                     // Redis에 저장된 refresh 토큰과 비교
                     // Todo : 프론트 서버에서 요청에 대한 응답에 header가 있는지 확인해야한다.
-                    if (redisService.get("refresh:"+
+                    if (redisService.getRefreshToken("refresh:"+
                             hmacAndBase64.crypt(ipAddress,"HmacSHA512")+"_"+authentication.getName()).equals(refreshToken)) {
                         SecurityContextHolder.getContext().setAuthentication((authentication));
                         log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}",
