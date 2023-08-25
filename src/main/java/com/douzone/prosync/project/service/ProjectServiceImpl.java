@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -71,4 +72,17 @@ public class ProjectServiceImpl implements ProjectService{
     public Page<Project> findProjectsByName(String name, Pageable pageable) {
         return projectJpaRepository.findByNameContaining(name, pageable);
     }
+
+
+    public List<Project> findByMemberIdAndIsDeletedNull(Long memberId, int offset, int size) {
+        List<Long> projectIds = projectRepository.findProjectIdsByMemberId(memberId);
+        return projectRepository.findProjectsByProjectIds(projectIds, offset, size);
+    }
+
+    public long countByMemberId(Long memberId) {
+        List<Long> projectIds = projectRepository.findProjectIdsByMemberId(memberId);
+        return projectRepository.countProjectsByProjectIds(projectIds);
+    }
+
+
 }
