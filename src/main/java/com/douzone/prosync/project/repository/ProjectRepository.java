@@ -46,4 +46,16 @@ public class ProjectRepository {
     public void deleteProject(Integer projectId) {
         projectMybatisMapper.deleteProject(projectId);
     }
+
+    public List<Long> findProjectIdsByMemberId(Long memberId) {
+        return projectMybatisMapper.findProjectIdsByMemberId(memberId);
+    }
+
+    public List<Project> findProjectsByProjectIds(List<Long> projectIds, int offset, int size) {
+        return projectMybatisMapper.findProjectsByProjectIds(projectIds, offset, size);
+    }
+
+    public int countProjectsByProjectIds(List<Long> projectIds) {
+        return projectMybatisMapper.countProjectsByProjectIds(projectIds);
+    }
 }

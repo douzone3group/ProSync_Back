@@ -1,5 +1,6 @@
 package com.douzone.prosync.project.dto.response;
 
+import com.douzone.prosync.member.dto.request.MemberSimpleDto;
 import com.douzone.prosync.project.entity.Project;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
