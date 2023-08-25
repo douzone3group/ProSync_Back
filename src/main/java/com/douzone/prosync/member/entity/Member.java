@@ -3,6 +3,10 @@ package com.douzone.prosync.member.entity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.sql.Timestamp;
 
 @Getter
@@ -10,10 +14,13 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
 public class Member {
 
     // PK
     @ApiModelProperty(value = "멤버 pk", example = "1")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
     @ApiModelProperty(value = "이메일", example = "abcd@naver.com")
