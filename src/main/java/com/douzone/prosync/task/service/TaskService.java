@@ -1,6 +1,7 @@
 package com.douzone.prosync.task.service;
 
 import com.douzone.prosync.common.PageResponseDto;
+import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
 import com.douzone.prosync.task.dto.request.TaskPostDto;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
@@ -19,10 +20,11 @@ public interface TaskService {
 
     GetTaskResponse findTask(Long taskId, Long memberId);
 
-    PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Integer projectId, Pageable pageable, String search, boolean isActive, Long memberId);
+    PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Integer projectId, Pageable pageable, String search, boolean isActive, String view, Long memberId);
 
     void createTaskMember(Long taskId, List<Long> memberIds, Long memberId);
 
     void deleteTaskMember(Long taskId, List<Long> memberIds, Long memberId);
 
+    List<MemberGetResponse.SimpleResponse> findTaskMembers(Long taskId, long parseLong);
 }
