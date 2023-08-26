@@ -24,7 +24,7 @@ public class NotificationListRequestDto {
                 .content(content)
                 .startDate(startDate)
                 .endDate(endDate)
-                .notiCode(notiCode)
+                .notiCode(notiCode.getCode())
                 .build();
     }
 }

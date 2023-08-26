@@ -67,8 +67,8 @@ public class MybatisNotificationRepository implements NotificationRepository{
     }
 
     @Override
-    public Optional<Notification> findById() {
-        return Optional.empty();
+    public Notification findById(Long notificationId) {
+        return notificationMapper.findById(notificationId);
     }
 
     @Override
@@ -82,8 +82,8 @@ public class MybatisNotificationRepository implements NotificationRepository{
     }
 
     @Override
-    public Optional<NotificationTarget> findTargetById() {
-        return Optional.empty();
+    public NotificationTarget findTargetById(Long notificationTargetId) {
+        return notificationMapper.findTargetById(notificationTargetId);
     }
 
     @Override

@@ -1,20 +1,13 @@
 package com.douzone.prosync.notification.repository;
 
-import com.douzone.prosync.member.dto.MemberDto;
-import com.douzone.prosync.member.dto.request.MemberPatchProfileDto;
-import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.notification.dto.NotificationDto;
 import com.douzone.prosync.notification.dto.NotificationTargetDto;
 import com.douzone.prosync.notification.dto.response.NotificationResponse;
 import com.douzone.prosync.notification.entity.Notification;
 import com.douzone.prosync.notification.entity.NotificationTarget;
 import com.douzone.prosync.searchcondition.NotificationSearchCondition;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 
 public interface NotificationRepository {
@@ -34,12 +27,12 @@ public interface NotificationRepository {
 
     void deleteNotification(Long notificationId);
 
-    Optional<Notification> findById();
+    Notification findById(Long notificationId);
     List<NotificationResponse> getNotificationList(NotificationSearchCondition condition);
 
     List<NotificationTarget> getNotificationTagetListByNotificationId(Long notificationId);
 
-    Optional<NotificationTarget> findTargetById();
+    NotificationTarget findTargetById(Long notificationTargetId);
 
     Integer getNotificationListCount(Long memberId);
 }

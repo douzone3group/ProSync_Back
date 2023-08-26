@@ -4,19 +4,22 @@ import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
+import com.douzone.prosync.notification.NoEmitterException;
 import com.douzone.prosync.notification.dto.ContentUrlContainer;
 import com.douzone.prosync.notification.dto.NotificationDto;
 import com.douzone.prosync.notification.dto.NotificationTargetDto;
 import com.douzone.prosync.notification.dto.response.NotificationData;
 import com.douzone.prosync.notification.dto.response.NotificationResponse;
+import com.douzone.prosync.notification.dto.response.NotificationTargetSimpleResponse;
 import com.douzone.prosync.notification.entity.NotificationTarget;
 import com.douzone.prosync.notification.notienum.NotificationCode;
 import com.douzone.prosync.notification.notienum.NotificationPlatform;
 import com.douzone.prosync.notification.repository.MapEmitterRepository;
 import com.douzone.prosync.notification.repository.MybatisNotificationRepository;
-import com.douzone.prosync.project.dto.ProjectResponse.GetProjectResponse;
+import com.douzone.prosync.project.dto.response.GetProjectResponse;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -27,6 +30,7 @@ import java.util.List;
 
 import static com.douzone.prosync.constant.ConstantPool.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class WebNotificationServiceImpl implements NotificationService{
@@ -71,10 +75,14 @@ public class WebNotificationServiceImpl implements NotificationService{
     @Override
     public void send(Long memberId, Object data) {
         SseEmitter emitter = emitterRepositoryrepository.findById(memberId);
+        if (emitter==null) {
+            throw new NoEmitterException();
+        }
         sendToClient(emitter,data);
+
     }
 
-
+    @Override
     public void saveAndSendNotification(Long fromMemberId, NotificationCode code, Object subject, List<Long> memberIds) {
 
         // 알림의 공통 속성인 code, content, url, date를 code의 분류에 따라 매핑시킨다.
@@ -153,7 +161,7 @@ public class WebNotificationServiceImpl implements NotificationService{
 
         // 알림을 저장하고 pk 값 불러온다.
         Long notificationId = notificationRepository.saveNotification(NotificationDto.builder()
-                .code(code)
+                .code(code.getCode())
                 .fromMemberId(fromMemberId)
                 .createdAt(date)
                 .content(container.getContent())
@@ -163,24 +171,53 @@ public class WebNotificationServiceImpl implements NotificationService{
         // 알림 타겟을 memberIds의 memberId와 알림 id를 이용하여 복수로 저장한다.
         List<NotificationTargetDto> dtoList = new ArrayList<>();
 
-        memberIds.stream().map((id) -> dtoList.add(
+        memberIds.stream().forEach((id) -> dtoList.add(
                 NotificationTargetDto.builder()
                         .notificationId(notificationId)
                         .memberId(id)
                         .isRead(false)
                         .isTransmitted(false)
                         .platform(NotificationPlatform.WEB)
-                        .createdAt(date).build()
-        ));
+                        .createdAt(date).
+                        updateUserId(fromMemberId)
+                        .build()
 
+        ));
+        System.out.println("memberIds"+memberIds.toString());
+        System.out.println("dtoList"+dtoList.toString());
         notificationRepository.saveNotificationTargetList(dtoList);
 
         // 알림 id에 해당하는 알림 타겟을 꺼내와서 for문을 돌며 수취인의 memberId에 해당하는 SseEmitter를 통해 알림을 전송한다.
         List<NotificationTarget> notificationTargetList = notificationRepository.getNotificationTagetListByNotificationId(notificationId);
 
         notificationTargetList.stream().forEach((target) -> {
-            new NotificationResponse(target.getNotificationId(), target.isRead(), container.getContent(), code, container.getDate(), container.getUrl());
+            NotificationResponse notification = new NotificationResponse(target.getNotificationId(),
+                    target.isRead(), container.getContent(), code, container.getDate(), container.getUrl());
+
+            try {
+                send((target.getMemberId()),new NotificationData(notification));
+                notificationRepository.updateIsTransmittedbyTagetId(true,target.getNotificationTargetId());
+            } catch(NoEmitterException e) {
+                log.debug("{}",target.getMemberId()+"은 접속중이 아닙니다");
+            }catch (RuntimeException e) {
+                throw new ApplicationException(ErrorCode.CONNECTION_ERROR);
+            }
         });
 
+    }
+
+
+    public NotificationTargetSimpleResponse updateNotificationIsRead(Long targetId, Long memberId) {
+
+        // 알림 검증 로직(DB에 알림이 존재하는지와 본인에 대한 알림이 맞는지)
+        NotificationTarget target = notificationRepository.findTargetById(targetId);
+        if (target==null) {
+            throw new ApplicationException(ErrorCode.NOTIFICATION_NOT_FOUND);
+        } else if (!target.getMemberId().equals(memberId)) {
+            throw new ApplicationException(ErrorCode.NOTIFICATION_CANT_READ);
+        }
+
+        notificationRepository.updateIsRead(true, targetId);
+        return new NotificationTargetSimpleResponse(targetId);
     }
 }

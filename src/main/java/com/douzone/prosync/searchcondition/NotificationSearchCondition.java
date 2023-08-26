@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class NotificationSearchCondition {
 
     private Long memberId;
-    private NotificationCode notiCode;
+    private String notiCode;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String content;

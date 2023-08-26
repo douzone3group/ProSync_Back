@@ -11,11 +11,12 @@
         values (#{notificationId}, #{memberId},#{platform},#{isRead},#{updateUserId},#{isTransmitted},#{createdAt});
     </insert>
 
-    <insert id="saveNotificationTargetList" useGeneratedKeys="true" keyProperty="notificationId" parameterType="list">
-        INSERT INTO notification_target (notification_id, member_id,platform, is_read, update_user_no, is_transmitted,created_at)
-        VALUES
-        <foreach collection="dtoList" item="dto" separator=",">
-            (#{dto.noticationId}, #{dto.memberId}, #{dto.platform}, #{dto.isRead}, #{dto.updateUserId}, #{dto.isTransmitted}, #{dto.createdAt})
+
+
+    <insert id="saveNotificationTargetList" parameterType="list">
+        insert into notification_target (notification_id, member_id,platform, is_read, update_user_no, is_transmitted,created_at) values
+        <foreach collection="list" item="dto" separator=",">
+            (#{dto.notificationId}, #{dto.memberId}, #{dto.platform}, #{dto.isRead}, #{dto.updateUserId}, #{dto.isTransmitted}, #{dto.createdAt})
         </foreach>
     </insert>
 

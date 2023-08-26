@@ -52,7 +52,6 @@ public class TaskServiceImpl implements TaskService {
 
     private final MemberRepository memberRepository;
 
-    private final NotificationRepository notificationRepository;
 
     private final NotificationService notificationService;
 
@@ -90,10 +89,14 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteTask(Long taskId, Long memberId) {
-        verifyExistTask(taskId);
-
+        GetTaskResponse task = verifyExistTask(taskId);
         //soft delete
         taskMapper.delete(taskId);
+
+
+        // Todo: 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
+//        taskMapper.
+//        notificationService.saveAndSendNotification(memberId, NotificationCode.TASK_REMOVE, task, );
     }
 
     @Transactional(readOnly = true)
@@ -136,59 +139,13 @@ public class TaskServiceImpl implements TaskService {
         // TODO : 프로젝트 회원 + writer 인지 검증
         // TODO : MEMBER_TASK 해당되는 값이 없을 경우 처리
 
-        GetTaskResponse task = taskMapper.findById(taskId).orElse(null);
-        if (task == null) {
-            throw new ApplicationException(ErrorCode.TASK_NOT_FOUND);
-        }
+        GetTaskResponse task = verifyExistTask(taskId);
 
         taskMapper.saveTaskMember(taskId, memberIds);
 
 
-
-        Member fromMember = memberRepository.findById(memberId).orElse(null);
-
-        // DB에서 JOIN으로 들고오지 않고 데이터를 그대로 사용하기 위해 따로 선언했습니다.
-        String content = fromMember.getEmail() + "님이 생성한 " + task.getTitle() + " 업무에 할당되셨습니다.";
-        LocalDateTime date = LocalDateTime.now();
-        String url = FRONT_SERVER_HOST + "/tasks/" + taskId;
-
-        // 알림을 저장하고 pk 값 불러오기
-        Long notificationId = notificationRepository.saveNotification(NotificationDto.builder()
-                .code(NotificationCode.TASK_ASSIGNMENT)
-                .fromMemberId(memberId)
-                .createdAt(date)
-                .content(content)
-                .url(url).build());
-
-
-        // 알림 타겟을 memberIds의 memberId와 알림 id를 이용하여 복수 저장하기
-        List<NotificationTargetDto> dtoList = new ArrayList<>();
-
-         memberIds.stream().map((id) ->  dtoList.add(
-            NotificationTargetDto.builder()
-                    .notificationId(notificationId)
-                    .memberId(memberId)
-                    .isRead(false)
-                    .isTransmitted(false)
-                    .platform(NotificationPlatform.WEB)
-                    .createdAt(LocalDateTime.now()).build())
-        );
-
-         notificationRepository.saveNotificationTargetList(dtoList);
-
-        List<NotificationTarget> notificationTargetList = notificationRepository.getNotificationTagetListByNotificationId(notificationId);
-
-        notificationTargetList.stream().forEach((target) -> {
-            NotificationResponse notification = new NotificationResponse(target.getNotificationId(),
-                    target.isRead(), content, NotificationCode.TASK_ASSIGNMENT, date, url);
-
-            try {
-                notificationService.send((target.getMemberId()),new NotificationData(notification) );
-                notificationRepository.updateIsTransmittedbyTagetId(true,target.getNotificationTargetId());
-            } catch(RuntimeException e) {
-                throw new ApplicationException(ErrorCode.CONNECTION_ERROR);
-            }
-         });
+        notificationService.saveAndSendNotification(memberId, NotificationCode.TASK_ASSIGNMENT,
+                task, memberIds);
 
 
 
@@ -201,12 +158,11 @@ public class TaskServiceImpl implements TaskService {
     public void deleteTaskMember(Long taskId, List<Long> memberIds, Long memberId) {
         // TODO : 프로젝트 회원 + writer 인지 검증
         // TODO : MEMBER_TASK 해당되는 값이 없을 경우 처리
-        GetTaskResponse task = taskMapper.findById(taskId).orElse(null);
-        if (task == null) {
-            throw new ApplicationException(ErrorCode.TASK_NOT_FOUND);
-        }
+        GetTaskResponse task = verifyExistTask(taskId);
 
         taskMapper.deleteTaskMember(taskId, memberIds);
+
+        notificationService.saveAndSendNotification(memberId, NotificationCode.TASK_EXCLUDED, task, memberIds);
     }
 
     private GetTaskResponse findExistTask(Long taskId) {
@@ -216,10 +172,14 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 삭제된 task인 경우 예외 처리
      */
-    private void verifyExistTask(Long taskId) {
-        if (taskMapper.findExistsTask(taskId) == 0) {
+    private GetTaskResponse verifyExistTask(Long taskId) {
+
+        GetTaskResponse task = taskMapper.findById(taskId).orElse(null);
+        if (task == null) {
             throw new ApplicationException(ErrorCode.TASK_NOT_FOUND);
         }
+
+        return task;
     }
 
     private void verifyTaskStatus(Integer projectId, Integer taskStatusId, Long memberId) {

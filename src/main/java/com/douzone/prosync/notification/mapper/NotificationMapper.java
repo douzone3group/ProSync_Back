@@ -31,10 +31,10 @@ public interface NotificationMapper {
 
     void deleteNotification(Long notificationId);
 
-    Optional<Notification> findById(Long notificationId);
+    Notification findById(Long notificationId);
 
     List<NotificationResponse> getNotificationList(@Param("condition") NotificationSearchCondition condition);
-    Optional<NotificationTarget> findTargetById(Long targetId);
+    NotificationTarget findTargetById(Long targetId);
 
     Integer getNotificationListCount(Long memberId);
 
