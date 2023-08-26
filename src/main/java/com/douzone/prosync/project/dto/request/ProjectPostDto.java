@@ -23,7 +23,7 @@ public  class ProjectPostDto {
     @NotBlank
     @Length(max = 50, message = "프로젝트 이름은 50자 이내여야 합니다")
     @ApiModelProperty(value = "프로젝트 이름", required = true, example = "프로젝트 이름")
-    private String name;
+    private String title;
 
     @NotNull
     @Length(max = 500, message = "프로젝트 소개는 500자 이내여야 합니다")
