@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.prosync.member_project.repository.MemberProjectMapper">
+
+<update id="updateProjectMember">
+    update member_project mp
+    set mp.authority_id = (select authority_id from project_authority where authority = #{projectMember.authority})
+    where member_project_id = #{projectMemberId}
+</update>
+
+<select id="findProjectMember">
+    select mp.member_project_id, mp.member_id, mp.project_id, pa.authority_id, pa.authority, m.name, m.profile_image
+    from member_project mp
+    left join project_authority pa on mp.authority_id = pa.authority_id
+    left join member m on mp.member_id = m.member_id
+    where mp.member_id = #{memberId} and mp.project_id = #{projectId}
+</select>
+
+<select id="findProjectMembers">
+    select mp.member_project_id, mp.member_id, mp.project_id, pa.authority_id, pa.authority, m.name, m.profile_image
+    from member_project mp
+    left join project_authority pa on mp.authority_id = pa.authority_id
+    left join member m on mp.member_id = m.member_id
+    where mp.project_id = #{projectId}
+</select>
+</mapper>

@@ -46,7 +46,7 @@ public class GetProjectResponse{
     public static GetProjectResponse of(Project project) {
         return GetProjectResponse.builder()
                 .projectId(project.getProjectId())
-                .name(project.getName())
+                .name(project.getTitle())
                 .intro(project.getIntro())
                 .createdAt(project.getCreatedAt().toString())
                 .startDate(project.getStartDate())

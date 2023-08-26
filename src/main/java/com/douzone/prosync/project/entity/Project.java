@@ -1,22 +1,25 @@
 package com.douzone.prosync.project.entity;
 
-import com.douzone.prosync.member.entity.Member;
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
+
 
 
 @Getter
-@Entity
 @NoArgsConstructor
+@Entity
 public class Project {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer projectId;
-    private String name;
+    private String title;
     private String intro;
 
     private LocalDateTime createdAt;
@@ -28,6 +31,4 @@ public class Project {
     private Boolean publicyn;
     private String projectImage;
     private Boolean isDeleted;
-
-
 }
