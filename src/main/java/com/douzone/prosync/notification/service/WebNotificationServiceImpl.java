@@ -30,6 +30,9 @@ import java.util.List;
 
 import static com.douzone.prosync.constant.ConstantPool.*;
 
+/**
+ *
+ */
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -39,6 +42,10 @@ public class WebNotificationServiceImpl implements NotificationService{
     private final MybatisNotificationRepository notificationRepository;
 
     private final MemberRepository memberRepository;
+
+    /**
+     * 서버에서 클라이언트로 data 전송
+     */
     private void sendToClient(SseEmitter sseEmitter, Object data) {
 
         try {
@@ -52,7 +59,9 @@ public class WebNotificationServiceImpl implements NotificationService{
     }
 
 
-
+    /**
+     * pk에 해당하는 사용자와 서버 간의 구독
+     */
     public SseEmitter subscribe(Long memberId) {
         SseEmitter emitter = emitterRepositoryrepository.save(memberId, new SseEmitter(DEFAULT_TIMEOUT));
 
@@ -72,6 +81,10 @@ public class WebNotificationServiceImpl implements NotificationService{
         return emitter;
     }
 
+
+    /**
+     * 사용자 pk에 해당하는 SseEmitter를 찾아서 data를 전송한다.
+     */
     @Override
     public void send(Long memberId, Object data) {
         SseEmitter emitter = emitterRepositoryrepository.findById(memberId);
@@ -82,6 +95,13 @@ public class WebNotificationServiceImpl implements NotificationService{
 
     }
 
+    /**
+     * 알림을 저장하고 알림 수취인이 Sse 연결이 된 상태이면 알림을 전송한다.
+     * @param fromMemberId 알림 제공자(알림을 뜨게 한 사용자)
+     * @param code 알림의 종류(코드)
+     * @param subject 프로젝트나 업무에 관련된 객체 자료
+     * @param memberIds 알림의 수취인 집단
+     */
     @Override
     public void saveAndSendNotification(Long fromMemberId, NotificationCode code, Object subject, List<Long> memberIds) {
 
@@ -207,6 +227,12 @@ public class WebNotificationServiceImpl implements NotificationService{
     }
 
 
+    /**
+     * 알림을 읽음 처리로 업데이트하는 로직
+     * @param targetId NotificationTarget의 pk
+     * @param memberId 알림 수취인 pk
+     * @return
+     */
     public NotificationTargetSimpleResponse updateNotificationIsRead(Long targetId, Long memberId) {
 
         // 알림 검증 로직(DB에 알림이 존재하는지와 본인에 대한 알림이 맞는지)
