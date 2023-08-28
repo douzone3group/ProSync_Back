@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -42,6 +43,10 @@ public class MybatisMemberRepository implements MemberRepository {
         return memberMapper.findByEmail(email);
 
     };
+
+    public List<Member> getMemberList(List<Long> memberIds) {
+        return memberMapper.getMeberList(memberIds);
+    }
 
 
     // Todo: 멤버 관리 리스트에서 검색조건을 사용할 때 findAll을 작성한다.
