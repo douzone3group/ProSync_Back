@@ -3,11 +3,8 @@ package com.douzone.prosync.comment.service;
 import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
 import com.douzone.prosync.comment.entity.Comment;
-import com.douzone.prosync.comment.repository.CommentRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 
 public interface CommentService {
@@ -25,4 +22,5 @@ public interface CommentService {
     Page<Comment> findCommentList(Long taskId,Pageable pageable);
 
 
+//    void checkMember(Long memberId);
 }

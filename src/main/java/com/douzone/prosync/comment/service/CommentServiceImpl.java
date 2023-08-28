@@ -60,5 +60,11 @@ public class CommentServiceImpl  implements CommentService{
         return commentJpaRepository.findAllByIsDeletedNullAndTaskId(taskId,pageable);
     }
 
+//    @Override
+//    public void checkMember(Long memberId) {
+//        commentRepository.checkMember(memberId);
+//
+//    }
+
 
 }
