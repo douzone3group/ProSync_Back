@@ -19,7 +19,7 @@
         where project_id=#{projectId} and is_deleted is null
     </update>
 
-    <select id="findProjectById" resultType="com.douzone.prosync.project.entity.Project">
+    <select id="findById" resultType="com.douzone.prosync.project.entity.Project">
         select * from project
         where project_id=#{projectId} and is_deleted is null
 

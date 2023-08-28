@@ -26,4 +26,5 @@
         WHERE
             is_deleted is null
     </select>
+
 </mapper>

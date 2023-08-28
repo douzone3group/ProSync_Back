@@ -6,9 +6,7 @@ import com.douzone.prosync.comment.dto.response.CommentSimpleResponse;
 import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
 import com.douzone.prosync.comment.entity.Comment;
 import com.douzone.prosync.comment.service.CommentService;
-import com.douzone.prosync.comment.service.CommentServiceImpl;
 import com.douzone.prosync.common.PageResponseDto;
-import com.douzone.prosync.project.dto.response.ProjectSimpleResponse;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -76,9 +74,8 @@ public class CommentController {
             @RequestBody @Valid CommentPatchDto dto,
             @Parameter(hidden = true) @ApiIgnore Principal principal) {
 
+//        commentService.checkMember(Long.valueOf(principal.getName()));
         dto.setCommentId(commentId);
-
-        log.info("dto.content={}", dto.getContent());
         commentService.update(dto);
         return new ResponseEntity(new CommentSimpleResponse(commentId), HttpStatus.OK);
     }

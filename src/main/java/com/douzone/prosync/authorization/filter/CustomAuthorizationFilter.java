@@ -26,21 +26,20 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Long memberId = getIdFromPrincipal(authentication);
-
-        System.out.println(memberId); // 확인용
-
         String requestUri = request.getRequestURI();
 
-        if(requestUri.startsWith("/api/v1/public/")){
-            filterChain.doFilter(request, response);
-        } else{
+        if (requestUri.startsWith("/api/v1/private")){
+            Long memberId = getIdFromPrincipal(authentication);
+            System.out.println(memberId); // 확인용
             List<GetProjectAuthorizationResponse> userPermission = getPermissionUrl(memberId);
-            if(hasPermission(request, userPermission)){
+            if (hasPermission(request, userPermission)) {
                 filterChain.doFilter(request, response);
-            }else {
+            } else {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             }
+
+        } else {
+            filterChain.doFilter(request, response);
         }
     }
 
@@ -66,7 +65,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             if(isMatchingPermission(request, permission)){
                 return true;
             }
-    }
+        }
         return false;
     }
 
@@ -74,7 +73,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         String requestUri = request.getRequestURI();
         String requiredUri = "/api/v1/private/" + permission.getProjectId();
 
-        
+
         if(requestUri.startsWith(requiredUri)){
             Long requiredAuthorityId = permission.getAuthorityId();
             switch (requiredAuthorityId.intValue()){
