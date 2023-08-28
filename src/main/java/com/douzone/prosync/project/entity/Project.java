@@ -10,13 +10,14 @@ import java.util.List;
 
 
 @Getter
-@Entity
 @NoArgsConstructor
+@Entity
 public class Project {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer projectId;
-    private String name;
+    private String title;
     private String intro;
 
     private LocalDateTime createdAt;

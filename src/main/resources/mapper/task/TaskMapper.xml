@@ -6,6 +6,12 @@
         INSERT INTO task(project_id, classification, title, detail, start_date, end_date, task_status_id, created_at, modified_at)
         VALUE (#{projectId}, #{task.classification}, #{task.title}, #{task.detail}, #{task.startDate}, #{task.endDate}, #{task.taskStatusId}, #{task.createdAt}, #{task.createdAt})
     </insert>
+    <select id="findById">
+        SELECT * FROM task t
+        LEFT JOIN task_status ts
+        ON t.task_status_id = ts.task_status_id
+        WHERE t.task_id=#{taskId} and t.is_deleted IS NULL AND ts.is_deleted IS NULL
+    </select>
     <update id="update">
         UPDATE task
         <set>
@@ -63,4 +69,9 @@
             member_id = #{memberId}
         </foreach>
     </delete>
+    <select id="findTaskMembers">
+        SELECT m.member_id, m.profile_image, m.name
+        FROM member m LEFT JOIN member_task mt ON m.member_id = mt.member_id
+        WHERE m.is_deleted IS NOT NULL;
+    </select>
 </mapper>

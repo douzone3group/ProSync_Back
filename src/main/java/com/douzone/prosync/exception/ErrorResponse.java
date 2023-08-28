@@ -29,7 +29,7 @@ public class ErrorResponse<T> {
         return new ErrorResponse<>(errorCode, result);
     }
 
-    public static <T> ErrorResponse<T> of(String errorCode) {
+    public static ErrorResponse of(String errorCode) {
         return new ErrorResponse<>(errorCode, null);
     }
 

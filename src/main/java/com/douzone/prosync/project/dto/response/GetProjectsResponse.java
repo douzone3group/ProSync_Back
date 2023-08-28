@@ -18,7 +18,7 @@ public class GetProjectsResponse{
     private Integer projectId;
 
     @ApiModelProperty(example = "프로젝트 이름")
-    private String name;
+    private String title;
 
     @ApiModelProperty(example = "프로젝트 시작 날짜")
     private String startDate;
@@ -29,18 +29,19 @@ public class GetProjectsResponse{
     @ApiModelProperty(example = "프로젝트 진행도")
     private Float progress;
 
-    @ApiModelProperty(example = "프로젝트 이미지")
-    private String projectImage;
-    // TODO: 회원 정보 추가
+    private Long memberId;
+    private String name;
+    private String profileImage;
+
+//    private MemberGetResponse.SimpleResponse adminInfo;
 
     public static GetProjectsResponse of(Project project) {
         return GetProjectsResponse.builder()
                 .projectId(project.getProjectId())
-                .name(project.getName())
+                .title(project.getTitle())
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
                 .progress(project.getProgress())
-                .projectImage(project.getProjectImage())
                 .build();
     }
 
