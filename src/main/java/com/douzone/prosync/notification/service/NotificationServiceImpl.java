@@ -29,7 +29,7 @@ public class NotificationServiceImpl implements NotificationService{
         }
     }
 
-    public void send(boolean isTransmitted, Long memberId){
+    public void send(boolean isTransmitted, Long memberId){ //
         notificationRepository.updateIsTransmitted(true, memberId);
     }
 

@@ -38,4 +38,7 @@
         set is_deleted=true
         where project_id=#{projectId} and is_deleted is null
     </update>
+
+
+
 </mapper>

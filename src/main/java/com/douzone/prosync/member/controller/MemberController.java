@@ -104,7 +104,7 @@ public class MemberController {
     public ResponseEntity<Member> signUp(@Valid @RequestBody MemberPostDto postDto) {
         // 중복 검사
         Member member = memberService.signup(postDto);
-
+        // TODO :
         return new ResponseEntity<>(member, HttpStatus.OK);
     }
 

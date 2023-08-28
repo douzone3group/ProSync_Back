@@ -25,4 +25,5 @@ public interface ProjectMybatisMapper {
 
     // 프로젝트 삭제
     void deleteProject(Integer projectId);
+
 }

@@ -24,10 +24,9 @@ public class NotificationController {
     private final NotificationMapper mapper;
     private final MapEmitterRepository mapEmitterRepository;
 
-    @GetMapping(value ="/subscribe/{id}", produces = "text/event-stream")
-    public SseEmitter subscribe(@PathVariable("id") Long memberId){
-        //Long memberId = Long.parseLong(principal.getName());
-        System.out.println("씨발");
+    @GetMapping(value ="/subscribe", produces = "text/event-stream")
+    public SseEmitter subscribe(Principal principal){
+        Long memberId = Long.parseLong(principal.getName());
         return notificationService.subscribe(memberId);
     }
 

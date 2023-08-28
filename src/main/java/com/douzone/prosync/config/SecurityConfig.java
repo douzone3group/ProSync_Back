@@ -1,5 +1,6 @@
 package com.douzone.prosync.config;
 
+import com.douzone.prosync.authorization.filter.CustomAuthorizationFilter;
 import com.douzone.prosync.redis.RedisService;
 import com.douzone.prosync.security.jwt.*;
 import org.springframework.context.annotation.Bean;
@@ -21,20 +22,17 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
-
     private final RefreshTokenProvider refreshTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
     private final HmacAndBase64 hmacAndBase64;
-
     private final RedisService redisService;
-
     private final CorsFilter corsFilter;
 
+    private final CustomAuthorizationFilter customAuthorizationFilter;
     public SecurityConfig(TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
                           JwtAccessDeniedHandler jwtAccessDeniedHandler, RedisService redisService, CorsFilter corsFilter,
-                          HmacAndBase64 hmacAndBase64, RefreshTokenProvider refreshTokenProvider) {
+                          HmacAndBase64 hmacAndBase64, RefreshTokenProvider refreshTokenProvider, CustomAuthorizationFilter customAuthorizationFilter) {
         this.tokenProvider = tokenProvider;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
@@ -42,6 +40,7 @@ public class SecurityConfig {
         this.corsFilter = corsFilter;
         this.hmacAndBase64 = hmacAndBase64;
         this.refreshTokenProvider = refreshTokenProvider;
+        this.customAuthorizationFilter = customAuthorizationFilter;
     }
 
     @Bean
@@ -61,17 +60,18 @@ public class SecurityConfig {
                 .mvcMatchers("/api/v1/members","/api/v1/login", "/api/v1/send_verification","/api/v1/verify_code").permitAll()
                 .mvcMatchers("/v2/api-docs","/favicon.ico","/swagger-ui/index.html").permitAll()
                 .mvcMatchers("/**/*.css", "/**/*.js", "/**/*.png","/swagger-ui/**","/swagger-resources/**").permitAll()
-                .mvcMatchers("/api/v1/test", "/api/v1/subscribe/**", "/api/v1/test2").permitAll()
+                .mvcMatchers("/api/v1/test", "/api/v1/subscribe/**", "/api/v1/test2").permitAll() // TODO : 테스트용
                 .anyRequest().authenticated();
 
         http
                 // token을 사용하는 방식이기 때문에 csrf를 disable합니다.
                 .csrf(csrf -> csrf.disable())
-
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+
                 );
 
 
