@@ -8,7 +8,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Service
-public class JavaMailService implements MailService {
+public class JavaMailService implements AuthenticateService {
 
     private final JavaMailSender javaMailSender;
     private final String senderEmail;
@@ -19,11 +19,11 @@ public class JavaMailService implements MailService {
         this.senderEmail = senderEmail;
     }
 
-    public static void createNumber() {
+    private static void createNumber() {
         number = (int) (Math.random() * (90000)) + 100000;// (int) Math.random() * (최댓값-최소값+1) + 최소값
     }
 
-    public MimeMessage CreateMail(String mail) {
+    private MimeMessage CreateMail(String mail) {
         createNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
 
@@ -50,8 +50,10 @@ public class JavaMailService implements MailService {
         return message;
     }
 
-    public String sendMail(String mail) {
-        MimeMessage message = CreateMail(mail);
+
+    @Override
+    public String sendForAuthenticate(String toUser) {
+        MimeMessage message = CreateMail(toUser);
         javaMailSender.send(message);
 
         return Integer.toString(number);

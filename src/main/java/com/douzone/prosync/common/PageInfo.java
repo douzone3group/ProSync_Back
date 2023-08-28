@@ -9,7 +9,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @ApiModel("[RESPONSE] LIST - GET (PAGEINFO)")
 public class PageInfo {
-
     @ApiModelProperty(value = "현재 페이지", example = "1")
     private int page;
 

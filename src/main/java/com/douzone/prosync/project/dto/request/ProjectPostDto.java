@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public  class ProjectPostDto {
 
     @ApiModelProperty(value = "프로젝트 식별자", required = true, example = "프로젝트 식별자")
-    private Integer projectId;
+    private Long projectId;
 
     @NotBlank
     @Length(max = 50, message = "프로젝트 이름은 50자 이내여야 합니다")

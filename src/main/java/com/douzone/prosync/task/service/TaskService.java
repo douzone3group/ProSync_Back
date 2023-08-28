@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface TaskService {
 
-    Long createTask(TaskPostDto dto, Integer projectId, Long memberId);
+    Long createTask(TaskPostDto dto, Long projectId, Long memberId);
 
     void updateTask(TaskPatchDto dto, Long taskId, Long memberId);
 
@@ -20,7 +20,7 @@ public interface TaskService {
 
     GetTaskResponse findTask(Long taskId, Long memberId);
 
-    PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Integer projectId, Pageable pageable, String search, boolean isActive, String view, Long memberId);
+    PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Long projectId, Pageable pageable, String search, boolean isActive, String view, Long memberId);
 
     void createTaskMember(Long taskId, List<Long> memberIds, Long memberId);
 

@@ -24,7 +24,7 @@ public class TaskStatus {
 
     private String taskStatus;
 
-    private Integer projectId;
+    private Long projectId;
 
     private String color;
 

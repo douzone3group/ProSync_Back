@@ -12,7 +12,7 @@ import java.util.Optional;
 @Mapper
 public interface TaskMapper {
 
-    void save(@Param("task") TaskPostDto dto, @Param("projectId") Integer projectId);
+    void save(@Param("task") TaskPostDto dto, @Param("projectId") Long projectId);
 
     Optional<GetTaskResponse> findById(Long taskId);
 
