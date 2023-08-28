@@ -115,4 +115,9 @@
     <delete id="deleteNotification">
         delete from notification where notification_id = #{notificationId}
     </delete>
+
+
+    <delete id="deleteSchedulingTarget">
+        delete from notification_target where timestampdiff(DAY, created_at,DATE_ADD(NOW(), INTERVAL 9 HOUR)) &gt; #{durationDate}
+    </delete>
 </mapper>

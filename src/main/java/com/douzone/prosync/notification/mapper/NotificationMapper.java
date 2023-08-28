@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 @Mapper
 public interface NotificationMapper {
@@ -39,4 +38,6 @@ public interface NotificationMapper {
     Integer getNotificationListCount(Long memberId);
 
     List<NotificationTarget> getNotificationTagetListByNotificationId(Long notificationId);
+
+    void deleteSchedulingTarget(Integer durationDate);
 }

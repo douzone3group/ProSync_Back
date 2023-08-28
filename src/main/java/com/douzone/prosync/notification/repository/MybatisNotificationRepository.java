@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
@@ -89,5 +88,15 @@ public class MybatisNotificationRepository implements NotificationRepository{
     @Override
     public Integer getNotificationListCount(Long memberId) {
         return notificationMapper.getNotificationListCount(memberId);
+    }
+
+
+    /**
+     * 알림의 만료기간이 지난 알림을 스케줄링하여 삭제할 때 사용되는 로직
+     * @param durationDate 만료기간
+     */
+    @Override
+    public void deleteSchedulingTarget(Integer durationDate) {
+        notificationMapper.deleteSchedulingTarget(durationDate);
     }
 }

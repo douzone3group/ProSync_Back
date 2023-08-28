@@ -28,4 +28,8 @@ public class ConstantPool {
     public static final String FRONT_SERVER_HOST = "http://localhost:3000";
 
 
+    //  NOTIFICATION SCHEDULING DURATION
+    public static final Integer NOTIFICATION_DEFAULT_DURATION = 30;
+
+
 }

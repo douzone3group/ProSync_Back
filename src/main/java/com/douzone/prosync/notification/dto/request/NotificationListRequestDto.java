@@ -3,14 +3,11 @@ package com.douzone.prosync.notification.dto.request;
 import com.douzone.prosync.notification.notienum.NotificationCode;
 import com.douzone.prosync.searchcondition.NotificationSearchCondition;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Schema(description = "알림 리스트 응답 DTO")
+@Schema(description = "알림 리스트 요청 DTO")
 @Data
 public class NotificationListRequestDto {
 

@@ -176,6 +176,12 @@ public class WebNotificationServiceImpl implements NotificationService{
                 container.setUrl(FRONT_SERVER_HOST+"/tasks/"+((GetTaskResponse) subject).getTaskId());
             }
                 break;
+            case "관리자변경":  {
+                //Todo : 회원_프로젝트에서 projectId로 ADMIN 권한을 가진 사용자를 찾아서 넣어줘야한다.
+                container.setContent("프로젝트의 관리자가 "+fromMember.getEmail()+"님에서 "+ "으로 변경되었습니다.");
+                container.setUrl(FRONT_SERVER_HOST+"/projects/" + ((GetProjectResponse) subject).getProjectId());
+            }
+            break;
 
         }
 
@@ -233,6 +239,7 @@ public class WebNotificationServiceImpl implements NotificationService{
      * @param memberId 알림 수취인 pk
      * @return
      */
+    @Override
     public NotificationTargetSimpleResponse updateNotificationIsRead(Long targetId, Long memberId) {
 
         // 알림 검증 로직(DB에 알림이 존재하는지와 본인에 대한 알림이 맞는지)

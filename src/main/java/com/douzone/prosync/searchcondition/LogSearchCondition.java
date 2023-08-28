@@ -5,16 +5,14 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+
 @Data
 @Builder
-public class NotificationSearchCondition {
+public class LogSearchCondition {
 
-    private Long memberId;
-    private String notiCode;
+    private Long projectId;
+    private String logCode;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String content;
-
-
-
 }

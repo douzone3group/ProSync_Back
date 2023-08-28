@@ -35,4 +35,6 @@ public interface NotificationRepository {
     NotificationTarget findTargetById(Long notificationTargetId);
 
     Integer getNotificationListCount(Long memberId);
+
+    void deleteSchedulingTarget(Integer durationDate);
 }
