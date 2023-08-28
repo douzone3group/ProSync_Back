@@ -18,12 +18,12 @@ import java.time.LocalDateTime;
 public  class ProjectPatchDto {
 
     @ApiModelProperty(value = "프로젝트 식별자", required = true, example = "프로젝트 식별자")
-    private Integer projectId;
+    private Long projectId;
 
     @NotBlank
     @ApiModelProperty(value = "프로젝트 이름", required = true, example = "프로젝트 이름")
     @Length(max = 50,message = "프로젝트 이름은 50자 이내여야 합니다")
-    private String name;
+    private String title;
 
     @NotNull
     @ApiModelProperty(value = "프로젝트 소개", required = true, example = "프로젝트 소개")

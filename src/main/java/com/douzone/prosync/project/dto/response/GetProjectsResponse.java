@@ -1,23 +1,23 @@
 package com.douzone.prosync.project.dto.response;
 
-import com.douzone.prosync.project.entity.Project;
+import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Builder
+import java.util.List;
+
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 @ApiModel("GetProjectsResponse")
-public class GetProjectsResponse{
+public class GetProjectsResponse {
 
     @ApiModelProperty(example = "프로젝트 아이디")
-    private Integer projectId;
+    private Long projectId;
 
     @ApiModelProperty(example = "프로젝트 이름")
-    private String name;
+    private String title;
 
     @ApiModelProperty(example = "프로젝트 시작 날짜")
     private String startDate;
@@ -27,20 +27,15 @@ public class GetProjectsResponse{
 
     @ApiModelProperty(example = "프로젝트 진행도")
     private Float progress;
+    private String createdAt;
 
-    @ApiModelProperty(example = "프로젝트 이미지")
-    private String projectImage;
-    // TODO: 회원 정보 추가
+    private Long memberId;
+    private String name;
+    private String profileImage;
 
-    public static GetProjectsResponse of(Project project) {
-        return GetProjectsResponse.builder()
-                .projectId(project.getProjectId())
-                .name(project.getName())
-                .startDate(project.getStartDate())
-                .endDate(project.getEndDate())
-                .progress(project.getProgress())
-                .projectImage(project.getProjectImage())
-                .build();
+    private List<MemberProjectResponseDto> projectMembers;
+
+    public void setProjectMembers(List<MemberProjectResponseDto> projectMembers) {
+        this.projectMembers = projectMembers;
     }
-
 }

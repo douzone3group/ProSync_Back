@@ -44,6 +44,6 @@ public class GetTaskResponse {
         private String taskStatus;
 
         @ApiModelProperty(value = "프로젝트식별자", example = "1")
-        private Integer projectId;
+        private Long projectId;
 
 }

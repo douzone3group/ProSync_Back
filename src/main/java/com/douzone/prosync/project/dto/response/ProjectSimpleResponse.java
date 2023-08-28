@@ -13,5 +13,5 @@ import lombok.Setter;
 public class ProjectSimpleResponse {
 
     @ApiModelProperty(value = "프로젝트 식별자", example = "1")
-    private Integer projectId;
+    private Long projectId;
 }

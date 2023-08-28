@@ -1,5 +1,6 @@
 package com.douzone.prosync.task.repository;
 
+import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
 import com.douzone.prosync.task.dto.request.TaskPostDto;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
@@ -11,12 +12,8 @@ import java.util.Optional;
 @Mapper
 public interface TaskMapper {
 
-    void save(@Param("task") TaskPostDto dto, @Param("projectId") Integer projectId);
+    void save(@Param("task") TaskPostDto dto, @Param("projectId") Long projectId);
 
-    @Select("SELECT * FROM task " +
-            "LEFT JOIN task_status " +
-            "ON task.task_status_id = task_status.task_status_id " +
-            "WHERE task.task_id=#{taskId} and task.is_deleted IS NULL AND task_status.is_deleted IS NULL")
     Optional<GetTaskResponse> findById(Long taskId);
 
     @Delete("DELETE FROM task WHERE task_id=#{taskId}")
@@ -33,4 +30,6 @@ public interface TaskMapper {
     void saveTaskMember(@Param("taskId") Long taskId, @Param("memberIds") List<Long> memberIds);
 
     void deleteTaskMember(Long taskId, List<Long> memberIds);
+
+    List<MemberGetResponse.SimpleResponse> findTaskMembers(Long taskId);
 }

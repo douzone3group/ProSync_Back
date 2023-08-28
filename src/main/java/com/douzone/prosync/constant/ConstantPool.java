@@ -11,6 +11,7 @@ public class ConstantPool {
 
     // EMAIL CERTIFICATIONNUMBER DURATION
     public static final long EMAIL_CERTIFICATIONNUMBER_DURATION = 600L;
+    public static final long PROJECT_INVITE_LINK_DURATION = 1800L;
 
     // SSE TIMEOUT
     public static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;

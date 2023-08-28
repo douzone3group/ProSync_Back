@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.prosync.project.repository.ProjectMapper">
+    <insert id="createProject" useGeneratedKeys="true" keyProperty="projectId" >
+        insert into project (title, intro, created_at, start_date, end_date, modified_at, progress, publicyn, project_image)
+        values (#{title}, #{intro}, #{createdAt}, #{startDate}, #{endDate}, #{createdAt}, 0, #{publicyn}, #{projectImage})
+    </insert>
+
+    <update id="updateProject">
+        update project
+        set title=#{title},
+            intro=#{intro},
+            start_date=#{startDate},
+            end_date=#{endDate},
+            modified_at=#{modifiedAt},
+            publicyn=#{publicyn},
+            project_image=#{projectImage}
+        where project_id=#{projectId} and is_deleted is null
+    </update>
+
+    <select id="findProjectById" resultType="com.douzone.prosync.project.entity.Project">
+        select * from project
+        where project_id=#{projectId} and is_deleted is null
+
+    </select>
+
+    <select id="findAllProjects" resultType="com.douzone.prosync.project.entity.Project">
+        select *
+        from project
+        where is_deleted is null
+        order by project_id desc
+    </select>
+
+    <update id="deleteProject">
+        update project
+        set is_deleted=true
+        where project_id=#{projectId} and is_deleted is null
+    </update>
+
+    <select id="findAll">
+        select p.project_id, p.title, p.start_date, p.end_date, p.progress, p.created_at, m.member_id, m.name, m.profile_image
+        from project p
+        join member_project mp on mp.project_id = p.project_id
+        join member m on mp.member_id = m.member_id
+        join project_authority pa on mp.authority_id = pa.authority_id
+        <if test="bookmark != null and bookmark == true">
+            join bookmark b on b.project_id = p.project_id
+        </if>
+        <where>
+            p.is_deleted is null and pa.authority = 'ADMIN'
+            <if test="search != null and search != ''">
+                and ((p.title like concat('%', #{search}, '%'))
+                or (m.name like concat('%', #{search}, '%') and pa.authority = 'admin'))
+            </if>
+            <if test="bookmark != null and bookmark == true">
+                and b.member_id = #{memberId}
+            </if>
+            <if test="sort != null and sort == 'endDate'">
+                and STR_TO_DATE(end_date, '%Y-%m-%d') >= CURRENT_DATE
+            </if>
+        </where>
+        <choose>
+            <when test="sort == 'endDate'">
+                order by ABS(DATEDIFF(CURRENT_DATE, STR_TO_DATE(end_date, '%Y-%m-%d')))
+            </when>
+            <otherwise>
+                order by project_id desc
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findByMemberId">
+        select p.project_id, p.title, p.start_date, p.end_date, p.progress, p.created_at, m.member_id, m.name, m.profile_image
+        from project p
+             join member_project mp on mp.project_id = p.project_id
+             join member m on mp.member_id = m.member_id
+             join project_authority pa on mp.authority_id = pa.authority_id
+        where pa.authority = 'ADMIN' and p.project_id in (select project_id from member_project where member_id = #{memberId})
+        order by p.project_id desc
+    </select>
+</mapper>
