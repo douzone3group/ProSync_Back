@@ -23,7 +23,7 @@ public  class ProjectPatchDto {
     @NotBlank
     @ApiModelProperty(value = "프로젝트 이름", required = true, example = "프로젝트 이름")
     @Length(max = 50,message = "프로젝트 이름은 50자 이내여야 합니다")
-    private String name;
+    private String title;
 
     @NotNull
     @ApiModelProperty(value = "프로젝트 소개", required = true, example = "프로젝트 소개")

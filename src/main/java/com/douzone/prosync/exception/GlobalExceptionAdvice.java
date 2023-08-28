@@ -3,13 +3,13 @@ package com.douzone.prosync.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mail.MailSendException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 
 import javax.mail.MessagingException;
 import javax.validation.ConstraintViolationException;
@@ -36,8 +36,6 @@ public class GlobalExceptionAdvice {
     }
 
 
-
-
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> applicationHandler(RuntimeException e) {
         log.error("Error occurs {}", e.toString());
@@ -47,7 +45,6 @@ public class GlobalExceptionAdvice {
 
 
     // 메일 인증 오류
-
     @ExceptionHandler(MailSendException.class)
     public ResponseEntity<?> handleEmailFailure(MailSendException e) {
         log.error("Error occurs {}", e.toString());
@@ -77,7 +74,12 @@ public class GlobalExceptionAdvice {
         return ErrorResponse.of(e.getConstraintViolations());
     }
 
-
+    @ExceptionHandler
+    public ResponseEntity handleInvalidEnumValueException(HttpMessageNotReadableException e) {
+        log.error("Error occurs {}", e.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(ErrorCode.INVALID_ENUM_VALUE.name()));
+    }
 
 }
 
