@@ -1,10 +1,9 @@
 package com.douzone.prosync.file.repository;
 
+import com.douzone.prosync.file.dto.FileResponseDto;
 import com.douzone.prosync.file.entity.File;
 import com.douzone.prosync.file.entity.FileInfo;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -13,16 +12,27 @@ public interface FileMapper {
 
     void save(File file);
 
-    void saveFileInfo(FileInfo fileInfo);
+    void saveFileList(List<File> fileList);
+
+    @Select("select * from file where file_id=#{fileId}")
+    File findById(Long fileId);
 
     // soft delete
-    void delete(Long fileId);
+    Integer delete(Long fileId);
 
-    List<File> findFiles(@Param("tableName") String target, @Param("tableKey") Long targetId);
+    @Delete("UPDATE file SET is_deleted = true WHERE file_id IN #{fileIdList}")
+    void deleteAll(List<Long> fileIdList);
 
-    @Delete("DELETE FROM file WHERE file_id=#{fileId} AND is_deleted IS NULL")
-    int deleteFile(Long fileId);
+    List<FileResponseDto> findFilesByTableInfo(@Param("tableName") String tableName, @Param("tableKey") Long tableKey);
+
+    List<File> findByIdList(List<Long> fileIds);
+
+    // file info
+    void saveFileInfo(FileInfo fileInfo);
+
+    void saveFileInfoList(List<FileInfo> fileInfoList);
 
     @Delete("DELETE FROM file_info WHERE file_id=#{fileId}")
     Integer deleteFileInfo(Long fileId);
+
 }
