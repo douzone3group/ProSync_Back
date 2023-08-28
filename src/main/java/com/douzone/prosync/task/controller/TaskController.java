@@ -55,7 +55,7 @@ public class TaskController {
             @ApiResponse(code = 404, message = "project not found"),
             @ApiResponse(code = 500, message = "server error"),
     })
-    public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> postTask(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") @Positive Integer projectId,
+    public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> postTask(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
                                                                           @Parameter(description = "업무상태식별자", required = true, example = "1") @PathVariable("task-status-id") @Positive Integer taskStatusId,
                                                                           @RequestBody @Valid TaskPostDto requestBody,
                                                                           @Parameter(hidden = true) @ApiIgnore Principal principal) {
@@ -117,7 +117,7 @@ public class TaskController {
             @ApiImplicitParam(name = "isActive", dataType = "boolean", paramType = "query", value = "체크한 업무 보임 여부", example = "true"),
             @ApiImplicitParam(name = "view", dataType = "string", paramType = "query", value = "보드뷰 - 업무상태별 응답 출력", example = "board")
     })
-    public ResponseEntity<PageResponseDto<GetTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Integer projectId,
+    public ResponseEntity<PageResponseDto<GetTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
                                                                                           @RequestParam(required = false) String search,
                                                                                           @Parameter(hidden = true) @ApiIgnore @PageableDefault(sort = "taskId", direction = Sort.Direction.DESC) Pageable pageable,
                                                                                           @RequestParam(required = false) boolean isActive,
@@ -147,11 +147,11 @@ public class TaskController {
      */
     @PostMapping("/tasks/{task-id}/members")
     @Operation(summary = "업무 담당자 지정", description = "특정 업무에 대한 담당자들을 지정합니다.", tags = "task")
-    public ResponseEntity postTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
+    public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> postTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
                                          @RequestBody TaskMemberDto requestBody,
                                          @Parameter(hidden = true) @ApiIgnore Principal principal) {
         taskService.createTaskMember(taskId, requestBody.getMemberIds(), Long.parseLong(principal.getName()));
-        return new ResponseEntity(new TaskSimpleResponse(taskId), HttpStatus.OK);
+        return new ResponseEntity(new SingleResponseDto<>(new TaskSimpleResponse(taskId)), HttpStatus.OK);
     }
 
     /**
@@ -159,11 +159,11 @@ public class TaskController {
      */
     @DeleteMapping("/tasks/{task-id}/members")
     @Operation(summary = "업무 담당자 삭제", description = "특정 업무에 대한 담당자들을 삭제합니다.", tags = "task")
-    public ResponseEntity deleteTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
+    public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> deleteTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
                                            @RequestBody TaskMemberDto requestBody,
                                            @Parameter(hidden = true) @ApiIgnore Principal principal) {
         taskService.deleteTaskMember(taskId, requestBody.getMemberIds(), Long.parseLong(principal.getName()));
-        return new ResponseEntity(new TaskSimpleResponse(taskId), HttpStatus.OK);
+        return new ResponseEntity(new SingleResponseDto<>(new TaskSimpleResponse(taskId)), HttpStatus.OK);
     }
 
     /**

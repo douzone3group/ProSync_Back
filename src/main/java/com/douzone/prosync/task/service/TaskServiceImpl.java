@@ -37,7 +37,7 @@ public class TaskServiceImpl implements TaskService {
     private final ProjectService projectService;
 
     @Override
-    public Long createTask(TaskPostDto dto, Integer projectId, Long memberId) {
+    public Long createTask(TaskPostDto dto, Long projectId, Long memberId) {
         // TODO : 프로젝트 회원 + writer인지 확인
         Project findProject = projectService.findProject(projectId);
 
@@ -84,7 +84,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Transactional(readOnly = true)
     @Override
-    public PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Integer projectId, Pageable pageable, String search, boolean isActive, String view, Long memberId) {
+    public PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Long projectId, Pageable pageable, String search, boolean isActive, String view, Long memberId) {
         pageable = PageRequest.of(pageable.getPageNumber() == 0 ? 0 : pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
 
         Page<Task> pages = search != null && !search.trim().isEmpty() ?
@@ -149,7 +149,7 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-    private void verifyTaskStatus(Integer projectId, Integer taskStatusId, Long memberId) {
+    private void verifyTaskStatus(Long projectId, Integer taskStatusId, Long memberId) {
         taskStatusService.getTaskStatusByProject(projectId, false, memberId)
                 .stream()
                 .filter(status -> status.getTaskStatusId() == taskStatusId).findFirst()

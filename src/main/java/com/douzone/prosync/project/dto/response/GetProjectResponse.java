@@ -14,7 +14,7 @@ import lombok.Getter;
 public class GetProjectResponse{
 
     @ApiModelProperty(example = "프로젝트 아이디")
-    private Integer projectId;
+    private Long projectId;
 
     @ApiModelProperty(example = "프로젝트 이름")
     private String name;

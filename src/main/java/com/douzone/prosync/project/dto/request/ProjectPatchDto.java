@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public  class ProjectPatchDto {
 
     @ApiModelProperty(value = "프로젝트 식별자", required = true, example = "프로젝트 식별자")
-    private Integer projectId;
+    private Long projectId;
 
     @NotBlank
     @ApiModelProperty(value = "프로젝트 이름", required = true, example = "프로젝트 이름")

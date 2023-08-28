@@ -18,7 +18,7 @@ public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer projectId;
+    private Long projectId;
     private String title;
     private String intro;
 
