@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Mapper
@@ -24,6 +25,8 @@ public interface MemberMapper {
     Optional<Member> findById(Long memberId);
 
     Optional<Member> findByEmail(String email);
+
+    List<Member> getMeberList(List<Long> memberIds);
 
 
 
