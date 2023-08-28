@@ -3,6 +3,7 @@ package com.douzone.prosync.project.service;
 
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.project.dto.request.ProjectPatchDto;
 import com.douzone.prosync.project.dto.request.ProjectPostDto;
@@ -20,6 +21,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -31,11 +33,11 @@ public class ProjectServiceImpl implements ProjectService {
     private final MemberProjectMapper memberProjectMapper;
 
     // 프로젝트 생성
-    public Integer save(ProjectPostDto dto, Long memberId) {
+    public Long save(ProjectPostDto dto, Long memberId) {
         dto.setCreatedAt(LocalDateTime.now());
 
         projectMapper.createProject(dto);
-        Integer projectId = dto.getProjectId();
+        Long projectId = dto.getProjectId();
 
         memberProjectMapper.saveProjectAdmin(dto.getProjectId(), memberId);
         return projectId;
@@ -52,7 +54,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 프로젝트 삭제 (소프트)
-    public void delete(Integer projectId) {
+    public void delete(Long projectId) {
         Integer row = projectMapper.deleteProject(projectId);
         if (row < 1) {
             throw new ApplicationException(ErrorCode.PROJECT_NOT_FOUND);
@@ -60,7 +62,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     //프로젝트 조회
-    public Project findProject(Integer projectId) {
+    public Project findProject(Long projectId) {
         Optional<Project> project = projectMapper.findById(projectId);
         return project.orElseThrow(() -> new ApplicationException(ErrorCode.PROJECT_NOT_FOUND));
     }
@@ -70,6 +72,11 @@ public class ProjectServiceImpl implements ProjectService {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
         PageHelper.startPage(pageNum, pageable.getPageSize());
         List<GetProjectsResponse> projectList = projectMapper.findAll(searchCond);
+        projectList = projectList.stream().map(project -> {
+            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(project.getProjectId());
+            project.setProjectMembers(projectMembers);
+            return project;
+        }).collect(Collectors.toList());
         return new PageInfo<>(projectList);
     }
 
@@ -78,6 +85,11 @@ public class ProjectServiceImpl implements ProjectService {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
         PageHelper.startPage(pageNum, pageable.getPageSize());
         List<GetProjectsResponse> myProjects = projectMapper.findByMemberId(memberId);
+        myProjects = myProjects.stream().map(project -> {
+            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(project.getProjectId());
+            project.setProjectMembers(projectMembers);
+            return project;
+        }).collect(Collectors.toList());
         return new PageInfo<>(myProjects);
     }
 

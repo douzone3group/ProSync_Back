@@ -29,6 +29,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import static com.douzone.prosync.constant.ConstantPool.FRONT_SERVER_HOST;
+
 @Configuration
 public class CorsConfig {
     @Bean
@@ -36,7 +38,7 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("http://localhost:3000");
+        config.addAllowedOriginPattern(FRONT_SERVER_HOST);
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 

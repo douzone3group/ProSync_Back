@@ -1,3 +1,14 @@
+pagehelper:
+  auto-dialect: true
+  page-size-zero: false
+  reasonable: true
+  offset-as-page-num: false
+  row-bounds-with-count: false
+  auto-runtime-dialect: false
+  close-conn: true
+  default-count: true
+  helper-dialect: mysql
+
 spring:
   messages:
     basename: messages,errors
@@ -75,4 +86,5 @@ cloud:
       static: ap-northeast-2
     stack:
       auto: false
+
 

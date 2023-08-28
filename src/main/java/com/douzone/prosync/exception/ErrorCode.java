@@ -28,7 +28,6 @@ public enum ErrorCode {
 
     CRYPT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Crypt error"),
 
-
     // PROJECT
     PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "Project not founded"),
     PROJECT_EXISTS(HttpStatus.CONFLICT, "Project exists"),
@@ -47,9 +46,12 @@ public enum ErrorCode {
 
     // FILE
     INVALID_FILE_TYPE(HttpStatus.FORBIDDEN, "Invalid file type"),
-    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not founded"),;
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not founded"),
 
     // NOTIFICATION
+    CONNECTION_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "Sse Connection is failed"),
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Notification not founded"),
+    NOTIFICATION_CANT_READ(HttpStatus.FORBIDDEN, "Notification not read");
 
 
     // LOG

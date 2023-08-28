@@ -7,17 +7,17 @@ import java.util.List;
 
 public interface MemberProjectService {
 
-    String createInviteLink(Integer projectId);
+    String createInviteLink(Long projectId);
 
-    Integer createProjectMember(Long memberId, String inviteCode);
+    Long createProjectMember(Long memberId, String inviteCode);
 
     void updateProjectMember(Long projectMemberIdt, MemberProjectRequestDto authority, Long memberId);
 
-    MemberProjectResponseDto findProjectMember(Integer projectId, Long memberId);
+    MemberProjectResponseDto findProjectMember(Long projectId, Long memberId);
 
-    List<MemberProjectResponseDto> findProjectMembers(Integer projectId);
+    List<MemberProjectResponseDto> findProjectMembers(Long projectId);
 
     void deleteProjectMember(Long projectMemberId);
 
-    void exitProjectMember(Integer projectId, Long memberId);
+    void exitProjectMember(Long projectId, Long memberId);
 }

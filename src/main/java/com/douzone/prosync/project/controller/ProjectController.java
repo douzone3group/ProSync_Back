@@ -51,7 +51,7 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity createProject(@RequestBody @Valid ProjectPostDto dto, Principal principal) {
-        Integer projectId = projectService.save(dto, Long.parseLong(principal.getName()));
+        Long projectId = projectService.save(dto, Long.parseLong(principal.getName()));
         return new ResponseEntity(new ProjectSimpleResponse(projectId), HttpStatus.CREATED);
     }
 
@@ -66,7 +66,7 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity getProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
-                                     @PathVariable("project-id") Integer projectId) {
+                                     @PathVariable("project-id") Long projectId) {
 
         Project project = projectService.findProject(projectId);
         return new ResponseEntity(GetProjectResponse.of(project), HttpStatus.OK);
@@ -84,7 +84,7 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity updateProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
-                                        @PathVariable("project-id") Integer projectId, @RequestBody @Valid ProjectPatchDto dto) {
+                                        @PathVariable("project-id") Long projectId, @RequestBody @Valid ProjectPatchDto dto) {
         dto.setProjectId(projectId);
         projectService.update(dto);
         return new ResponseEntity(new ProjectSimpleResponse(projectId), HttpStatus.OK);
@@ -102,7 +102,7 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity deleteProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
-                                        @PathVariable("project-id") @Positive Integer projectId) {
+                                        @PathVariable("project-id") @Positive Long projectId) {
         projectService.delete(projectId);
         return new ResponseEntity(new ProjectSimpleResponse(projectId), HttpStatus.NO_CONTENT);
     }
@@ -142,11 +142,16 @@ public class ProjectController {
      * LOGIN USER
      * TODO : url 확인
      */
-    @GetMapping("/my-projects")
+    @GetMapping("/private/my")
+    @ApiOperation(value = "내 프로젝트 조회", notes = "내가 속한 프로젝트를 조회합니다.", tags = "project")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successfully retrieved", response = GetProjectsResponse.class),
+            @ApiResponse(code = 404, message = "project not found"),
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+    })
     public ResponseEntity<PageResponseDto<GetProjectsResponse>> getMemberProjects(
             @Parameter(hidden = true) @ApiIgnore @PageableDefault (sort="projectId", direction = Sort.Direction.DESC) Pageable pageable,
             @ApiIgnore Principal principal) {
-
         PageInfo<GetProjectsResponse> pageInfo = projectService.findMyProjects(Long.parseLong(principal.getName()), pageable);
         return new ResponseEntity<>(new PageResponseDto<>(pageInfo), HttpStatus.OK);
     }

@@ -18,7 +18,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
 
     private final TaskStatusMapper taskStatusMapper;
 
-    public Integer createTaskStatus(Integer projectId, TaskStatusDto.PostDto requestBody, Long memberId) {
+    public Integer createTaskStatus(Long projectId, TaskStatusDto.PostDto requestBody, Long memberId) {
         taskStatusMapper.save(projectId, requestBody);
         return requestBody.getTaskStatusId();
     }
@@ -34,7 +34,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
         taskStatusMapper.delete(taskStatusId);
     }
 
-    public List<TaskStatusDto.GetResponseDto> getTaskStatusByProject(Integer projectId, boolean isActive, Long memberId) {
+    public List<TaskStatusDto.GetResponseDto> getTaskStatusByProject(Long projectId, boolean isActive, Long memberId) {
         return taskStatusMapper.findTaskStatusByProject(projectId, isActive);
     }
 

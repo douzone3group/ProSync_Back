@@ -26,10 +26,10 @@
     </select>
 
     <select id="findAllProjects" resultType="com.douzone.prosync.project.entity.Project">
-        SELECT *
-        FROM project
-        WHERE
-            is_deleted IS NULL
+        select *
+        from project
+        where is_deleted is null
+        order by project_id desc
     </select>
 
     <update id="deleteProject">
@@ -37,8 +37,9 @@
         set is_deleted=true
         where project_id=#{projectId} and is_deleted is null
     </update>
+
     <select id="findAll">
-        select p.project_id, p.title, p.start_date, p.end_date, p.progress, m.member_id, m.name, m.profile_image
+        select p.project_id, p.title, p.start_date, p.end_date, p.progress, p.created_at, m.member_id, m.name, m.profile_image
         from project p
         join member_project mp on mp.project_id = p.project_id
         join member m on mp.member_id = m.member_id
@@ -47,7 +48,7 @@
             join bookmark b on b.project_id = p.project_id
         </if>
         <where>
-            p.is_deleted is null
+            p.is_deleted is null and pa.authority = 'ADMIN'
             <if test="search != null and search != ''">
                 and ((p.title like concat('%', #{search}, '%'))
                 or (m.name like concat('%', #{search}, '%') and pa.authority = 'admin'))
@@ -70,11 +71,12 @@
     </select>
 
     <select id="findByMemberId">
-        select p.project_id, p.title, p.start_date, p.end_date, p.progress, m.member_id, m.name, m.profile_image
+        select p.project_id, p.title, p.start_date, p.end_date, p.progress, p.created_at, m.member_id, m.name, m.profile_image
         from project p
              join member_project mp on mp.project_id = p.project_id
              join member m on mp.member_id = m.member_id
              join project_authority pa on mp.authority_id = pa.authority_id
         where pa.authority = 'ADMIN' and p.project_id in (select project_id from member_project where member_id = #{memberId})
+        order by p.project_id desc
     </select>
 </mapper>

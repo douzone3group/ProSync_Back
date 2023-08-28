@@ -21,8 +21,4 @@ public class FileInfo {
                 .fileId(fileId)
                 .build();
     }
-
-    public void setFileInfoId(Long fileInfoId) {
-        this.fileInfoId = fileInfoId;
-    }
 }

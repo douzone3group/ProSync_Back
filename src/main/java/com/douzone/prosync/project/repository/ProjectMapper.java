@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface ProjectMapper {
 
     // 프로젝트 단일 조회
-    Optional<Project> findById(Integer projectId);
+    Optional<Project> findById(Long projectId);
 
     // 프로젝트 생성
     Integer createProject(ProjectPostDto dto);
@@ -23,7 +23,7 @@ public interface ProjectMapper {
     Integer updateProject(ProjectPatchDto dto);
 
     // 프로젝트 삭제
-    Integer deleteProject(Integer projectId);
+    Integer deleteProject(Long projectId);
 
     List<GetProjectsResponse> findAll(ProjectSearchCond searchCond);
 

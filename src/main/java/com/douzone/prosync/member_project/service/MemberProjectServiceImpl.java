@@ -28,7 +28,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
 
     // 프로젝트 초대 링크 생성
     @Override
-    public String createInviteLink(Integer projectId) {
+    public String createInviteLink(Long projectId) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         String result = values.get("invite_project:" + projectId);
         return result != null ? result : createInviteCodeForProject(projectId);
@@ -36,7 +36,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
 
     // 프로젝트_회원 저장
     @Override
-    public Integer createProjectMember(Long memberId, String inviteCode) {
+    public Long createProjectMember(Long memberId, String inviteCode) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         String projectId = values.get("invite:" + inviteCode);
 
@@ -45,7 +45,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
             throw new ApplicationException(ErrorCode.PROJECT_LINK_NOT_FOUND);
         }
 
-        Integer findProjectId = Integer.parseInt(projectId);
+        Long findProjectId = Long.parseLong(projectId);
 
         // 이미 해당 프로젝트 회원일 경우 예외
         if (projectMemberMapper.findProjectMember(findProjectId, memberId).isPresent()) {
@@ -68,7 +68,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
         // 프로젝트 회원 권한을 ADMIN 으로 변경하는 경우 (위임)
         // -> 기존 ADMIN은 WRITER 권한 부여
         if (dto.getAuthority().equals(ProjectMemberAuthority.ADMIN)) {
-            Integer projectId = projectMemberMapper.findProjectByProjectMemberId(projectMemberId);
+            Long projectId = projectMemberMapper.findProjectByProjectMemberId(projectMemberId);
             Long memberProjectId = findProjectMember(projectId, memberId).getMemberProjectId();
             projectMemberMapper.updateProjectMember(memberProjectId, new MemberProjectRequestDto(ProjectMemberAuthority.WRITER));
         }
@@ -76,13 +76,13 @@ public class MemberProjectServiceImpl implements MemberProjectService {
 
     // 프로젝트 회원 조회
     @Override
-    public MemberProjectResponseDto findProjectMember(Integer projectId, Long memberId) {
+    public MemberProjectResponseDto findProjectMember(Long projectId, Long memberId) {
         return projectMemberMapper.findProjectMember(projectId, memberId).orElseThrow(() -> new ApplicationException(ErrorCode.PROJECT_MEMBER_NOT_FOUND));
     }
 
     // 프로젝트 회원 목록 조회
     @Override
-    public List<MemberProjectResponseDto> findProjectMembers(Integer projectId) {
+    public List<MemberProjectResponseDto> findProjectMembers(Long projectId) {
         return projectMemberMapper.findProjectMembers(projectId);
     }
 
@@ -97,7 +97,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
 
     // 프로젝트 나가기
     @Override
-    public void exitProjectMember(Integer projectId, Long memberId) {
+    public void exitProjectMember(Long projectId, Long memberId) {
         MemberProjectResponseDto projectMember = findProjectMember(projectId, memberId);
         // admin일 경우 위임 후 나가기 가능
         if (projectMember.getAuthority().equals("ADMIN")) {
@@ -107,7 +107,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
     }
 
 
-    private String createInviteCodeForProject(Integer projectId) {
+    private String createInviteCodeForProject(Long projectId) {
 
         String invitationCode = UUID.randomUUID().toString().replace("-", "");
 
