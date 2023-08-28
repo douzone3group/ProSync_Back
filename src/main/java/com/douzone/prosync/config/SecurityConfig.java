@@ -1,5 +1,6 @@
 package com.douzone.prosync.config;
 
+import com.douzone.prosync.authorization.filter.CustomAuthorizationFilter;
 import com.douzone.prosync.redis.RedisService;
 import com.douzone.prosync.security.jwt.*;
 import org.springframework.context.annotation.Bean;
@@ -32,9 +33,10 @@ public class SecurityConfig {
 
     private final CorsFilter corsFilter;
 
+    private final CustomAuthorizationFilter customAuthorizationFilter;
     public SecurityConfig(TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
                           JwtAccessDeniedHandler jwtAccessDeniedHandler, RedisService redisService, CorsFilter corsFilter,
-                          HmacAndBase64 hmacAndBase64, RefreshTokenProvider refreshTokenProvider) {
+                          HmacAndBase64 hmacAndBase64, RefreshTokenProvider refreshTokenProvider, CustomAuthorizationFilter customAuthorizationFilter) {
         this.tokenProvider = tokenProvider;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
@@ -42,6 +44,7 @@ public class SecurityConfig {
         this.corsFilter = corsFilter;
         this.hmacAndBase64 = hmacAndBase64;
         this.refreshTokenProvider = refreshTokenProvider;
+        this.customAuthorizationFilter = customAuthorizationFilter;
     }
 
     @Bean
@@ -67,11 +70,12 @@ public class SecurityConfig {
         http
                 // token을 사용하는 방식이기 때문에 csrf를 disable합니다.
                 .csrf(csrf -> csrf.disable())
-
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+
                 );
 
 
