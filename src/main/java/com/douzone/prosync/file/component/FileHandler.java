@@ -30,4 +30,6 @@ public interface FileHandler {
     default void deleteAll(List<String> fileNameList) {
         fileNameList.parallelStream().forEach(this::delete);
     }
+
 }
+
