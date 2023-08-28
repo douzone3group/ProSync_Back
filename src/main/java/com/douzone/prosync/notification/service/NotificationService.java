@@ -1,10 +1,15 @@
 package com.douzone.prosync.notification.service;
 
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import com.douzone.prosync.notification.dto.response.NotificationTargetSimpleResponse;
+import com.douzone.prosync.notification.notienum.NotificationCode;
+
+import java.util.List;
 
 public interface NotificationService {
-    void sendToClient(SseEmitter sseEmitter, Object data);
-    SseEmitter subscribe(Long memberId);
+    void send(Long memberId, Object data);
 
-    void send(boolean isTransmitted, Long memberId);
+    void saveAndSendNotification(Long fromMemberId, NotificationCode code, Object subject, List<Long> memberIds);
+
+     NotificationTargetSimpleResponse updateNotificationIsRead(Long targetId, Long memberId);
+
 }

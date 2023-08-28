@@ -22,11 +22,15 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
+
     private final RefreshTokenProvider refreshTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
     private final HmacAndBase64 hmacAndBase64;
+
     private final RedisService redisService;
+
     private final CorsFilter corsFilter;
 
     private final CustomAuthorizationFilter customAuthorizationFilter;
@@ -60,7 +64,7 @@ public class SecurityConfig {
                 .mvcMatchers("/api/v1/members","/api/v1/login", "/api/v1/send_verification","/api/v1/verify_code").permitAll()
                 .mvcMatchers("/v2/api-docs","/favicon.ico","/swagger-ui/index.html").permitAll()
                 .mvcMatchers("/**/*.css", "/**/*.js", "/**/*.png","/swagger-ui/**","/swagger-resources/**").permitAll()
-                .mvcMatchers("/api/v1/test", "/api/v1/subscribe/**", "/api/v1/test2").permitAll() // TODO : 테스트용
+                .mvcMatchers("/api/v1/subscribe/**").permitAll()
                 .anyRequest().authenticated();
 
         http

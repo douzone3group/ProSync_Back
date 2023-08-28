@@ -3,6 +3,11 @@ package com.douzone.prosync.task.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+
+import com.douzone.prosync.member.dto.response.MemberGetResponse;
+import com.douzone.prosync.member.repository.MemberRepository;
+import com.douzone.prosync.notification.notienum.NotificationCode;
+import com.douzone.prosync.notification.service.NotificationService;
 import com.douzone.prosync.project.entity.Project;
 import com.douzone.prosync.project.service.ProjectService;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
@@ -25,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -35,8 +41,13 @@ public class TaskServiceImpl implements TaskService {
     private final TaskStatusService taskStatusService;
     private final ProjectService projectService;
 
+
+
+    private final NotificationService notificationService;
+
+
     @Override
-    public Long createTask(TaskPostDto dto, Integer projectId, Long memberId) {
+    public Long createTask(TaskPostDto dto, Long projectId, Long memberId) {
         // TODO : 프로젝트 회원 + writer인지 확인
         Project findProject = projectService.findProject(projectId);
 
@@ -61,15 +72,21 @@ public class TaskServiceImpl implements TaskService {
             verifyTaskStatus(findTask.getProjectId(), dto.getTaskStatusId(), memberId);
         }
 
+
+
         taskMapper.update(dto);
     }
 
     @Override
     public void deleteTask(Long taskId, Long memberId) {
-        verifyExistTask(taskId);
-
+        GetTaskResponse task = verifyExistTask(taskId);
         //soft delete
         taskMapper.delete(taskId);
+
+
+        // Todo: 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
+//        taskMapper.
+//        notificationService.saveAndSendNotification(memberId, NotificationCode.TASK_REMOVE, task, );
     }
 
     @Transactional(readOnly = true)
@@ -83,7 +100,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Transactional(readOnly = true)
     @Override
-    public PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Integer projectId, Pageable pageable, String search, boolean isActive, Long memberId) {
+    public PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Long projectId, Pageable pageable, String search, boolean isActive, String view, Long memberId) {
         pageable = PageRequest.of(pageable.getPageNumber() == 0 ? 0 : pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
 
         Page<Task> pages = search != null && !search.trim().isEmpty() ?
@@ -101,7 +118,11 @@ public class TaskServiceImpl implements TaskService {
                 .map(task -> GetTasksResponse.of(task))
                 .collect(Collectors.toList());
 
-        return new PageResponseDto(GetTasksResponse.PerTasksResponse.of(res), pages);
+        // 보드뷰일 경우 task_status별 응답 리턴
+        if (view != null && view.equals("board")) {
+            return new PageResponseDto(GetTasksResponse.PerTasksResponse.of(res), pages);
+        }
+        return new PageResponseDto(res, pages);
     }
 
     /**
@@ -111,8 +132,17 @@ public class TaskServiceImpl implements TaskService {
     public void createTaskMember(Long taskId, List<Long> memberIds, Long memberId) {
         // TODO : 프로젝트 회원 + writer 인지 검증
         // TODO : MEMBER_TASK 해당되는 값이 없을 경우 처리
-        verifyExistTask(taskId);
+
+        GetTaskResponse task = verifyExistTask(taskId);
+
         taskMapper.saveTaskMember(taskId, memberIds);
+
+
+        notificationService.saveAndSendNotification(memberId, NotificationCode.TASK_ASSIGNMENT,
+                task, memberIds);
+
+
+
     }
 
     /**
@@ -122,8 +152,16 @@ public class TaskServiceImpl implements TaskService {
     public void deleteTaskMember(Long taskId, List<Long> memberIds, Long memberId) {
         // TODO : 프로젝트 회원 + writer 인지 검증
         // TODO : MEMBER_TASK 해당되는 값이 없을 경우 처리
-        verifyExistTask(taskId);
+        GetTaskResponse task = verifyExistTask(taskId);
+
         taskMapper.deleteTaskMember(taskId, memberIds);
+
+        notificationService.saveAndSendNotification(memberId, NotificationCode.TASK_EXCLUDED, task, memberIds);
+    }
+
+    @Override
+    public List<MemberGetResponse.SimpleResponse> findTaskMembers(Long taskId, long memberId) {
+        return taskMapper.findTaskMembers(taskId);
     }
 
     private GetTaskResponse findExistTask(Long taskId) {
@@ -133,13 +171,17 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 삭제된 task인 경우 예외 처리
      */
-    private void verifyExistTask(Long taskId) {
-        if (taskMapper.findExistsTask(taskId) == 0) {
+    private GetTaskResponse verifyExistTask(Long taskId) {
+
+        GetTaskResponse task = taskMapper.findById(taskId).orElse(null);
+        if (task == null) {
             throw new ApplicationException(ErrorCode.TASK_NOT_FOUND);
         }
+
+        return task;
     }
 
-    private void verifyTaskStatus(Integer projectId, Integer taskStatusId, Long memberId) {
+    private void verifyTaskStatus(Long projectId, Integer taskStatusId, Long memberId) {
         taskStatusService.getTaskStatusByProject(projectId, false, memberId)
                 .stream()
                 .filter(status -> status.getTaskStatusId() == taskStatusId).findFirst()

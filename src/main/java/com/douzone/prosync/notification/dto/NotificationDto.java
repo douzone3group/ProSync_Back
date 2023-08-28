@@ -13,7 +13,7 @@ public class NotificationDto {
     // PK
     private Long notificationId;
 
-    private NotificationCode code;
+    private String code;
 
     private Long fromMemberId;
 

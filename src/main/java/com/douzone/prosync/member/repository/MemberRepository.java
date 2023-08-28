@@ -5,6 +5,7 @@ import com.douzone.prosync.member.dto.request.MemberPatchProfileDto;
 import com.douzone.prosync.member.entity.Member;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository {
@@ -20,4 +21,6 @@ public interface MemberRepository {
      Optional<Member> findById(Long memberId);
 
      Optional<Member> findByEmail(String email);
+
+     List<Member> getMemberList(List<Long> memberIds);
 }

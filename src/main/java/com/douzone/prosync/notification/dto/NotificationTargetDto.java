@@ -1,7 +1,10 @@
 package com.douzone.prosync.notification.dto;
 
+import com.douzone.prosync.notification.notienum.NotificationPlatform;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -11,11 +14,10 @@ public class NotificationTargetDto {
     private Long notificationId;
     private Long memberId;
     private boolean isRead;
-    private boolean isDeleted;
     private Long updateUserId;
     private boolean isTransmitted;
+    private LocalDateTime createdAt;
 
 
-    // TODO:플랫폼 enum 설정하기
-    private String platform;
+    private NotificationPlatform platform;
 }

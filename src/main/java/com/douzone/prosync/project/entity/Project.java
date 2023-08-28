@@ -6,20 +6,20 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 
 
 
 @Getter
-@Entity
 @NoArgsConstructor
+@Entity
 public class Project {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer projectId;
-    private String name;
+    private Long projectId;
+    private String title;
     private String intro;
 
     private LocalDateTime createdAt;

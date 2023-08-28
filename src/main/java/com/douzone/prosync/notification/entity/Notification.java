@@ -12,7 +12,7 @@ public class Notification {
     private Long notificationId;
     private String notiCode;
     private Long fromMemberId;
-    private LocalDateTime insertTime;
+    private LocalDateTime createdAt;
     private String content;
     private String url;
 }

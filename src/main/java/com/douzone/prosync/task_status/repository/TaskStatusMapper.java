@@ -12,7 +12,7 @@ import java.util.Optional;
 @Mapper
 public interface TaskStatusMapper {
 
-    void save(@Param("projectId") Integer projectId, @Param("taskStatus") TaskStatusDto.PostDto dto);
+    void save(@Param("projectId") Long projectId, @Param("taskStatus") TaskStatusDto.PostDto dto);
 
     void update(TaskStatusDto.PatchDto dto);
 
@@ -20,7 +20,7 @@ public interface TaskStatusMapper {
     @Update("UPDATE task_status SET is_deleted=true WHERE task_status_id=#{taskStatusId}")
     void delete(Integer taskStatusId);
 
-    List<TaskStatusDto.GetResponseDto> findTaskStatusByProject(Integer projectId, boolean isActive);
+    List<TaskStatusDto.GetResponseDto> findTaskStatusByProject(Long projectId, boolean isActive);
 
     @Select("SELECT task_status_id, color, task_status, seq " +
             "FROM task_status " +
