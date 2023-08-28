@@ -39,7 +39,7 @@ public class TaskStatusController {
             @ApiResponse(code = 404, message = "project not found"),
             @ApiResponse(code = 500, message = "server error"),
     })
-    public ResponseEntity<SingleResponseDto<TaskStatusDto.SimpleResponseDto>> postTaskStatus(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") @Positive Integer projectId,
+    public ResponseEntity<SingleResponseDto<TaskStatusDto.SimpleResponseDto>> postTaskStatus(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
                                                                                              @RequestBody @Valid TaskStatusDto.PostDto requestBody,
                                                                                              @Parameter(hidden = true) @ApiIgnore Principal principal) {
         Integer taskStatusId = taskStatusService.createTaskStatus(projectId, requestBody, Long.parseLong(principal.getName()));
@@ -89,7 +89,7 @@ public class TaskStatusController {
             @ApiResponse(code = 404, message = "task_status_not_found"),
             @ApiResponse(code = 500, message = "server error"),
     })
-    public ResponseEntity<SingleResponseDto<List<TaskStatusDto.GetResponseDto>>> getProjectTaskStatus(@Parameter(description = "프로젝트 식별자", required = true, example = "1") @PathVariable("project-id") @Positive Integer projectId,
+    public ResponseEntity<SingleResponseDto<List<TaskStatusDto.GetResponseDto>>> getProjectTaskStatus(@Parameter(description = "프로젝트 식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
                                                                                                       @Parameter(description = "보여짐 체크한 업무상태 조회", required = false, example = "true") @RequestParam(required = false) boolean isActive,
                                                                                                       @Parameter(hidden = true) @ApiIgnore Principal principal) {
         return new ResponseEntity(new SingleResponseDto(taskStatusService.getTaskStatusByProject(projectId, isActive, Long.parseLong(principal.getName()))), HttpStatus.OK);

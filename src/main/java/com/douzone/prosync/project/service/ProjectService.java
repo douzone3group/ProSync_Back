@@ -10,13 +10,13 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProjectService {
 
-     Integer save(ProjectPostDto dto, Long memberId);
+     Long save(ProjectPostDto dto, Long memberId);
 
      void update(ProjectPatchDto dto);
 
-     void delete(Integer projectId);
+     void delete(Long projectId);
 
-     Project findProject(Integer projectId);
+     Project findProject(Long projectId);
 
     PageInfo<GetProjectsResponse> findAll(ProjectSearchCond searchCond, Pageable pageable);
 
