@@ -22,5 +22,5 @@ public interface CommentService {
     Page<Comment> findCommentList(Long taskId,Pageable pageable);
 
 
-//    void checkMember(Long memberId);
+    Boolean checkMember(Integer commentId, Long memberId);
 }
