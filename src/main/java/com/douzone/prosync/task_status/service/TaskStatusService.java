@@ -6,14 +6,14 @@ import java.util.List;
 
 public interface TaskStatusService {
 
-    Integer createTaskStatus(Long projectId, TaskStatusDto.PostDto requestBody, Long memberId);
+    Long createTaskStatus(Long projectId, TaskStatusDto.PostDto requestBody, Long memberId);
 
-    void updateTaskStatus(Integer taskStatusId, TaskStatusDto.PatchDto requestBody, Long memberId);
+    void updateTaskStatus(Long taskStatusId, TaskStatusDto.PatchDto requestBody, Long memberId);
 
-    void deleteTaskStatus(Integer taskStatusId, Long memberId);
+    void deleteTaskStatus(Long taskStatusId, Long memberId);
 
     List<TaskStatusDto.GetResponseDto> getTaskStatusByProject(Long projectId, boolean isActive, Long memberId);
 
-    TaskStatusDto.GetResponseDto getTaskStatus(Integer taskStatusId, Long memberId);
+    TaskStatusDto.GetResponseDto getTaskStatus(Long taskStatusId, Long memberId);
 
 }

@@ -16,7 +16,7 @@
 
     <update id="deleteComment">
         update comment
-        set is_deleted=true
+        set is_deleted=true, modified_at=now()
         where comment_id=#{commentId} and is_deleted is null
     </update>
 
