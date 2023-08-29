@@ -4,10 +4,7 @@ import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
 import com.douzone.prosync.comment.entity.Comment;
 import com.douzone.prosync.comment.repository.CommentJpaRepository;
-import com.douzone.prosync.comment.repository.CommentMybatisMapper;
 import com.douzone.prosync.comment.repository.CommentRepository;
-import com.douzone.prosync.task.dto.response.GetTaskResponse;
-import com.douzone.prosync.task.entity.Task;
 import com.douzone.prosync.task.service.TaskServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +40,6 @@ public class CommentServiceImpl  implements CommentService{
     @Override
     public void update(CommentPatchDto dto) {
         dto.setModifiedAt(LocalDateTime.now());
-        log.info("dto.content={}", dto.getContent());
 
 //        GetTaskResponse findTask = taskService.findTask(dto.getTaskId(), dto.getMemberId());
 
@@ -60,11 +57,15 @@ public class CommentServiceImpl  implements CommentService{
         return commentJpaRepository.findAllByIsDeletedNullAndTaskId(taskId,pageable);
     }
 
-//    @Override
-//    public void checkMember(Long memberId) {
-//        commentRepository.checkMember(memberId);
-//
-//    }
+    @Override
+    public Boolean checkMember(Integer commentId, Long memberId) {
+
+        Optional<Comment> comment = commentRepository.checkMember(commentId,memberId);
+
+        return comment.isPresent() ? true : false;
+
+    }
 
 
 }
+

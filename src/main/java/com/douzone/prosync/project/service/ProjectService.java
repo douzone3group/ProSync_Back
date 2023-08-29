@@ -2,26 +2,24 @@ package com.douzone.prosync.project.service;
 
 import com.douzone.prosync.project.dto.request.ProjectPatchDto;
 import com.douzone.prosync.project.dto.request.ProjectPostDto;
+import com.douzone.prosync.project.dto.request.ProjectSearchCond;
+import com.douzone.prosync.project.dto.response.GetProjectsResponse;
 import com.douzone.prosync.project.entity.Project;
-import org.springframework.data.domain.Page;
+import com.github.pagehelper.PageInfo;
 import org.springframework.data.domain.Pageable;
 
 public interface ProjectService {
 
-    public Integer save(ProjectPostDto dto);
+    Long save(ProjectPostDto dto, Long memberId);
 
-    public void update(ProjectPatchDto dto);
+    void update(ProjectPatchDto dto);
 
-    public void delete(Integer projectId);
+    void delete(Long projectId);
 
-    public Project findProject(Integer projectId);
+    Project findProject(Long projectId);
 
-    public Page<Project> findProjectList(Pageable pageable);
+    PageInfo<GetProjectsResponse> findAll(ProjectSearchCond searchCond, Pageable pageable);
 
-    // 프로젝트 종료 임박 순 정렬
-    public Page<Project> findProjectsSortedByEndDateAsc(Pageable pageable);
+    PageInfo<GetProjectsResponse> findMyProjects(Long memberId, Pageable pageable);
 
-    public Page<Project> findProjectsSortedByEndDateDesc(Pageable pageable);
-
-    public Page<Project> findProjectsByName(String name, Pageable pageable);
 }

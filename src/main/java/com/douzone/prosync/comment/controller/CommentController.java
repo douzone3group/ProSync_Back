@@ -7,6 +7,8 @@ import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
 import com.douzone.prosync.comment.entity.Comment;
 import com.douzone.prosync.comment.service.CommentService;
 import com.douzone.prosync.common.PageResponseDto;
+import com.douzone.prosync.exception.ApplicationException;
+import com.douzone.prosync.exception.ErrorCode;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -74,7 +76,13 @@ public class CommentController {
             @RequestBody @Valid CommentPatchDto dto,
             @Parameter(hidden = true) @ApiIgnore Principal principal) {
 
-//        commentService.checkMember(Long.valueOf(principal.getName()));
+        // 작성한 멤버인지 검증
+        boolean isCommentOwner = commentService.checkMember(commentId,Long.valueOf(principal.getName()));
+
+        if(!isCommentOwner) {
+            throw new ApplicationException(ErrorCode.ACCESS_FORBIDDEN);
+        }
+
         dto.setCommentId(commentId);
         commentService.update(dto);
         return new ResponseEntity(new CommentSimpleResponse(commentId), HttpStatus.OK);
@@ -119,6 +127,14 @@ public class CommentController {
     public ResponseEntity deleteComment(
             @Parameter(description = "댓글 식별자", required = true, example = "1") @PathVariable("comment-id") Integer commentId,
             @ApiIgnore Principal principal) {
+
+        // 작성한 멤버인지 검증
+        boolean isCommentOwner = commentService.checkMember(commentId,Long.valueOf(principal.getName()));
+
+        if(!isCommentOwner) {
+            throw new ApplicationException(ErrorCode.ACCESS_FORBIDDEN);
+        }
+
         commentService.delete(commentId);
         return new ResponseEntity(new CommentSimpleResponse(commentId), HttpStatus.NO_CONTENT);
     }

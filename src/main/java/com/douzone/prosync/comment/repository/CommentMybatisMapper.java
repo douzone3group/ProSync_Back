@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface CommentMybatisMapper {
@@ -23,6 +24,6 @@ public interface CommentMybatisMapper {
     // 댓글 삭제
     void deleteComment(Integer commentId);
 
-    // 댓글 멤버 검증
-//    void checkMember(Long memberId);
+//     댓글 멤버 검증
+    Optional<Comment> checkMember(Integer commentId,Long memberId);
 }
