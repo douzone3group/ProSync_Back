@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 @Validated
 @Tag(name = "comment", description = "댓글 API")
 @Slf4j
+@RequestMapping("/api/v1")
 public class CommentController {
 
     private final CommentService commentService;
@@ -54,11 +55,11 @@ public class CommentController {
             @RequestBody CommentPostDto dto,
             @Parameter(hidden = true) @ApiIgnore Principal principal) {
 
+        // 업무 존재 여부 확인
+
         dto.setMemberId(Long.valueOf(principal.getName()));
         dto.setTaskId(taskId);
         Integer commentId = commentService.save(dto);
-
-        // 생성된 댓글의 ID를 반환
 
         return new ResponseEntity<>(new CommentSimpleResponse(commentId), HttpStatus.CREATED);
     }
@@ -77,11 +78,7 @@ public class CommentController {
             @Parameter(hidden = true) @ApiIgnore Principal principal) {
 
         // 작성한 멤버인지 검증
-        boolean isCommentOwner = commentService.checkMember(commentId,Long.valueOf(principal.getName()));
-
-        if(!isCommentOwner) {
-            throw new ApplicationException(ErrorCode.ACCESS_FORBIDDEN);
-        }
+        isWriter(commentId, principal);
 
         dto.setCommentId(commentId);
         commentService.update(dto);
@@ -89,7 +86,9 @@ public class CommentController {
     }
 
 
-//     댓글 조회
+
+
+    //     댓글 조회
     @GetMapping("/tasks/{task-id}/comments")
     @ApiOperation(value = "댓글 전체 조회",notes = "댓글을 전체 조회 한다",tags = "comment")
     @ApiResponses(value = {
@@ -129,14 +128,18 @@ public class CommentController {
             @ApiIgnore Principal principal) {
 
         // 작성한 멤버인지 검증
+        isWriter(commentId, principal);
+
+        commentService.delete(commentId);
+        return new ResponseEntity(new CommentSimpleResponse(commentId), HttpStatus.NO_CONTENT);
+    }
+
+    private void isWriter(Integer commentId, Principal principal) {
         boolean isCommentOwner = commentService.checkMember(commentId,Long.valueOf(principal.getName()));
 
         if(!isCommentOwner) {
             throw new ApplicationException(ErrorCode.ACCESS_FORBIDDEN);
         }
-
-        commentService.delete(commentId);
-        return new ResponseEntity(new CommentSimpleResponse(commentId), HttpStatus.NO_CONTENT);
     }
 
 
