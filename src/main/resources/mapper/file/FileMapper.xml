@@ -3,13 +3,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.file.repository.FileMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="fileId">
-        INSERT INTO file(size, path, created_at, file_name)
-        VALUES (#{size}, #{path}, #{createdAt}, #{fileName})
+        INSERT INTO file(size, path, created_at, file_name, modified_at)
+        VALUES (#{size}, #{path}, now(), #{fileName}, now())
     </insert>
 
     <update id="delete">
         UPDATE file
-        SET is_deleted = true
+        SET is_deleted = true, modified_at=now()
         WHERE file_id=#{fileId} and is_deleted IS NULL;
     </update>
 
@@ -23,7 +23,7 @@
     <insert id="saveFileList" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="fileId">
         INSERT INTO file (size, path, created_at, file_name) VALUES
         <foreach collection="fileList" item="file" separator=",">
-            (#{file.size}, #{file.path}, #{file.createdAt}, #{file.fileName})
+            (#{file.size}, #{file.path}, now(), #{file.fileName})
         </foreach>
     </insert>
 

@@ -20,7 +20,7 @@ public class TaskStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer taskStatusId;
+    private Long taskStatusId;
 
     private String taskStatus;
 
@@ -35,4 +35,5 @@ public class TaskStatus {
     private LocalDateTime modifiedAt;
 
     private Boolean isDeleted;
+
 }

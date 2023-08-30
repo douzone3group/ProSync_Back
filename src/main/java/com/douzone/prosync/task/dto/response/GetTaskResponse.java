@@ -35,7 +35,7 @@ public class GetTaskResponse {
         private String modifiedAt;
 
         @ApiModelProperty(value = "업무상태식별자", example = "1")
-        private Integer taskStatusId;
+        private Long taskStatusId;
 
         @ApiModelProperty(value = "색상", example = "#000000")
         private String color;

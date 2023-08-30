@@ -4,13 +4,13 @@
 <mapper namespace="com.douzone.prosync.task_status.repository.TaskStatusMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="taskStatus.taskStatusId">
         INSERT INTO task_status (task_status, color, project_id, created_at, modified_at, seq)
-        VALUES (#{taskStatus.taskStatus}, #{taskStatus.color}, #{projectId}, #{taskStatus.createdAt},
-                #{taskStatus.createdAt}, 0);
+        VALUES (#{taskStatus.taskStatus}, #{taskStatus.color}, #{projectId}, now(),
+                now(), #{taskStatus.seq});
     </insert>
     <update id="update">
         UPDATE task_status
         <set>
-            modified_at=#{modifiedAt},
+            modified_at=now(),
             <if test="taskStatus != null">
                 task_status=#{taskStatus},
             </if>
@@ -31,7 +31,7 @@
           AND is_deleted IS NULL;
     </select>
     <select id="findTaskStatusByProject">
-        SELECT task_status_id, color, task_status, seq
+        SELECT task_status_id, color, task_status, seq, project_id
         FROM task_status
         <where>
             project_id=#{projectId} AND is_deleted IS NULL
@@ -39,5 +39,11 @@
                 AND seq != 0
             </if>
         </where>
+    </select>
+
+    <select id="findTaskByTaskStatus">
+        SELECT COUNT(*) FROM task_status ts
+        JOIN task t ON t.task_status_id = ts.task_status_id
+        WHERE t.task_status_id = #{taskStatusId} AND ts.is_deleted IS NULL AND t.is_deleted IS NULL
     </select>
 </mapper>

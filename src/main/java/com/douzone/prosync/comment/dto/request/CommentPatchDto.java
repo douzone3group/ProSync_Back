@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -19,8 +18,5 @@ public class CommentPatchDto {
     @NotBlank
     @ApiModelProperty(value = "댓글 내용", required = true, example = "댓글 내용")
     private String content;
-
-    @ApiModelProperty(value = "댓글 수정 일자", required = true, example = "댓글 수정 일자")
-    private LocalDateTime modifiedAt;
 
 }
