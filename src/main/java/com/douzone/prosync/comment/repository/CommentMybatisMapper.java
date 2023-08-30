@@ -2,11 +2,13 @@ package com.douzone.prosync.comment.repository;
 
 import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
+import com.douzone.prosync.comment.entity.Comment;
 import com.douzone.prosync.project.entity.Project;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface CommentMybatisMapper {
@@ -14,11 +16,14 @@ public interface CommentMybatisMapper {
     void createComment(CommentPostDto dto);
 
     // 댓글 목록 조회
-    List<Project> findAllComments();
+//    List<Comment> findAllComments();
 
     // 댓글 수정
     void updateComment(CommentPatchDto dto);
 
     // 댓글 삭제
     void deleteComment(Integer commentId);
+
+//     댓글 멤버 검증
+    Optional<Comment> checkMember(Integer commentId,Long memberId);
 }

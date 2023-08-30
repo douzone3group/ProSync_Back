@@ -6,9 +6,9 @@ import com.douzone.prosync.comment.dto.response.CommentSimpleResponse;
 import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
 import com.douzone.prosync.comment.entity.Comment;
 import com.douzone.prosync.comment.service.CommentService;
-import com.douzone.prosync.comment.service.CommentServiceImpl;
 import com.douzone.prosync.common.PageResponseDto;
-import com.douzone.prosync.project.dto.response.ProjectSimpleResponse;
+import com.douzone.prosync.exception.ApplicationException;
+import com.douzone.prosync.exception.ErrorCode;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 @Validated
 @Tag(name = "comment", description = "댓글 API")
 @Slf4j
+@RequestMapping("/api/v1")
 public class CommentController {
 
     private final CommentService commentService;
@@ -54,11 +55,11 @@ public class CommentController {
             @RequestBody CommentPostDto dto,
             @Parameter(hidden = true) @ApiIgnore Principal principal) {
 
+        // 업무 존재 여부 확인
+
         dto.setMemberId(Long.valueOf(principal.getName()));
         dto.setTaskId(taskId);
         Integer commentId = commentService.save(dto);
-
-        // 생성된 댓글의 ID를 반환
 
         return new ResponseEntity<>(new CommentSimpleResponse(commentId), HttpStatus.CREATED);
     }
@@ -76,15 +77,18 @@ public class CommentController {
             @RequestBody @Valid CommentPatchDto dto,
             @Parameter(hidden = true) @ApiIgnore Principal principal) {
 
-        dto.setCommentId(commentId);
+        // 작성한 멤버인지 검증
+        isWriter(commentId, principal);
 
-        log.info("dto.content={}", dto.getContent());
+        dto.setCommentId(commentId);
         commentService.update(dto);
         return new ResponseEntity(new CommentSimpleResponse(commentId), HttpStatus.OK);
     }
 
 
-//     댓글 조회
+
+
+    //     댓글 조회
     @GetMapping("/tasks/{task-id}/comments")
     @ApiOperation(value = "댓글 전체 조회",notes = "댓글을 전체 조회 한다",tags = "comment")
     @ApiResponses(value = {
@@ -122,8 +126,20 @@ public class CommentController {
     public ResponseEntity deleteComment(
             @Parameter(description = "댓글 식별자", required = true, example = "1") @PathVariable("comment-id") Integer commentId,
             @ApiIgnore Principal principal) {
+
+        // 작성한 멤버인지 검증
+        isWriter(commentId, principal);
+
         commentService.delete(commentId);
         return new ResponseEntity(new CommentSimpleResponse(commentId), HttpStatus.NO_CONTENT);
+    }
+
+    private void isWriter(Integer commentId, Principal principal) {
+        boolean isCommentOwner = commentService.checkMember(commentId,Long.valueOf(principal.getName()));
+
+        if(!isCommentOwner) {
+            throw new ApplicationException(ErrorCode.ACCESS_FORBIDDEN);
+        }
     }
 
 
