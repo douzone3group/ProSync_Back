@@ -13,7 +13,6 @@ public interface LogRepository {
 
     Long saveLog(LogDto dto);
 
-//    Long saveMemberLog(Long memberId,Long logId);
 
     Long deleteLog(Long logId);
 

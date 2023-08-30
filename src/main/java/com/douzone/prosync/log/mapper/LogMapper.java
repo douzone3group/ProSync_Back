@@ -15,7 +15,6 @@ public interface LogMapper {
 
     void saveLog(LogDto logDto);
 
-//    void saveMemberLog(MemberLogDto memberLogDto);
 
 
 

@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 public class CommentPatchDto {
 
     @ApiModelProperty(value = "댓글 식별자", required = true, example = "댓글 식별자")
-    private Integer commentId;
+    private Long commentId;
 
     @NotBlank
     @ApiModelProperty(value = "댓글 내용", required = true, example = "댓글 내용")

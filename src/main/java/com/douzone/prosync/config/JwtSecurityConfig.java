@@ -1,6 +1,10 @@
-package com.douzone.prosync.security.jwt;
+package com.douzone.prosync.config;
 
 import com.douzone.prosync.redis.RedisService;
+import com.douzone.prosync.security.jwt.HmacAndBase64;
+import com.douzone.prosync.security.jwt.JwtFilter;
+import com.douzone.prosync.security.jwt.RefreshTokenProvider;
+import com.douzone.prosync.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

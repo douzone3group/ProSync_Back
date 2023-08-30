@@ -28,4 +28,7 @@ public interface ProjectMapper {
     List<GetProjectsResponse> findAll(ProjectSearchCond searchCond);
 
     List<GetProjectsResponse> findByMemberId(Long memberId);
+
+    List<GetProjectsResponse> findByMemberIdPartOfAdmin(Long memberId);
+
 }
