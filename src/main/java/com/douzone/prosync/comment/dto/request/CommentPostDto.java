@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class CommentPostDto {
 
     @ApiModelProperty(value = "댓글 식별자", required = true, example = "댓글 식별자")
-    private Integer commentId;
+    private Long commentId;
 
     @NotBlank
     @ApiModelProperty(value = "댓글 내용", required = true, example = "댓글 내용")
@@ -26,4 +26,5 @@ public class CommentPostDto {
 
     private Long taskId;
 
+    private Long memberProjectId;
 }

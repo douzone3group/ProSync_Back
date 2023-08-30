@@ -2,25 +2,22 @@ package com.douzone.prosync.comment.service;
 
 import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
-import com.douzone.prosync.comment.entity.Comment;
-import org.springframework.data.domain.Page;
+import com.douzone.prosync.common.PageResponseDto;
 import org.springframework.data.domain.Pageable;
 
 
 public interface CommentService {
 
     // 댓글 생성
-    Integer save(CommentPostDto dto);
+    Long save(CommentPostDto dto);
 
     // 댓글 수정
-    void update(CommentPatchDto dto);
+    void update(CommentPatchDto dto, Long memberId);
 
     // 댓글 삭제 (소프트)
-    void delete(Integer CommentId);
+    void delete(Long commentId, Long memberId);
 
     // 댓글 리스트 조회
-    Page<Comment> findCommentList(Long taskId,Pageable pageable);
+    PageResponseDto findCommentList(Long taskId, Pageable pageable);
 
-
-    Boolean checkMember(Integer commentId, Long memberId);
 }
