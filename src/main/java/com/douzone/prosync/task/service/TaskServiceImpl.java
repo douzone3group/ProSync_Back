@@ -3,11 +3,14 @@ package com.douzone.prosync.task.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
-import com.douzone.prosync.member.dto.response.MemberGetResponse;
+import com.douzone.prosync.member_project.entity.MemberProject;
+import com.douzone.prosync.member_project.repository.MemberProjectMapper;
+import com.douzone.prosync.member_project.service.MemberProjectService;
 import com.douzone.prosync.notification.notienum.NotificationCode;
 import com.douzone.prosync.notification.service.NotificationService;
 import com.douzone.prosync.project.entity.Project;
 import com.douzone.prosync.project.service.ProjectService;
+import com.douzone.prosync.task.dto.request.TaskMemberResponseDto;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
 import com.douzone.prosync.task.dto.request.TaskPostDto;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
@@ -34,7 +37,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
     private final TaskStatusService taskStatusService;
     private final ProjectService projectService;
-
+    private final MemberProjectMapper memberProjectMapper;
 
     private final NotificationService notificationService;
 
@@ -114,22 +117,23 @@ public class TaskServiceImpl implements TaskService {
      * 업무 담당자 지정
      */
     @Override
-    public void createTaskMember(Long taskId, List<Long> memberIds, Long memberId) {
+    public void createTaskMember(Long taskId, List<Long> projectMemberIds, Long memberId) {
 
         GetTaskResponse task = verifyExistTask(taskId);
 
-        // 업무 담당자 중복 추가할 경우 예외
-        List<MemberGetResponse.SimpleResponse> taskMembers = taskMapper.findTaskMembers(taskId);
+        // 이미 담당자로 지정되어있는 경우 경우
+        List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskId);
         taskMembers.forEach(taskMember -> {
-            if (memberIds.contains(taskMember.getMemberId())) {
+            if (projectMemberIds.contains(taskMember.getMemberProjectId())) {
                 throw new ApplicationException(ErrorCode.TASK_MEMBER_EXISTS);
             }
         });
+        // TODO : projectMemberId 값이 프로젝트 회원 아닌 경우 예외
 
-        taskMapper.saveTaskMember(taskId, memberIds);
+        taskMapper.saveTaskMember(taskId, projectMemberIds);
 
         notificationService.saveAndSendNotification(memberId, NotificationCode.TASK_ASSIGNMENT,
-                task, memberIds);
+                task, projectMemberIds);
 
     }
 
@@ -137,16 +141,16 @@ public class TaskServiceImpl implements TaskService {
      * 업무 담당자 삭제
      */
     @Override
-    public void deleteTaskMember(Long taskId, List<Long> memberIds, Long memberId) {
+    public void deleteTaskMember(Long taskId, List<Long> projectMemberIds, Long memberId) {
         GetTaskResponse task = verifyExistTask(taskId);
 
-        taskMapper.deleteTaskMember(taskId, memberIds);
+        taskMapper.deleteTaskMember(taskId, projectMemberIds);
 
-        notificationService.saveAndSendNotification(memberId, NotificationCode.TASK_EXCLUDED, task, memberIds);
+        notificationService.saveAndSendNotification(memberId, NotificationCode.TASK_EXCLUDED, task, projectMemberIds);
     }
 
     @Override
-    public List<MemberGetResponse.SimpleResponse> findTaskMembers(Long taskId, long memberId) {
+    public List<TaskMemberResponseDto> findTaskMembers(Long taskId, long memberId) {
         return taskMapper.findTaskMembers(taskId);
     }
 

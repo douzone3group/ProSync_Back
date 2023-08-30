@@ -1,6 +1,6 @@
 package com.douzone.prosync.task.dto.response;
 
-import com.douzone.prosync.member.dto.response.MemberGetResponse;
+import com.douzone.prosync.task.dto.request.TaskMemberResponseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -51,7 +51,7 @@ public class GetTasksResponse {
 
     @Setter
     @ApiModelProperty(value = "업무 담당자들")
-    List<MemberGetResponse.SimpleResponse> taskMembers;
+    List<TaskMemberResponseDto> taskMembers;
 
 
     @Builder
