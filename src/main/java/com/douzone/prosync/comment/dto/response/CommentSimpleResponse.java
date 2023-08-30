@@ -11,5 +11,5 @@ import lombok.Getter;
 public class CommentSimpleResponse {
 
     @ApiModelProperty(value = "댓글식별자", example = "1")
-    private Integer commentId;
+    private Long commentId;
 }

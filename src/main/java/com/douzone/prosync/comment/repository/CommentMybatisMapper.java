@@ -3,15 +3,15 @@ package com.douzone.prosync.comment.repository;
 import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
 import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
-import com.douzone.prosync.comment.entity.Comment;
+import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.data.domain.Pageable;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Optional;
 
 @Mapper
-public interface CommentMapper {
+public interface CommentMybatisMapper {
     // 댓글 생성
     void createComment(CommentPostDto dto);
 
@@ -22,8 +22,10 @@ public interface CommentMapper {
     void updateComment(CommentPatchDto dto);
 
     // 댓글 삭제
-    void deleteComment(Integer commentId);
+    void deleteComment(Long commentId);
 
-//     댓글 멤버 검증
-    Optional<Comment> checkMember(Integer commentId,Long memberId);
+    @Select("select project_id from task where task_id = #{taskId} and is_deleted is null")
+    Long findProjectIdByTask(Long taskId);
+
+    Optional<MemberProjectResponseDto> findCommentMember(Long commentId);
 }

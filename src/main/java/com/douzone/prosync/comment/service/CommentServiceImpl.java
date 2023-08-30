@@ -3,10 +3,12 @@ package com.douzone.prosync.comment.service;
 import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
 import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
-import com.douzone.prosync.comment.entity.Comment;
-import com.douzone.prosync.comment.repository.CommentRepository;
+import com.douzone.prosync.comment.repository.CommentMybatisMapper;
+import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
+import com.douzone.prosync.member_project.service.MemberProjectService;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
 import com.douzone.prosync.task.service.TaskServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -17,60 +19,66 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CommentServiceImpl  implements CommentService{
+public class CommentServiceImpl implements CommentService {
 
     private final TaskServiceImpl taskService;
 
-    private final CommentRepository commentRepository;
+    private final CommentMybatisMapper commentMybatisMapper;
 
+    private final MemberProjectService memberProjectService;
 
     @Override
-    public Integer save(CommentPostDto dto) {
+    public Long save(CommentPostDto dto) {
         findExistTask(dto);
 
-        commentRepository.createComment(dto);
+        Long projectId = commentMybatisMapper.findProjectIdByTask(dto.getTaskId());
+        MemberProjectResponseDto projectMember = memberProjectService.findProjectMember(projectId, dto.getMemberId());
+        dto.setMemberProjectId(projectMember.getMemberProjectId());
+        commentMybatisMapper.createComment(dto);
 
         return dto.getCommentId();
     }
 
 
-
     @Override
-    public void update(CommentPatchDto dto) {
-
-        commentRepository.updateComment(dto);
-
+    public void update(CommentPatchDto dto, Long memberId) {
+        verifyCommentMember(dto.getCommentId(), memberId);
+        commentMybatisMapper.updateComment(dto);
     }
 
     @Override
-    public void delete(Integer commentId) {
-        commentRepository.deleteComment(commentId);
+    public void delete(Long commentId, Long memberId) {
+        verifyCommentMember(commentId, memberId);
+        commentMybatisMapper.deleteComment(commentId);
     }
 
     @Override
-    public PageInfo<GetCommentsResponse> findCommentList(Long taskId, Pageable pageable) {
-        // PageHelper 시작 - 페이지 및 페이지 크기 설정
-        PageHelper.startPage(pageable.getPageNumber() + 1, pageable.getPageSize()); // 페이지 인덱스는 1부터 시작합니다.
+    public PageResponseDto<GetCommentsResponse> findCommentList(Long taskId, Pageable pageable) {
+        int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
+        PageHelper.startPage(pageNum, pageable.getPageSize());
 
-        // DB에서 데이터 가져오기
-        List<GetCommentsResponse> commentsResponses = commentRepository.findAllComment(taskId);
+        List<GetCommentsResponse> comments = commentMybatisMapper.findAllComments(taskId);
+        PageInfo<GetCommentsResponse> pageInfo = new PageInfo<>(comments);
 
-        // PageInfo 객체 반환
-        return new PageInfo<>(commentsResponses);
+        comments.forEach(comment -> comment.setMemberInfo(findCommentMember(comment.getCommentId())));
+
+        return new PageResponseDto<>(pageInfo);
     }
 
-    @Override
-    public Boolean checkMember(Integer commentId, Long memberId) {
+    private MemberProjectResponseDto findCommentMember(Long commentId) {
+        return commentMybatisMapper.findCommentMember(commentId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.ACCESS_FORBIDDEN));
+    }
 
-        Optional<Comment> comment = commentRepository.checkMember(commentId,memberId);
-
-        return comment.isPresent() ? true : false;
-
+    private void verifyCommentMember(Long commentId, Long memberId) {
+        MemberProjectResponseDto commentMember = findCommentMember(commentId);
+        if (commentMember.getMemberId() != memberId) {
+            throw new ApplicationException(ErrorCode.ACCESS_FORBIDDEN);
+        }
     }
 
     private void findExistTask(CommentPostDto dto) {
@@ -79,7 +87,6 @@ public class CommentServiceImpl  implements CommentService{
             throw new ApplicationException(ErrorCode.TASK_NOT_FOUND);
         }
     }
-
-
 }
+
 

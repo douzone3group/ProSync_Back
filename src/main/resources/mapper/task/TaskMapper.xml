@@ -73,24 +73,27 @@
     </select>
 
     <insert id="saveTaskMember">
-        INSERT INTO member_task(member_id, task_id)
+        INSERT INTO member_project_task(member_project_id, task_id)
         VALUES
-        <foreach collection="memberIds" item="memberId" separator=",">
-            (#{memberId}, #{taskId})
+        <foreach collection="projectMemberIds" item="projectMemberId" separator=",">
+            (#{projectMemberId}, #{taskId})
         </foreach>
     </insert>
 
     <delete id="deleteTaskMember">
-        DELETE FROM member_task
+        DELETE FROM member_project_task
         WHERE task_id = #{taskId} AND
-        <foreach collection="memberIds" item="memberId" separator="OR" open="(" close=")">
-            member_id = #{memberId}
+        <foreach collection="projectMemberIds" item="projectMemberId" separator="OR" open="(" close=")">
+            member_project_id = #{projectMemberId}
         </foreach>
     </delete>
 
     <select id="findTaskMembers">
-        SELECT m.member_id, m.profile_image, m.name
-        FROM member m LEFT JOIN member_task mt ON m.member_id = mt.member_id
-        WHERE m.is_deleted IS NOT NULL AND task_id = #{taskId};
+        SELECT mp.member_project_id, mp.status, m.member_id, m.profile_image, m.name
+        FROM member_project_task mpt
+                 JOIN member_project mp ON mpt.member_project_id = mp.member_project_id
+                 JOIN member m ON m.member_id = mp.member_id
+                 JOIN task t on t.task_id = mpt.task_id
+        WHERE mpt.task_id = #{taskId} AND t.is_deleted IS NULL;
     </select>
 </mapper>
