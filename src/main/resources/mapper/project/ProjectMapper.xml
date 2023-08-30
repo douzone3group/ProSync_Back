@@ -34,7 +34,7 @@
 
     <update id="deleteProject">
         update project
-        set is_deleted=true
+        set is_deleted=true, modified_at=now()
         where project_id=#{projectId} and is_deleted is null
     </update>
 
@@ -79,4 +79,5 @@
         where pa.authority = 'ADMIN' and p.project_id in (select project_id from member_project where member_id = #{memberId})
         order by p.project_id desc
     </select>
+
 </mapper>

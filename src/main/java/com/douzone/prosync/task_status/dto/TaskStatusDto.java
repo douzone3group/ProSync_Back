@@ -16,7 +16,7 @@ public class TaskStatusDto {
     public static class PostDto {
 
         @ApiModelProperty(hidden = true)
-        private Integer taskStatusId;
+        private Long taskStatusId;
 
         @ApiModelProperty(value = "업무상태", required = true, example = "TODO")
         @NotBlank
@@ -41,7 +41,7 @@ public class TaskStatusDto {
     public static class PatchDto {
 
         @ApiModelProperty(hidden = true)
-        private Integer taskStatusId;
+        private Long taskStatusId;
 
         @ApiModelProperty(value = "업무상태", example = "TODO")
         private String taskStatus;
@@ -57,7 +57,7 @@ public class TaskStatusDto {
         @ApiModelProperty(hidden = true)
         private LocalDateTime modifiedAt = LocalDateTime.now();
 
-        public void setTaskStatusId(Integer taskStatusId) {
+        public void setTaskStatusId(Long taskStatusId) {
             this.taskStatusId = taskStatusId;
         }
     }
@@ -67,7 +67,7 @@ public class TaskStatusDto {
     public static class GetResponseDto {
 
         @ApiModelProperty(value = "업무상태식별자", example = "1")
-        private Integer taskStatusId;
+        private Long taskStatusId;
 
         @ApiModelProperty(value = "색상", example = "#000000")
         private String color;
@@ -77,6 +77,9 @@ public class TaskStatusDto {
 
         @ApiModelProperty(value = "보여질 순서 (순서지정 x 는 0으로 표시)", example = "1")
         private Integer seq;
+
+        @ApiModelProperty(value = "프로젝트식별자", example = "1")
+        private Long projectId;
     }
 
 
@@ -86,6 +89,6 @@ public class TaskStatusDto {
     public static class SimpleResponseDto {
 
         @ApiModelProperty(value = "업무상태식별자", example = "1")
-        private Integer taskStatusId;
+        private Long taskStatusId;
     }
 }

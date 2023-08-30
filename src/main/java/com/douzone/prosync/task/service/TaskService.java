@@ -20,7 +20,7 @@ public interface TaskService {
 
     GetTaskResponse findTask(Long taskId, Long memberId);
 
-    PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Long projectId, Pageable pageable, String search, boolean isActive, String view, Long memberId);
+    PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Long projectId, Pageable pageable, String search, boolean isActive, String view, String status, Long memberId);
 
     void createTaskMember(Long taskId, List<Long> memberIds, Long memberId);
 

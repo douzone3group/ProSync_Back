@@ -140,9 +140,8 @@ public class ProjectController {
     /**
      * 내 프로젝트 목록 조회
      * LOGIN USER
-     * TODO : url 확인
      */
-    @GetMapping("/private/my")
+    @GetMapping("/my-projects")
     @ApiOperation(value = "내 프로젝트 조회", notes = "내가 속한 프로젝트를 조회합니다.", tags = "project")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = GetProjectsResponse.class),
