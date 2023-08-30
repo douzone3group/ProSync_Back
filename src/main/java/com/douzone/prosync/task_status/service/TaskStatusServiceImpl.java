@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-//TODO : 권한가진 프로젝트회원인지 검증
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -18,19 +17,23 @@ public class TaskStatusServiceImpl implements TaskStatusService {
 
     private final TaskStatusMapper taskStatusMapper;
 
-    public Integer createTaskStatus(Long projectId, TaskStatusDto.PostDto requestBody, Long memberId) {
+    public Long createTaskStatus(Long projectId, TaskStatusDto.PostDto requestBody) {
         taskStatusMapper.save(projectId, requestBody);
         return requestBody.getTaskStatusId();
     }
 
-    public void updateTaskStatus(Integer taskStatusId, TaskStatusDto.PatchDto requestBody, Long memberId) {
+    public void updateTaskStatus(Long taskStatusId, TaskStatusDto.PatchDto requestBody, Long memberId) {
         requestBody.setTaskStatusId(taskStatusId);
         verifyExistTaskStatus(taskStatusId);
         taskStatusMapper.update(requestBody);
     }
 
-    public void deleteTaskStatus(Integer taskStatusId, Long memberId) {
+    public void deleteTaskStatus(Long taskStatusId, Long memberId) {
         verifyExistTaskStatus(taskStatusId);
+        // task에 삭제하는 task status가 지정되어 있으면 예외 던짐
+        if (taskStatusMapper.findTaskByTaskStatus(taskStatusId) != 0) {
+            throw new ApplicationException(ErrorCode.TASK_EXISTS);
+        }
         taskStatusMapper.delete(taskStatusId);
     }
 
@@ -38,13 +41,18 @@ public class TaskStatusServiceImpl implements TaskStatusService {
         return taskStatusMapper.findTaskStatusByProject(projectId, isActive);
     }
 
-    public TaskStatusDto.GetResponseDto getTaskStatus(Integer taskStatusId, Long memberId) {
-        return taskStatusMapper.findTaskStatus(taskStatusId).orElseThrow(() -> new ApplicationException(ErrorCode.TASK_STATUS_NOT_FOUND));
+    public TaskStatusDto.GetResponseDto getTaskStatus(Long taskStatusId, Long memberId) {
+        TaskStatusDto.GetResponseDto findTaskStatus = findTaskStatus(taskStatusId);
+        return findTaskStatus;
     }
 
-    private void verifyExistTaskStatus(Integer taskStatusId) {
+    private void verifyExistTaskStatus(Long taskStatusId) {
         if (taskStatusMapper.findExistsTaskStatus(taskStatusId) == 0) {
-                throw new ApplicationException(ErrorCode.TASK_STATUS_NOT_FOUND);
+            throw new ApplicationException(ErrorCode.TASK_STATUS_NOT_FOUND);
         }
+    }
+
+    private TaskStatusDto.GetResponseDto findTaskStatus(Long taskStatusId) {
+        return taskStatusMapper.findTaskStatus(taskStatusId).orElseThrow(() -> new ApplicationException(ErrorCode.TASK_STATUS_NOT_FOUND));
     }
 }

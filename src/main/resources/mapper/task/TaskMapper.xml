@@ -4,18 +4,20 @@
 <mapper namespace="com.douzone.prosync.task.repository.TaskMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="task.taskId">
         INSERT INTO task(project_id, classification, title, detail, start_date, end_date, task_status_id, created_at, modified_at)
-        VALUE (#{projectId}, #{task.classification}, #{task.title}, #{task.detail}, #{task.startDate}, #{task.endDate}, #{task.taskStatusId}, #{task.createdAt}, #{task.createdAt})
+        VALUE (#{projectId}, #{task.classification}, #{task.title}, #{task.detail}, #{task.startDate}, #{task.endDate}, #{task.taskStatusId}, now(), now())
     </insert>
+
     <select id="findById">
         SELECT * FROM task t
         LEFT JOIN task_status ts
         ON t.task_status_id = ts.task_status_id
         WHERE t.task_id=#{taskId} and t.is_deleted IS NULL AND ts.is_deleted IS NULL
     </select>
+
     <update id="update">
         UPDATE task
         <set>
-            modified_at=#{modifiedAt},
+            modified_at=now(),
             <if test="classification != null">
                 classification=#{classification},
             </if>
@@ -38,23 +40,38 @@
         WHERE task_id = #{taskId}
           AND is_deleted IS NULL
     </update>
-    <select id="findTaskCount" resultType="int">
-        SELECT count(*) FROM task
+
+    <resultMap id="getTasksResponseMap" type="GetTasksResponse">
+        <id property="taskId" column="task_id"/>
+        <result property="classification" column="classification"/>
+        <result property="title" column="title"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="modifiedAt" column="modified_at"/>
+        <result property="taskStatusId" column="task_status_id"/>
+        <result property="color" column="color"/>
+        <result property="taskStatus" column="task_status"/>
+        <result property="seq" column="seq"/>
+    </resultMap>
+
+    <select id="findTasks" resultMap="getTasksResponseMap">
+        select t.task_id, t.classification, t.title, t.start_date, t.end_date, t.created_at, t.modified_at,
+               ts.task_status_id, ts.color, ts.task_status, ts.seq from task t
+        join task_status ts on ts.task_status_id = t.task_status_id
         <where>
-            project_id=#{projectId}
-            AND is_deleted IS NULL
+            and t.project_id = #{projectId} and t.is_deleted is null
             <if test="search != null and search != ''">
-                AND (title LIKE concat('%', #{search}, '%')
-                OR task_status LIKE concat('%', #{search}, '%'))
+                and (t.title like concat('%', #{search}, '%') or
+                ts.task_status like concat('%', #{search}, '%'))
             </if>
+           <if test="isActive != null and isActive == true">
+               and not (ts.seq = 0 or ts.seq is null)
+           </if>
         </where>
+        order by t.task_id desc
     </select>
-    <select id="findExistsTask" resultType="int">
-        SELECT count(*)
-        FROM task
-        WHERE task_id = #{taskId}
-          AND is_deleted IS NULL
-    </select>
+
     <insert id="saveTaskMember">
         INSERT INTO member_task(member_id, task_id)
         VALUES
@@ -62,6 +79,7 @@
             (#{memberId}, #{taskId})
         </foreach>
     </insert>
+
     <delete id="deleteTaskMember">
         DELETE FROM member_task
         WHERE task_id = #{taskId} AND
@@ -69,9 +87,10 @@
             member_id = #{memberId}
         </foreach>
     </delete>
+
     <select id="findTaskMembers">
         SELECT m.member_id, m.profile_image, m.name
         FROM member m LEFT JOIN member_task mt ON m.member_id = mt.member_id
-        WHERE m.is_deleted IS NOT NULL;
+        WHERE m.is_deleted IS NOT NULL AND task_id = #{taskId};
     </select>
 </mapper>

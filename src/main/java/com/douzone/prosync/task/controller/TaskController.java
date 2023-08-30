@@ -32,9 +32,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 
-//TODO : token 완료 후 인증 로직 추가
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
@@ -47,6 +47,7 @@ public class TaskController {
 
     /**
      * 업무 생성
+     * ADMIN, WRITER
      */
     @PostMapping("/projects/{project-id}/tasks/task-status/{task-status-id}")
     @Operation(summary = "업무 생성", description = "프로젝트에 대한 신규 업무를 생성합니다.", tags = "task")
@@ -56,7 +57,7 @@ public class TaskController {
             @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> postTask(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
-                                                                          @Parameter(description = "업무상태식별자", required = true, example = "1") @PathVariable("task-status-id") @Positive Integer taskStatusId,
+                                                                          @Parameter(description = "업무상태식별자", required = true, example = "1") @PathVariable("task-status-id") @Positive Long taskStatusId,
                                                                           @RequestBody @Valid TaskPostDto requestBody,
                                                                           @Parameter(hidden = true) @ApiIgnore Principal principal) {
         requestBody.setTaskStatusId(taskStatusId);
@@ -66,6 +67,7 @@ public class TaskController {
 
     /**
      * 업무 수정
+     * ADMIN, WRITER
      */
     @PatchMapping("/tasks/{task-id}")
     @Operation(summary = "업무 수정", description = "특정 업무를 수정합니다.", tags = "task")
@@ -83,6 +85,7 @@ public class TaskController {
 
     /**
      * 업무 삭제
+     * ADMIN, WRITER
      */
     @DeleteMapping("/tasks/{task-id}")
     @Operation(summary = "업무 삭제", description = "특정 업무를 삭제합니다.", tags = "task")
@@ -98,11 +101,9 @@ public class TaskController {
     }
 
     /**
-     * 프로젝트 업무 리스트 조회
-     * @param projectId : 프로젝트 식별자
-     * @param search    : 검색 키워드
-     * @param pageable  : page - 조회할 페이지 번호, size - 한페이지에 보여질 요소 개수
-     * @return 프로젝트 한건에 해당하는 업무 리스트를 페이지 형식으로 리턴합니다.
+     * 프로젝트 업무 리스트 조회 - ok
+     * public - LOGIN USER
+     * private - ADMIN, WRITER, READER
      */
     @GetMapping("/projects/{project-id}/tasks")
     @Operation(summary = "프로젝트 업무 목록 조회", description = "프로젝트 목록을 페이지네이션으로 조회합니다. 검색창으로 통해 프로젝트를 검색할 수 있습니다.", tags = "task")
@@ -115,20 +116,24 @@ public class TaskController {
             @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query", value = "한페이지에 보여질 요소 개수", defaultValue = "10", example = "20"),
             @ApiImplicitParam(name = "search", dataType = "string", paramType = "query", value = "검색키워드", example = "제목/작성자/업무상태"),
             @ApiImplicitParam(name = "isActive", dataType = "boolean", paramType = "query", value = "체크한 업무 보임 여부", example = "true"),
-            @ApiImplicitParam(name = "view", dataType = "string", paramType = "query", value = "보드뷰 - 업무상태별 응답 출력", example = "board")
+            @ApiImplicitParam(name = "view", dataType = "string", paramType = "query", value = "보드뷰 - 업무상태별 응답 출력", example = "board"),
+            @ApiImplicitParam(name = "status", dataType = "string", paramType = "query", value = "업무상태", example = "todo")
     })
     public ResponseEntity<PageResponseDto<GetTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
                                                                                           @RequestParam(required = false) String search,
-                                                                                          @Parameter(hidden = true) @ApiIgnore @PageableDefault(sort = "taskId", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                                          @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = 8) Pageable pageable,
                                                                                           @RequestParam(required = false) boolean isActive,
                                                                                           @RequestParam(required = false) String view,
+                                                                                          @RequestParam(required = false) String status,
                                                                                           @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        PageResponseDto pageResponseDto = taskService.findTaskList(projectId, pageable, search, isActive, view, Long.parseLong(principal.getName()));
+        PageResponseDto pageResponseDto = taskService.findTaskList(projectId, pageable, search, isActive, view, status, getMemberId(principal));
         return new ResponseEntity<>(pageResponseDto, HttpStatus.OK);
     }
 
     /**
-     * 업무 상세 조회
+     * 업무 상세 조회 - ok
+     * public - ALL USER
+     * private - ADMIN, WRITER, READER
      */
     @GetMapping("/tasks/{task-id}")
     @Operation(summary = "업무 상세 조회", description = "특정 업무을 조회합니다.", tags = "task")
@@ -139,41 +144,51 @@ public class TaskController {
     })
     public ResponseEntity<SingleResponseDto<GetTaskResponse>> getTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") Long taskId,
                                                                       @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        return new ResponseEntity<>(new SingleResponseDto<>(taskService.findTask(taskId, Long.parseLong(principal.getName()))), HttpStatus.OK);
+        return new ResponseEntity<>(new SingleResponseDto<>(taskService.findTask(taskId, getMemberId(principal))), HttpStatus.OK);
     }
 
     /**
      * 업무 담당자 (복수) 설정
+     * ADMIN, WRITER
      */
     @PostMapping("/tasks/{task-id}/members")
     @Operation(summary = "업무 담당자 지정", description = "특정 업무에 대한 담당자들을 지정합니다.", tags = "task")
     public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> postTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
-                                         @RequestBody TaskMemberDto requestBody,
-                                         @Parameter(hidden = true) @ApiIgnore Principal principal) {
+                                                                                @RequestBody TaskMemberDto requestBody,
+                                                                                @Parameter(hidden = true) @ApiIgnore Principal principal) {
         taskService.createTaskMember(taskId, requestBody.getMemberIds(), Long.parseLong(principal.getName()));
         return new ResponseEntity(new SingleResponseDto<>(new TaskSimpleResponse(taskId)), HttpStatus.OK);
     }
 
     /**
      * 업무 담당자 삭제 (DB 삭제)
+     * ADMIN, WRITER
      */
     @DeleteMapping("/tasks/{task-id}/members")
     @Operation(summary = "업무 담당자 삭제", description = "특정 업무에 대한 담당자들을 삭제합니다.", tags = "task")
     public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> deleteTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
-                                           @RequestBody TaskMemberDto requestBody,
-                                           @Parameter(hidden = true) @ApiIgnore Principal principal) {
+                                                                                  @RequestBody TaskMemberDto requestBody,
+                                                                                  @Parameter(hidden = true) @ApiIgnore Principal principal) {
         taskService.deleteTaskMember(taskId, requestBody.getMemberIds(), Long.parseLong(principal.getName()));
         return new ResponseEntity(new SingleResponseDto<>(new TaskSimpleResponse(taskId)), HttpStatus.OK);
     }
 
     /**
      * 업무 담당자 목록 조회
+     * public - ALL USER
+     * private - ADMIN, WRITER, READER
      */
     @GetMapping("/tasks/{task-id}/members")
     @Operation(summary = "업무 담당자 목록 조회", description = "특정 업무에 대한 담당자를 전체 조회합니다.", tags = "task")
     public ResponseEntity<SingleResponseDto<List<MemberGetResponse.SimpleResponse>>> getTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
-                                        @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        List<MemberGetResponse.SimpleResponse> res = taskService.findTaskMembers(taskId, Long.parseLong(principal.getName()));
+                                                                                                   @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        List<MemberGetResponse.SimpleResponse> res = taskService.findTaskMembers(taskId, getMemberId(principal));
         return new ResponseEntity(new SingleResponseDto<>(res), HttpStatus.OK);
+    }
+
+    private Long getMemberId(Principal principal) {
+        return Optional.ofNullable(principal)
+                .map(p -> Long.parseLong(p.getName()))
+                .orElse(null);
     }
 }

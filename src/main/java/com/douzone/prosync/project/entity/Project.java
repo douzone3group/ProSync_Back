@@ -27,8 +27,7 @@ public class Project {
     private String endDate;
     private LocalDateTime modifiedAt;
 
-    private Float progress;
-    private Boolean publicyn;
+    private Boolean isPublic;
     private String projectImage;
     private Boolean isDeleted;
 }
