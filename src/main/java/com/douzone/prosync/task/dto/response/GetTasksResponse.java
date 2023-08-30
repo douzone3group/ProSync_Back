@@ -1,11 +1,9 @@
 package com.douzone.prosync.task.dto.response;
 
-import com.douzone.prosync.task.entity.Task;
-import com.douzone.prosync.task_status.entity.TaskStatus;
+import com.douzone.prosync.task.dto.request.TaskMemberResponseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +11,8 @@ import java.util.stream.Collectors;
 
 @Builder
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @ApiModel("[RESPONSE] TASK LIST - GET")
 public class GetTasksResponse {
 
@@ -38,7 +38,7 @@ public class GetTasksResponse {
     private String modifiedAt;
 
     @ApiModelProperty(value = "업무상태식별자", example = "1")
-    private Integer taskStatusId;
+    private Long taskStatusId;
 
     @ApiModelProperty(value = "색상", example = "#000000")
     private String color;
@@ -49,28 +49,17 @@ public class GetTasksResponse {
     @ApiModelProperty(value = "보여질 순서 (순서지정 x 는 0으로 표시)", example = "1")
     private Integer seq;
 
-    public static GetTasksResponse of(Task task) {
-        TaskStatus taskStatus = task.getTaskStatus();
-        return GetTasksResponse.builder()
-                .taskId(task.getTaskId())
-                .classification(task.getClassification())
-                .title(task.getTitle())
-                .startDate(task.getStartDate())
-                .endDate(task.getEndDate())
-                .createdAt(task.getCreatedAt().toString())
-                .modifiedAt(task.getModifiedAt().toString())
-                .taskStatusId(taskStatus.getTaskStatusId())
-                .taskStatus(taskStatus.getTaskStatus())
-                .seq(taskStatus.getSeq())
-                .color(taskStatus.getColor()).build();
-    }
+    @Setter
+    @ApiModelProperty(value = "업무 담당자들")
+    List<TaskMemberResponseDto> taskMembers;
+
 
     @Builder
     @Getter
     public static class PerTasksResponse {
 
         @ApiModelProperty(value = "업무상태식별자", example = "1")
-        private Integer taskStatusId;
+        private Long taskStatusId;
 
         @ApiModelProperty(value = "업무상태", example = "TODO")
         private String taskStatus;
@@ -84,7 +73,7 @@ public class GetTasksResponse {
         private List<GetTasksResponse> list;
 
         public static List<PerTasksResponse> of(List<GetTasksResponse> list) {
-            List<Integer> status = new ArrayList<>();
+            List<Long> status = new ArrayList<>();
             List<PerTasksResponse> perTasksResponses = new ArrayList<>();
             list.forEach(res -> {
                 if (!status.contains(res.getTaskStatusId())) {

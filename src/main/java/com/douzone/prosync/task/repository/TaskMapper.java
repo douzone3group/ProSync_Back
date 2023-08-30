@@ -1,10 +1,14 @@
 package com.douzone.prosync.task.repository;
 
-import com.douzone.prosync.member.dto.response.MemberGetResponse;
+import com.douzone.prosync.task.dto.request.TaskMemberResponseDto;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
 import com.douzone.prosync.task.dto.request.TaskPostDto;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
-import org.apache.ibatis.annotations.*;
+import com.douzone.prosync.task.dto.response.GetTasksResponse;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,16 +24,16 @@ public interface TaskMapper {
     void deleteById(Long taskId);
 
     //soft delete
-    @Update("UPDATE task SET is_deleted=true WHERE task_id=#{taskId}")
+    @Update("UPDATE task SET is_deleted=true, modified_at=now() WHERE task_id=#{taskId}")
     void delete(Long taskId);
 
     void update(TaskPatchDto dto);
 
-    int findExistsTask(Long taskId);
+    void saveTaskMember(@Param("taskId") Long taskId, @Param("projectMemberIds") List<Long> projectMemberIds);
 
-    void saveTaskMember(@Param("taskId") Long taskId, @Param("memberIds") List<Long> memberIds);
+    void deleteTaskMember(@Param("taskId") Long taskId, @Param("projectMemberIds") List<Long> projectMemberIds);
 
-    void deleteTaskMember(Long taskId, List<Long> memberIds);
+    List<TaskMemberResponseDto> findTaskMembers(Long taskId);
 
-    List<MemberGetResponse.SimpleResponse> findTaskMembers(Long taskId);
+    List<GetTasksResponse> findTasks(@Param("projectId") Long projectId, @Param("search") String search, @Param("isActive") Boolean isActive);
 }

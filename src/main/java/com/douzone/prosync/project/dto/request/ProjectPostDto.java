@@ -40,11 +40,9 @@ public  class ProjectPostDto {
 
     @NotNull
     @ApiModelProperty(value = "프로젝트 공개여부", required = true, example = "프로젝트 공개여부")
-    private Boolean publicyn;
+    private Boolean isPublic;
 
     @ApiModelProperty(value = "프로젝트 이미지", required = true, example = "프로젝트 이미지")
     private String projectImage;
 
-    @ApiModelProperty(value = "프로젝트 생성 날짜", required = true, example = "프로젝트 생성 날짜")
-    private LocalDateTime createdAt;
 }

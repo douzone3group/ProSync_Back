@@ -11,4 +11,10 @@ public class MemberProject {
     private Long memberId;
     private Long projectId;
     private Long authorityId;
+    private MemberProjectStatus status;
+
+    public enum MemberProjectStatus {
+        ACTIVE,
+        QUIT,
+    }
 }

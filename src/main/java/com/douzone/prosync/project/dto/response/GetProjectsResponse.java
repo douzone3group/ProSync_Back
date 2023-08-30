@@ -25,8 +25,6 @@ public class GetProjectsResponse {
     @ApiModelProperty(example = "프로젝트 종료 날짜")
     private String endDate;
 
-    @ApiModelProperty(example = "프로젝트 진행도")
-    private Float progress;
     private String createdAt;
 
     private Long memberId;

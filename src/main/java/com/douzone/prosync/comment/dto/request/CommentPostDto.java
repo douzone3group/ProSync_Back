@@ -16,17 +16,15 @@ import java.time.LocalDateTime;
 public class CommentPostDto {
 
     @ApiModelProperty(value = "댓글 식별자", required = true, example = "댓글 식별자")
-    private Integer commentId;
+    private Long commentId;
 
     @NotBlank
     @ApiModelProperty(value = "댓글 내용", required = true, example = "댓글 내용")
     private String content;
 
-    @ApiModelProperty(value = "댓글 생성 일자", required = true, example = "댓글 생성 일자")
-    private LocalDateTime createdAt;
-
     private Long memberId;
 
     private Long taskId;
 
+    private Long memberProjectId;
 }
