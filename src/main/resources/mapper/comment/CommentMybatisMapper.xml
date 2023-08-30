@@ -26,4 +26,11 @@
         WHERE
             is_deleted is null
     </select>
+
+    <select id="checkMember" resultType="com.douzone.prosync.comment.entity.Comment">
+        select *
+        from comment
+        where member_id=#{memberId} and comment_id=#{commentId} and is_deleted is null
+    </select>
+
 </mapper>
