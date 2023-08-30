@@ -4,14 +4,11 @@ import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
 import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
 import com.douzone.prosync.comment.entity.Comment;
-import com.douzone.prosync.comment.repository.CommentMapper;
 import com.douzone.prosync.comment.repository.CommentRepository;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
-import com.douzone.prosync.log.dto.response.LogResponse;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
 import com.douzone.prosync.task.service.TaskServiceImpl;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +32,6 @@ public class CommentServiceImpl  implements CommentService{
     @Override
     public Integer save(CommentPostDto dto) {
         findExistTask(dto);
-        dto.setCreatedAt(LocalDateTime.now());
 
         commentRepository.createComment(dto);
 
@@ -48,7 +42,6 @@ public class CommentServiceImpl  implements CommentService{
 
     @Override
     public void update(CommentPatchDto dto) {
-        dto.setModifiedAt(LocalDateTime.now());
 
         commentRepository.updateComment(dto);
 
