@@ -116,11 +116,12 @@ public class TaskController {
             @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query", value = "한페이지에 보여질 요소 개수", defaultValue = "10", example = "20"),
             @ApiImplicitParam(name = "search", dataType = "string", paramType = "query", value = "검색키워드", example = "제목/작성자/업무상태"),
             @ApiImplicitParam(name = "isActive", dataType = "boolean", paramType = "query", value = "체크한 업무 보임 여부", example = "true"),
-            @ApiImplicitParam(name = "view", dataType = "string", paramType = "query", value = "보드뷰 - 업무상태별 응답 출력", example = "board")
+            @ApiImplicitParam(name = "view", dataType = "string", paramType = "query", value = "보드뷰 - 업무상태별 응답 출력", example = "board"),
+            @ApiImplicitParam(name = "status", dataType = "string", paramType = "query", value = "업무상태", example = "todo")
     })
     public ResponseEntity<PageResponseDto<GetTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
                                                                                           @RequestParam(required = false) String search,
-                                                                                          @Parameter(hidden = true) @ApiIgnore @PageableDefault(sort = "taskId", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                                          @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = 8) Pageable pageable,
                                                                                           @RequestParam(required = false) boolean isActive,
                                                                                           @RequestParam(required = false) String view,
                                                                                           @RequestParam(required = false) String status,

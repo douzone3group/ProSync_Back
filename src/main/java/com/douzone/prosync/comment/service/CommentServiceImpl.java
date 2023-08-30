@@ -32,7 +32,6 @@ public class CommentServiceImpl  implements CommentService{
     @Override
     public Integer save(CommentPostDto dto) {
         findExistTask(dto);
-        dto.setCreatedAt(LocalDateTime.now());
 
         commentRepository.createComment(dto);
 
@@ -42,7 +41,6 @@ public class CommentServiceImpl  implements CommentService{
 
     @Override
     public void update(CommentPatchDto dto) {
-        dto.setModifiedAt(LocalDateTime.now());
 
         commentRepository.updateComment(dto);
 

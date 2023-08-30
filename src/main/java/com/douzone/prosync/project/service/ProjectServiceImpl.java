@@ -1,6 +1,7 @@
 package com.douzone.prosync.project.service;
 
 
+import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -78,29 +78,32 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 프로젝트 리스트 조회
-    public PageInfo<GetProjectsResponse> findAll(ProjectSearchCond searchCond, Pageable pageable) {
+    public PageResponseDto<GetProjectsResponse> findAll(ProjectSearchCond searchCond, Pageable pageable) {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
         PageHelper.startPage(pageNum, pageable.getPageSize());
+
         List<GetProjectsResponse> projectList = projectMapper.findAll(searchCond);
-        projectList = projectList.stream().map(project -> {
-            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(project.getProjectId());
-            project.setProjectMembers(projectMembers);
-            return project;
-        }).collect(Collectors.toList());
-        return new PageInfo<>(projectList);
+
+        return getGetProjectsResponsePageResponseDto(projectList);
     }
 
 
-    public PageInfo<GetProjectsResponse> findMyProjects(Long memberId, Pageable pageable) {
+    public PageResponseDto<GetProjectsResponse> findMyProjects(Long memberId, Pageable pageable) {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
         PageHelper.startPage(pageNum, pageable.getPageSize());
+
         List<GetProjectsResponse> myProjects = projectMapper.findByMemberId(memberId);
-        myProjects = myProjects.stream().map(project -> {
-            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(project.getProjectId());
-            project.setProjectMembers(projectMembers);
-            return project;
-        }).collect(Collectors.toList());
-        return new PageInfo<>(myProjects);
+        return getGetProjectsResponsePageResponseDto(myProjects);
     }
 
+    private PageResponseDto<GetProjectsResponse> getGetProjectsResponsePageResponseDto(List<GetProjectsResponse> projects) {
+        PageInfo<GetProjectsResponse> pageInfo = new PageInfo<>(projects);
+
+        projects.forEach(project -> {
+            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(project.getProjectId());
+            project.setProjectMembers(projectMembers);
+        });
+
+        return new PageResponseDto<>(pageInfo);
+    }
 }

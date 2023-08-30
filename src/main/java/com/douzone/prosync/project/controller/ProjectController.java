@@ -9,14 +9,12 @@ import com.douzone.prosync.project.dto.response.GetProjectsResponse;
 import com.douzone.prosync.project.dto.response.ProjectSimpleResponse;
 import com.douzone.prosync.project.entity.Project;
 import com.douzone.prosync.project.service.ProjectService;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -125,7 +123,7 @@ public class ProjectController {
             @ApiImplicitParam(name = "sort", dataType = "string", paramType = "query", value = "정렬기준 (최신순 - 기본, 마감임박순)", defaultValue = "latest", example = "latest or endDate")}
     )
     public ResponseEntity<PageResponseDto<GetProjectsResponse>> getProjectList(
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size=8, sort="projectId", direction = Sort.Direction.DESC) Pageable pageable,
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = 8) Pageable pageable,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean bookmark,
             @RequestParam(required = false) String sort,
@@ -133,8 +131,8 @@ public class ProjectController {
 
         Long memberId = principal != null ? Long.parseLong(principal.getName()) : null;
         ProjectSearchCond searchCond = new ProjectSearchCond(search, bookmark, sort, memberId);
-        PageInfo<GetProjectsResponse> pageInfo = projectService.findAll(searchCond, pageable);
-        return new ResponseEntity(new PageResponseDto<>(pageInfo), HttpStatus.OK);
+        PageResponseDto<GetProjectsResponse> response = projectService.findAll(searchCond, pageable);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     /**
@@ -149,10 +147,10 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity<PageResponseDto<GetProjectsResponse>> getMemberProjects(
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault (sort="projectId", direction = Sort.Direction.DESC) Pageable pageable,
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = 8) Pageable pageable,
             @ApiIgnore Principal principal) {
-        PageInfo<GetProjectsResponse> pageInfo = projectService.findMyProjects(Long.parseLong(principal.getName()), pageable);
-        return new ResponseEntity<>(new PageResponseDto<>(pageInfo), HttpStatus.OK);
+        PageResponseDto<GetProjectsResponse> response = projectService.findMyProjects(Long.parseLong(principal.getName()), pageable);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

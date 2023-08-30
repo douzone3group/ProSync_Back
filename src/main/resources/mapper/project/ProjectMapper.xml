@@ -48,7 +48,8 @@
             join bookmark b on b.project_id = p.project_id
         </if>
         <where>
-            p.is_deleted is null and pa.authority = 'ADMIN'
+            (mp.member_id = #{memberId} or p.is_public = true)
+            and (p.is_deleted is null and pa.authority = 'ADMIN')
             <if test="search != null and search != ''">
                 and ((p.title like concat('%', #{search}, '%'))
                 or (m.name like concat('%', #{search}, '%') and pa.authority = 'admin'))
@@ -56,6 +57,7 @@
             <if test="bookmark != null and bookmark == true">
                 and b.member_id = #{memberId}
             </if>
+
             <if test="sort != null and sort == 'endDate'">
                 and STR_TO_DATE(end_date, '%Y-%m-%d') >= CURRENT_DATE
             </if>

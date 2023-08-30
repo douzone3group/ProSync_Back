@@ -4,7 +4,7 @@
 <mapper namespace="com.douzone.prosync.task.repository.TaskMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="task.taskId">
         INSERT INTO task(project_id, classification, title, detail, start_date, end_date, task_status_id, created_at, modified_at)
-        VALUE (#{projectId}, #{task.classification}, #{task.title}, #{task.detail}, #{task.startDate}, #{task.endDate}, #{task.taskStatusId}, #{task.createdAt}, #{task.createdAt})
+        VALUE (#{projectId}, #{task.classification}, #{task.title}, #{task.detail}, #{task.startDate}, #{task.endDate}, #{task.taskStatusId}, now(), now())
     </insert>
 
     <select id="findById">

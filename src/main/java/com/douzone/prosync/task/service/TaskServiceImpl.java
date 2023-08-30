@@ -4,7 +4,6 @@ import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.member.dto.response.MemberGetResponse;
-import com.douzone.prosync.member_project.service.MemberProjectService;
 import com.douzone.prosync.notification.notienum.NotificationCode;
 import com.douzone.prosync.notification.service.NotificationService;
 import com.douzone.prosync.project.entity.Project;
@@ -18,12 +17,10 @@ import com.douzone.prosync.task_status.service.TaskStatusService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,8 +34,6 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
     private final TaskStatusService taskStatusService;
     private final ProjectService projectService;
-    private final MemberProjectService memberProjectService;
-
 
 
     private final NotificationService notificationService;
@@ -92,8 +87,8 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Long projectId, Pageable pageable, String search, boolean isActive, String view, String status, Long memberId) {
-        pageable = PageRequest.of(pageable.getPageNumber() == 0 ? 0 : pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
-        PageHelper.startPage(pageable.getPageNumber(), pageable.getPageSize());
+        int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
+        PageHelper.startPage(pageNum, pageable.getPageSize());
 
         List<GetTasksResponse> tasks = taskMapper.findTasks(projectId, search, isActive);
 
