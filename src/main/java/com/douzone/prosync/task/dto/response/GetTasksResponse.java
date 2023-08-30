@@ -1,6 +1,5 @@
 package com.douzone.prosync.task.dto.response;
 
-import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.task.dto.request.TaskMemberResponseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

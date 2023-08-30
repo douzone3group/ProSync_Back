@@ -45,10 +45,9 @@ public class TaskServiceImpl implements TaskService {
 
     private final LogServiceImpl logService;
 
+    private final MemberProjectMapper memberProjectMapper;
 
     private final NotificationService notificationService;
-
-    private final MemberProjectMapper memberProjectMapper;
 
 
     @Override
@@ -173,10 +172,10 @@ public class TaskServiceImpl implements TaskService {
      * 업무 담당자 삭제
      */
     @Override
-    public void deleteTaskMember(Long taskId, List<Long> memberIds, Long memberId) {
+    public void deleteTaskMember(Long taskId, List<Long> projectMemberIds, Long memberId) {
         GetTaskResponse task = verifyExistTask(taskId);
 
-        taskMapper.deleteTaskMember(taskId, memberIds);
+        taskMapper.deleteTaskMember(taskId, projectMemberIds);
 
 
     }

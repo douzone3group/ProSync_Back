@@ -2,9 +2,7 @@ package com.douzone.prosync.comment.service;
 
 import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
-import com.douzone.prosync.comment.entity.Comment;
 import com.douzone.prosync.common.PageResponseDto;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 

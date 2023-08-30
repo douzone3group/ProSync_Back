@@ -1,7 +1,6 @@
 package com.douzone.prosync.task.service;
 
 import com.douzone.prosync.common.PageResponseDto;
-import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.task.dto.request.TaskMemberResponseDto;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
 import com.douzone.prosync.task.dto.request.TaskPostDto;
@@ -25,7 +24,7 @@ public interface TaskService {
 
     void createTaskMember(Long taskId, List<Long> projectMemberIds, Long memberId);
 
-    void deleteTaskMember(Long taskId, List<Long> memberIds, Long memberId);
+    void deleteTaskMember(Long taskId, List<Long> projectMemberIds, Long memberId);
 
     List<TaskMemberResponseDto> findTaskMembers(Long taskId, long parseLong);
 }

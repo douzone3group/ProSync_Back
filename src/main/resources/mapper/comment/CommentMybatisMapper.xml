@@ -3,8 +3,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.comment.repository.CommentMybatisMapper">
     <insert id="createComment" useGeneratedKeys="true" keyProperty="commentId" >
-        insert into comment (content, created_at, modified_at,member_id,task_id)
-        values (#{content}, now(), now(),#{memberId},#{taskId})
+        insert into comment (content, created_at, modified_at, task_id, member_project_id)
+        values (#{content}, now(), now(), #{taskId}, #{memberProjectId});
     </insert>
 
     <update id="updateComment" >
@@ -20,17 +20,32 @@
         where comment_id=#{commentId} and is_deleted is null
     </update>
 
-    <select id="findAllComments" resultType="com.douzone.prosync.comment.entity.Comment">
-        SELECT *
-        FROM comment
-        WHERE
-            is_deleted is null
+    <select id="findAllComments" >
+        select * from comment
+        where is_deleted is null and task_id = #{taskId}
     </select>
 
-    <select id="findbyId" resultType="com.douzone.prosync.comment.entity.Comment">
-        SELECT *
-        FROM comment
-        WHERE
-            comment_id = #{commentId} and is_deleted is null
+    <select id="findCommentMember">
+        select mp.member_project_id,
+               mp.member_id,
+               mp.project_id,
+               mp.authority_id,
+               pa.authority,
+               m.name,
+               m.profile_image,
+               mp.status
+        from comment c
+                 join member_project mp on c.member_project_id = mp.member_project_id
+                 join member m on mp.member_id = m.member_id
+                 join project_authority pa on pa.authority_id = mp.authority_id
+        where c.comment_id = #{commentId}
+          and c.is_deleted is null;
     </select>
+
+<!--    <select id="findbyId" resultType="com.douzone.prosync.comment.entity.Comment">-->
+<!--        SELECT *-->
+<!--        FROM comment-->
+<!--        WHERE-->
+<!--            comment_id = #{commentId} and is_deleted is null-->
+<!--    </select>-->
 </mapper>
