@@ -9,6 +9,7 @@ import com.douzone.prosync.comment.service.CommentService;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -103,13 +104,9 @@ public class CommentController {
             @Parameter(description = "업무 식별자",required = true,example = "1") @PathVariable("task-id") Long taskId,
             @Parameter(hidden = true) @ApiIgnore @PageableDefault (size=8, sort="commentId", direction = Sort.Direction.DESC) Pageable pageable){
 
+        PageInfo<GetCommentsResponse> pageInfo = commentService.findCommentList(taskId, pageable);
 
-        Page<Comment> pages = commentService.findCommentList(taskId,pageable);
-        List<Comment> comments = pages.getContent();
-        List<GetCommentsResponse> commentsResponses
-                = comments.stream().map(GetCommentsResponse::of).collect(Collectors.toList());
-
-        return new ResponseEntity(new PageResponseDto<>(commentsResponses,pages), HttpStatus.OK);
+        return new ResponseEntity(new PageResponseDto<>(pageInfo), HttpStatus.OK);
     }
 
 

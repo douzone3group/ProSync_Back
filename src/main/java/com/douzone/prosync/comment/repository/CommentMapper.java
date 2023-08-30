@@ -2,21 +2,21 @@ package com.douzone.prosync.comment.repository;
 
 import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
+import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
 import com.douzone.prosync.comment.entity.Comment;
-import com.douzone.prosync.project.entity.Project;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 
 @Mapper
-public interface CommentMybatisMapper {
+public interface CommentMapper {
     // 댓글 생성
     void createComment(CommentPostDto dto);
 
     // 댓글 목록 조회
-//    List<Comment> findAllComments();
+    List<GetCommentsResponse> findAllComments(Long taskId);
 
     // 댓글 수정
     void updateComment(CommentPatchDto dto);

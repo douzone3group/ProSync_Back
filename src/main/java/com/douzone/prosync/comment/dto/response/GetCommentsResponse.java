@@ -7,13 +7,14 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Builder
-@Getter
-@ApiModel("[RESPONSE] COMMENT LIST - GET")
 
+@Getter
+@Builder
+@ApiModel("[RESPONSE] COMMENT LIST - GET")
 public class GetCommentsResponse {
     @ApiModelProperty(value = "댓글 식별자", example = "1")
     private Integer commentId;

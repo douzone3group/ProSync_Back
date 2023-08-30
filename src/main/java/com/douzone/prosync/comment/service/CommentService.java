@@ -2,7 +2,9 @@ package com.douzone.prosync.comment.service;
 
 import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
+import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
 import com.douzone.prosync.comment.entity.Comment;
+import com.github.pagehelper.PageInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,7 +21,7 @@ public interface CommentService {
     void delete(Integer CommentId);
 
     // 댓글 리스트 조회
-    Page<Comment> findCommentList(Long taskId,Pageable pageable);
+    PageInfo<GetCommentsResponse> findCommentList(Long taskId, Pageable pageable);
 
 
     Boolean checkMember(Integer commentId, Long memberId);
