@@ -4,7 +4,7 @@
 <mapper namespace="com.douzone.prosync.file.repository.FileMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="fileId">
         INSERT INTO file(size, path, created_at, file_name, modified_at)
-        VALUES (#{size}, #{path}, #{createdAt}, #{fileName}, #{createdAt})
+        VALUES (#{size}, #{path}, now(), #{fileName}, now())
     </insert>
 
     <update id="delete">

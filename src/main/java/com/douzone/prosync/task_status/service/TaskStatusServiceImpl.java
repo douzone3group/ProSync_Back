@@ -17,7 +17,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
 
     private final TaskStatusMapper taskStatusMapper;
 
-    public Long createTaskStatus(Long projectId, TaskStatusDto.PostDto requestBody, Long memberId) {
+    public Long createTaskStatus(Long projectId, TaskStatusDto.PostDto requestBody) {
         taskStatusMapper.save(projectId, requestBody);
         return requestBody.getTaskStatusId();
     }

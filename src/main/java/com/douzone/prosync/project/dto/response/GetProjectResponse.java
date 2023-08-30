@@ -34,11 +34,8 @@ public class GetProjectResponse{
     @ApiModelProperty(example = "프로젝트 수정 날짜")
     private String modifiedAt;
 
-    @ApiModelProperty(example = "프로젝트 진행도")
-    private Float progress;
-
     @ApiModelProperty(example = "프로젝트 공개여부")
-    private Boolean publicyn;
+    private Boolean isPublic;
 
     @ApiModelProperty(example = "프로젝트 이미지")
     private String projectImage;
@@ -52,8 +49,7 @@ public class GetProjectResponse{
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
                 .modifiedAt(project.getModifiedAt().toString())
-                .progress(project.getProgress())
-                .publicyn(project.getPublicyn())
+                .isPublic(project.getIsPublic())
                 .projectImage(project.getProjectImage())
                 .build();
     }

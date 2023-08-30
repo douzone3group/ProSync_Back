@@ -4,13 +4,13 @@
 <mapper namespace="com.douzone.prosync.comment.repository.CommentMybatisMapper">
     <insert id="createComment" useGeneratedKeys="true" keyProperty="commentId" >
         insert into comment (content, created_at, modified_at,member_id,task_id)
-        values (#{content}, #{createdAt}, #{createdAt},#{memberId},#{taskId})
+        values (#{content}, now(), now(),#{memberId},#{taskId})
     </insert>
 
     <update id="updateComment" >
         update comment
         set content=#{content},
-            modified_at=#{modifiedAt}
+            modified_at=now()
         where comment_id=#{commentId} and is_deleted is null
     </update>
 

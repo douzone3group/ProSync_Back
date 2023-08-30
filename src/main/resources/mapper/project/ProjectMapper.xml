@@ -3,8 +3,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.project.repository.ProjectMapper">
     <insert id="createProject" useGeneratedKeys="true" keyProperty="projectId" >
-        insert into project (title, intro, created_at, start_date, end_date, modified_at, progress, publicyn, project_image)
-        values (#{title}, #{intro}, #{createdAt}, #{startDate}, #{endDate}, #{createdAt}, 0, #{publicyn}, #{projectImage})
+        insert into project (title, intro, created_at, start_date, end_date, modified_at, is_public, project_image)
+        values (#{title}, #{intro}, now(), #{startDate}, #{endDate}, now(), #{isPublic}, #{projectImage})
     </insert>
 
     <update id="updateProject">
@@ -13,8 +13,8 @@
             intro=#{intro},
             start_date=#{startDate},
             end_date=#{endDate},
-            modified_at=#{modifiedAt},
-            publicyn=#{publicyn},
+            modified_at=now(),
+            is_public=#{isPublic},
             project_image=#{projectImage}
         where project_id=#{projectId} and is_deleted is null
     </update>
@@ -39,7 +39,7 @@
     </update>
 
     <select id="findAll">
-        select p.project_id, p.title, p.start_date, p.end_date, p.progress, p.created_at, m.member_id, m.name, m.profile_image
+        select p.project_id, p.title, p.start_date, p.end_date, p.created_at, m.member_id, m.name, m.profile_image
         from project p
         join member_project mp on mp.project_id = p.project_id
         join member m on mp.member_id = m.member_id
@@ -71,7 +71,7 @@
     </select>
 
     <select id="findByMemberId">
-        select p.project_id, p.title, p.start_date, p.end_date, p.progress, p.created_at, m.member_id, m.name, m.profile_image
+        select p.project_id, p.title, p.start_date, p.end_date, p.created_at, m.member_id, m.name, m.profile_image
         from project p
              join member_project mp on mp.project_id = p.project_id
              join member m on mp.member_id = m.member_id

@@ -35,4 +35,5 @@ public class TaskStatus {
     private LocalDateTime modifiedAt;
 
     private Boolean isDeleted;
+
 }

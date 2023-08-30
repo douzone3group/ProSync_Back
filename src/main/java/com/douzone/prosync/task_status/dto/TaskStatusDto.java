@@ -1,18 +1,22 @@
 package com.douzone.prosync.task_status.dto;
 
+import com.douzone.prosync.task_status.basic.BasicTaskStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
 
 public class TaskStatusDto {
 
     @ApiModel("[REQUEST] TASK_STATUS - POST")
     @Getter
+    @Builder
+    @AllArgsConstructor
     public static class PostDto {
 
         @ApiModelProperty(hidden = true)
@@ -27,12 +31,46 @@ public class TaskStatusDto {
         @Pattern(regexp = "#\\d{6}", message = "#6자리 숫자 형식으로 입력하세요. (예 : #000000)")
         private String color;
 
-        @ApiModelProperty(hidden = true)
-        private LocalDateTime createdAt = LocalDateTime.now();
+        @Setter
+        @NotBlank
+        @ApiModelProperty(value = "순서", required = true, example = "1")
+        private Integer seq;
 
         public PostDto(String taskStatus, String color) {
             this.taskStatus = taskStatus;
             this.color = color;
+        }
+
+        public static PostDto createNoStatus() {
+            return PostDto.builder()
+                    .taskStatus(BasicTaskStatus.NO_STATUS.getTaskStatus())
+                    .color(BasicTaskStatus.NO_STATUS.getColor())
+                    .seq(BasicTaskStatus.NO_STATUS.getSeq())
+                    .build();
+        }
+
+        public static PostDto createTodo() {
+            return PostDto.builder()
+                    .taskStatus(BasicTaskStatus.TODO.getTaskStatus())
+                    .color(BasicTaskStatus.TODO.getColor())
+                    .seq(BasicTaskStatus.TODO.getSeq())
+                    .build();
+        }
+
+        public static PostDto createInProgress() {
+            return PostDto.builder()
+                    .taskStatus(BasicTaskStatus.IN_PROGRESS.getTaskStatus())
+                    .color(BasicTaskStatus.IN_PROGRESS.getColor())
+                    .seq(BasicTaskStatus.IN_PROGRESS.getSeq())
+                    .build();
+        }
+
+        public static PostDto createDone() {
+            return PostDto.builder()
+                    .taskStatus(BasicTaskStatus.DONE.getTaskStatus())
+                    .color(BasicTaskStatus.DONE.getColor())
+                    .seq(BasicTaskStatus.DONE.getSeq())
+                    .build();
         }
     }
 
@@ -53,9 +91,6 @@ public class TaskStatusDto {
 
         @ApiModelProperty(value = "보여질 순서 (순서지정하지 않을 경우 -> 0)", example = "1")
         private Integer seq;
-
-        @ApiModelProperty(hidden = true)
-        private LocalDateTime modifiedAt = LocalDateTime.now();
 
         public void setTaskStatusId(Long taskStatusId) {
             this.taskStatusId = taskStatusId;

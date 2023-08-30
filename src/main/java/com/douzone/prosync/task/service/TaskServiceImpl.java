@@ -51,8 +51,6 @@ public class TaskServiceImpl implements TaskService {
         // check task_status of project
         verifyTaskStatus(findProject.getProjectId(), dto.getTaskStatusId(), memberId);
 
-        dto.setCreatedAt(LocalDateTime.now());
-
         taskMapper.save(dto, projectId);
         return dto.getTaskId();
     }
@@ -62,14 +60,11 @@ public class TaskServiceImpl implements TaskService {
 
         GetTaskResponse findTask = findExistTask(taskId);
         dto.setTaskId(taskId);
-        dto.setModifiedAt(LocalDateTime.now());
 
         // find task_status of project
         if (Optional.ofNullable(dto.getTaskStatusId()).isPresent()) {
             verifyTaskStatus(findTask.getProjectId(), dto.getTaskStatusId(), memberId);
         }
-
-
 
         taskMapper.update(dto);
     }

@@ -44,7 +44,7 @@ public class TaskStatusController {
     public ResponseEntity<SingleResponseDto<TaskStatusDto.SimpleResponseDto>> postTaskStatus(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
                                                                                              @RequestBody @Valid TaskStatusDto.PostDto requestBody,
                                                                                              @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        Long taskStatusId = taskStatusService.createTaskStatus(projectId, requestBody, Long.parseLong(principal.getName()));
+        Long taskStatusId = taskStatusService.createTaskStatus(projectId, requestBody);
         return new ResponseEntity(new SingleResponseDto(new TaskStatusDto.SimpleResponseDto(taskStatusId)), HttpStatus.CREATED);
     }
 

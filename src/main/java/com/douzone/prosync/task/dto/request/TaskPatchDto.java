@@ -40,6 +40,4 @@ public class TaskPatchDto {
     @ApiModelProperty(value = "업무상태식별자", example = "1")
     private Long taskStatusId;
 
-    @ApiModelProperty(hidden = true)
-    private LocalDateTime modifiedAt;
 }

@@ -4,6 +4,7 @@ import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.member_project.dto.MemberProjectRequestDto;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
+import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.member_project.status.ProjectMemberAuthority;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.douzone.prosync.constant.ConstantPool.PROJECT_INVITE_LINK_DURATION;
@@ -47,12 +49,20 @@ public class MemberProjectServiceImpl implements MemberProjectService {
 
         Long findProjectId = Long.parseLong(projectId);
 
-        // 이미 해당 프로젝트 회원일 경우 예외
-        if (projectMemberMapper.findProjectMember(findProjectId, memberId).isPresent()) {
-            throw new ApplicationException(ErrorCode.PROJECT_MEMBER_EXISTS, "projectId : " + findProjectId);
+        // 이미 해당 프로젝트 회원일 경우
+        Optional<MemberProjectResponseDto> projectMember = projectMemberMapper.findProjectMember(findProjectId, memberId);
+        if (projectMember.isPresent()) {
+            MemberProject.MemberProjectStatus status = projectMember.get().getStatus();
+            if (status.equals(MemberProject.MemberProjectStatus.ACTIVE)) {
+                throw new ApplicationException(ErrorCode.PROJECT_MEMBER_EXISTS, "projectId : " + findProjectId);
+            }
+            projectMemberMapper.updateStatusOfProjectMember(findProjectId, memberId, MemberProject.MemberProjectStatus.ACTIVE);
+            MemberProjectResponseDto findProjectMember = findProjectMember(findProjectId, memberId);
+            projectMemberMapper.updateAuthorityOfProjectMember(findProjectMember.getMemberProjectId(), ProjectMemberAuthority.READER);
+        } else {
+            projectMemberMapper.saveProjectMember(memberId, findProjectId, MemberProject.MemberProjectStatus.ACTIVE);
         }
 
-        projectMemberMapper.saveProjectMember(memberId, findProjectId);
         return findProjectId;
     }
 
@@ -61,7 +71,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
     @Override
     public void updateProjectMember(Long projectMemberId, MemberProjectRequestDto dto, Long memberId) {
 
-        Integer row = projectMemberMapper.updateProjectMember(projectMemberId, dto);
+        Integer row = projectMemberMapper.updateAuthorityOfProjectMember(projectMemberId, dto.getAuthority());
         if (row < 1) {
             throw new ApplicationException(ErrorCode.PROJECT_MEMBER_NOT_FOUND);
         }
@@ -70,7 +80,8 @@ public class MemberProjectServiceImpl implements MemberProjectService {
         if (dto.getAuthority().equals(ProjectMemberAuthority.ADMIN)) {
             Long projectId = projectMemberMapper.findProjectByProjectMemberId(projectMemberId);
             Long memberProjectId = findProjectMember(projectId, memberId).getMemberProjectId();
-            projectMemberMapper.updateProjectMember(memberProjectId, new MemberProjectRequestDto(ProjectMemberAuthority.WRITER));
+            System.out.println(memberProjectId);
+            projectMemberMapper.updateAuthorityOfProjectMember(memberProjectId, ProjectMemberAuthority.WRITER);
         }
     }
 
@@ -89,7 +100,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
     // 프로젝트 회원 삭제
     @Override
     public void deleteProjectMember(Long projectMemberId) {
-        Integer row = projectMemberMapper.deleteProjectMember(projectMemberId);
+        Integer row = projectMemberMapper.deleteProjectMember(projectMemberId, MemberProject.MemberProjectStatus.QUIT);
         if (row < 1) {
             throw new ApplicationException(ErrorCode.PROJECT_MEMBER_NOT_FOUND);
         }
@@ -100,10 +111,10 @@ public class MemberProjectServiceImpl implements MemberProjectService {
     public void exitProjectMember(Long projectId, Long memberId) {
         MemberProjectResponseDto projectMember = findProjectMember(projectId, memberId);
         // admin일 경우 위임 후 나가기 가능
-        if (projectMember.getAuthority().equals("ADMIN")) {
+        if (projectMember.getAuthority().equals(ProjectMemberAuthority.ADMIN)) {
             throw new ApplicationException(ErrorCode.ACCESS_FORBIDDEN);
         }
-        projectMemberMapper.exitProjectMember(projectId, memberId);
+        projectMemberMapper.updateStatusOfProjectMember(projectId, memberId, MemberProject.MemberProjectStatus.QUIT);
     }
 
 

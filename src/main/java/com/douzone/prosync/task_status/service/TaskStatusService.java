@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface TaskStatusService {
 
-    Long createTaskStatus(Long projectId, TaskStatusDto.PostDto requestBody, Long memberId);
+    Long createTaskStatus(Long projectId, TaskStatusDto.PostDto requestBody);
 
     void updateTaskStatus(Long taskStatusId, TaskStatusDto.PatchDto requestBody, Long memberId);
 

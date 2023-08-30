@@ -17,7 +17,7 @@
     <update id="update">
         UPDATE task
         <set>
-            modified_at=#{modifiedAt},
+            modified_at=now(),
             <if test="classification != null">
                 classification=#{classification},
             </if>

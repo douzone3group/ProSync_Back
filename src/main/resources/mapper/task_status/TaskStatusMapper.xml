@@ -4,13 +4,13 @@
 <mapper namespace="com.douzone.prosync.task_status.repository.TaskStatusMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="taskStatus.taskStatusId">
         INSERT INTO task_status (task_status, color, project_id, created_at, modified_at, seq)
-        VALUES (#{taskStatus.taskStatus}, #{taskStatus.color}, #{projectId}, #{taskStatus.createdAt},
-                #{taskStatus.createdAt}, 0);
+        VALUES (#{taskStatus.taskStatus}, #{taskStatus.color}, #{projectId}, now(),
+                now(), #{taskStatus.seq});
     </insert>
     <update id="update">
         UPDATE task_status
         <set>
-            modified_at=#{modifiedAt},
+            modified_at=now(),
             <if test="taskStatus != null">
                 task_status=#{taskStatus},
             </if>
