@@ -1,14 +1,23 @@
 package com.douzone.prosync.log.service;
 
 
+import com.douzone.prosync.exception.ApplicationException;
+import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.log.dto.LogConditionDto;
+import com.douzone.prosync.log.dto.LogDto;
 import com.douzone.prosync.log.dto.request.LogPatchDto;
 import com.douzone.prosync.log.dto.response.LogResponse;
 import com.douzone.prosync.log.dto.response.LogSimpleResponse;
 import com.douzone.prosync.log.repository.LogRepository;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
+import com.douzone.prosync.member_project.entity.MemberProject;
+import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.notification.dto.ContentUrlContainer;
+import com.douzone.prosync.project.dto.request.ProjectPatchDto;
+import com.douzone.prosync.project.dto.response.GetProjectResponse;
+import com.douzone.prosync.project.entity.Project;
+import com.douzone.prosync.project.service.ProjectService;
 import com.douzone.prosync.searchcondition.LogSearchCondition;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
 import com.github.pagehelper.PageInfo;
@@ -17,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.douzone.prosync.constant.ConstantPool.*;
 
@@ -28,7 +38,13 @@ public class LogServiceImpl implements LogService {
 
     private final LogRepository logRepository;
 
-    // TODO: 로그 저장하는 로직 작성하기
+    private final ProjectService projectService;
+
+    private final MemberProjectMapper projectMemberMapper;
+
+    /**
+     * LogCode에 따라 로그 생성 및 저장하는 로직
+     */
     @Override
     public LogSimpleResponse saveLog(LogConditionDto dto) {
 
@@ -45,52 +61,176 @@ public class LogServiceImpl implements LogService {
 
         switch (code) {
             case "업무삭제": {
-                container.setContent(fromMember.getEmail()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무를 삭제하셨습니다.") ;
-                container.setUrl(FRONT_SERVER_HOST+"/notifications");
+                container.setContent(fromMember.getName() + "님이 " + ((GetTaskResponse) dto.getSubject()).getTitle() + " 업무를 삭제하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST + "/projectlog");
             }
             break;
-            case "업무지정":   {
-                container.setContent(fromMember.getEmail()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무로 배정하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/tasks/"+((GetTaskResponse) dto.getSubject()).getTaskId());
+            case "업무지정": {
+
+                List<Long> memberIds = dto.getMemberIds();
+                List<Member> memberList = memberRepository.getMemberList(memberIds);
+
+                String membersName = null;
+
+                for (int i = 0; i < memberList.size(); i++) {
+                    if (i == 0) {
+                        membersName = memberList.get(i).getName();
+                    } else {
+                        membersName += ", " + memberList.get(i).getName();
+                    }
+                }
+
+                container.setContent(fromMember.getName() + "님이 " + membersName + "님을 " + ((GetTaskResponse) dto.getSubject()).getTitle() + " 업무로 배정하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST + "/tasks/" + dto.getTaskId());
             }
             break;
-            case "업무수정":  {
-                container.setContent(fromMember.getEmail()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무를 수정하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/tasks/"+((GetTaskResponse) dto.getSubject()).getTaskId());
+            case "업무수정": {
+                container.setContent(fromMember.getName() + "님이 " + ((GetTaskResponse) dto.getSubject()).getTitle() + " 업무를 수정하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST + "/tasks/" + dto.getTaskId());
             }
             break;
-            case "업무제외":  {
-                container.setContent(fromMember.getEmail()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무에서 제외하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/tasks/"+((GetTaskResponse) dto.getSubject()).getTaskId());
+            case "업무제외": {
+
+                List<Long> memberIds = dto.getMemberIds();
+                List<Member> memberList = memberRepository.getMemberList(memberIds);
+
+                String membersName = null;
+
+                for (int i = 0; i < memberList.size(); i++) {
+                    if (i == 0) {
+                        membersName = memberList.get(i).getName();
+                    } else {
+                        membersName += ", " + memberList.get(i).getName();
+                    }
+                }
+
+                container.setContent(fromMember.getName() + "님이 " + membersName + "님을 " + ((GetTaskResponse) dto.getSubject()).getTitle() + " 업무에서 제외하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST + "/tasks/" + dto.getTaskId());
             }
+            break;
+            case "프로젝트지정": {
+                container.setContent(fromMember.getName() + "님이 " + ((GetProjectResponse) dto.getSubject()).getName() + " 프로젝트의 구성원으로 수락하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST + "/projects/" + dto.getProjectId());
+            }
+            break;
+            case "프로젝트제외": {
+
+                List<Long> memberIds = dto.getMemberIds();
+                List<Member> memberList = memberRepository.getMemberList(memberIds);
+
+                String membersName = null;
+
+                for (int i = 0; i < memberList.size(); i++) {
+                    if (i == 0) {
+                        membersName = memberList.get(i).getName();
+                    } else {
+                        membersName += ", " + memberList.get(i).getName();
+                    }
+                }
+
+                container.setContent(fromMember.getName() + "님이 " + membersName + "님을 " + ((GetProjectResponse) dto.getSubject()).getName() + " 프로젝트의 구성원에서 제외하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST + "/projects/" + dto.getProjectId());
+            }
+            break;
+            case "프로젝트권한변경": {
+
+                Long projectId = dto.getProjectId();
+                Project project = projectService.findProject(projectId);
+
+                Long projectMemberId = dto.getProjectMemberId();
+                MemberProject memberProject = projectMemberMapper.findProjectMemberById(projectMemberId).orElse(null);
+                Member member = memberRepository.findById(memberProject.getMemberId()).orElse(null);
+
+                container.setContent(fromMember.getName() + "님이 " + member.getName() + "님의 " + project.getTitle() + " 프로젝트에 대한 권한을 " + dto.getAuthority() + "(으)로 변경하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST + "/projects/" + projectId);
+            }
+            break;
+            case "프로젝트탈퇴": {
+
+                Project project = projectService.findProject(dto.getProjectId());
+
+                container.setContent(fromMember.getName() + "님이 " + project.getTitle() + " 프로젝트를 탈퇴하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST + "/projects/" + dto.getProjectId());
+            }
+            break;
+            case "프로젝트수정": {
+
+                container.setContent(fromMember.getName() + "님이 " + ((ProjectPatchDto) dto.getSubject()).getTitle() + " 프로젝트에 대한 정보를 수정하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST + "/projects/" + dto.getProjectId());
+            }
+            break;
+            case "프로젝트삭제": {
+
+                Project project = projectService.findProject(dto.getProjectId());
+                container.setContent(fromMember.getName() + "님이 " + project.getTitle() + " 프로젝트를 삭제하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST + "/projectlog");
+            }
+            break;
+            case "댓글추가": {
+                container.setContent(fromMember.getName()+"님이 "+ ((GetTaskResponse)dto.getSubject()).getTitle()+" 업무에 댓글을 추가하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST+"/tasks/"+dto.getTaskId());
+            }
+            break;
+            case "댓글삭제": {
+
+                container.setContent(fromMember.getName()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무에 댓글을 삭제하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST+"/tasks/"+dto.getTaskId());
+            }
+            break;
+            case "댓글수정": {
+
+                container.setContent(fromMember.getName()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무에 댓글을 수정하셨습니다.");
+                container.setUrl(FRONT_SERVER_HOST+"/tasks/"+dto.getTaskId());
+            }
+            break;
+            case "권한변경": {
+
+                //Todo : 회원_프로젝트에서 projectId로 ADMIN 권한을 가진 사용자를 찾아서 넣어줘야한다.
+                Member member = memberRepository.findById(dto.getMemberId()).orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+
+                container.setContent(member.getName()+"님의 권한이 "+ dto.getAuthority().name()+"으로 변경되었습니다.");
+                container.setUrl(FRONT_SERVER_HOST+"/projects/" + dto.getProjectId());
+            }
+            break;
+
         }
 
-        return new LogSimpleResponse(1L);
+        Long logId = logRepository.saveLog(LogDto.builder()
+                .logCode(code)
+                .createdAt(container.getDate())
+                .content(container.getContent())
+                .isDeleted(false)
+                .projectId(dto.getProjectId())
+                .modifiedAt(container.getDate())
+                .url(container.getUrl()).build());
+
+
+        return new LogSimpleResponse(logId);
     }
 
-    @Override
-    public LogSimpleResponse deleteLog(Long logId) {
+        @Override
+        public LogSimpleResponse deleteLog(Long logId){
 
-        Long id = logRepository.deleteLog(logId);
-        return new LogSimpleResponse(id);
+            Long id = logRepository.deleteLog(logId);
+            return new LogSimpleResponse(id);
+        }
+
+        @Override
+        public PageInfo<LogResponse> getLogList(LogSearchCondition condition){
+
+            return new PageInfo<>(logRepository.getLogList(condition), PAGE_NAVI);
+
+        }
+
+        @Override
+        public LogSimpleResponse updateLog(LogPatchDto dto){
+
+            Long id = logRepository.updateLog(dto);
+            return new LogSimpleResponse(id);
+        }
+
+        @Override
+        public Integer getLogListCount(Long projectId){
+            return logRepository.getLogListCount(projectId);
+        }
     }
-
-    @Override
-    public PageInfo<LogResponse> getLogList(LogSearchCondition condition) {
-
-        return new PageInfo<>(logRepository.getLogList(condition), PAGE_NAVI);
-
-    }
-
-    @Override
-    public LogSimpleResponse updateLog(LogPatchDto dto) {
-
-        Long id = logRepository.updateLog(dto);
-        return new LogSimpleResponse(id);
-    }
-
-    @Override
-    public Integer getLogListCount(Long projectId) {
-        return logRepository.getLogListCount(projectId);
-    }
-}

@@ -25,10 +25,6 @@ public class MybatisLogRepository implements LogRepository{
         return dto.getLogId();
     }
 
-//    @Override
-//    public Long saveMemberLog(Long memberId, Long logId) {
-//        return null;
-//    }
 
     @Override
     public Long deleteLog(Long logId) {

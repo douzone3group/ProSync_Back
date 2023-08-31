@@ -9,6 +9,8 @@ import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.member.dto.response.MemberSimpleResponseDto;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.service.MemberService;
+import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
+import com.douzone.prosync.member_project.service.MemberProjectService;
 import com.douzone.prosync.redis.TokenStorageService;
 import com.douzone.prosync.security.jwt.HmacAndBase64;
 import io.swagger.annotations.*;
@@ -32,6 +34,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.util.List;
 
 
 @RestController
@@ -47,6 +50,8 @@ public class MemberController {
     private final TokenStorageService redisService;
 
     private final HmacAndBase64 hmacAndBase64;
+
+
 
 
     /**
@@ -132,6 +137,9 @@ public class MemberController {
     @Transactional
     public ResponseEntity updateMemberDelete(@Parameter(hidden = true) @ApiIgnore Principal principal,
                                              HttpServletRequest request) {
+
+
+
         Long memberId = Long.parseLong(principal.getName());
         memberService.updateMemberDelete(memberId,request);
 

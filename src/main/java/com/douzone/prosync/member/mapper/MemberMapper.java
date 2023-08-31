@@ -26,7 +26,7 @@ public interface MemberMapper {
 
     Optional<Member> findByEmail(String email);
 
-    List<Member> getMeberList(List<Long> memberIds);
+    List<Member> getMemberList(@Param("memberIds")List<Long> memberIds);
 
 
 

@@ -28,7 +28,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         String requestUri = request.getRequestURI();
 
-        if (requestUri.startsWith("/api/v1/private")){
+        if (requestUri.startsWith("/api/v1/modify")){
             Long memberId = getIdFromPrincipal(authentication);
             System.out.println(memberId); // 확인용
             List<GetProjectAuthorizationResponse> userPermission = getPermissionUrl(memberId);
@@ -48,8 +48,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
      *  principal에서 memberid 가져오기
      */
     Long getIdFromPrincipal(Authentication authentication){
-        Object principal = authentication.getPrincipal();
-        Long memberId = (Long)principal;
+        Long memberId = Long.parseLong(authentication.getName());
+        System.out.println(Long.parseLong(authentication.getName()));
+
         return memberId;
     }
 
@@ -68,6 +69,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         }
         return false;
     }
+
+
 
     private boolean isMatchingPermission(HttpServletRequest request, GetProjectAuthorizationResponse permission) {
         String requestUri = request.getRequestURI();
