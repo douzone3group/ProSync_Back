@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.douzone.prosync.constant.ConstantPool.PAGE_NAVI;
 
@@ -39,21 +36,22 @@ public class LogController {
     }
 
 
+    @GetMapping("/projectlog")
     public PageInfo<LogResponse> getLogList(LogSearchCondition condition){
 
         return new PageInfo<>(logRepository.getLogList(condition), PAGE_NAVI);
 
     }
 
-
+    @PatchMapping("/projectlog/{id}")
     public LogSimpleResponse updateLog(LogPatchDto dto){
 
         Long id = logRepository.updateLog(dto);
         return new LogSimpleResponse(id);
     }
 
-
-    public Integer getLogListCount(Long projectId){
+    @GetMapping("/projectlog/count/{project-id}")
+    public Integer getLogListCount(@PathVariable("project-id") Long projectId){
         return logRepository.getLogListCount(projectId);
     }
 }

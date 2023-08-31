@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -107,17 +108,17 @@ public class ProjectServiceImpl implements ProjectService {
         return new PageResponseDto<>(pageInfo);
     }
 
-//    // 내 프로젝트 중 관리자인 프로젝트만 조회
-//    @Override
-//    public PageInfo<GetProjectsResponse> findMyProjectsPartOfAdmin(Long memberId, Pageable pageable) {
-//        int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
-//        PageHelper.startPage(pageNum, pageable.getPageSize());
-//        List<GetProjectsResponse> myProjects = projectMapper.findByMemberIdPartOfAdmin(memberId);
-//        myProjects = myProjects.stream().map(project -> {
-//            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(project.getProjectId());
-//            project.setProjectMembers(projectMembers);
-//            return project;
-//        }).collect(Collectors.toList());
-//        return new PageInfo<>(myProjects);
-//    }
+    // 내 프로젝트 중 관리자인 프로젝트만 조회
+    @Override
+    public PageInfo<GetProjectsResponse> findMyProjectsPartOfAdmin(Long memberId, Pageable pageable) {
+        int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
+        PageHelper.startPage(pageNum, pageable.getPageSize());
+        List<GetProjectsResponse> myProjects = projectMapper.findByMemberIdPartOfAdmin(memberId);
+        myProjects = myProjects.stream().map(project -> {
+            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(project.getProjectId());
+            project.setProjectMembers(projectMembers);
+            return project;
+        }).collect(Collectors.toList());
+        return new PageInfo<>(myProjects);
+    }
 }

@@ -82,14 +82,14 @@
         order by p.project_id desc
     </select>
 
-<!--    <select id="findByMemberIdPartOfAdmin">-->
-<!--        select p.project_id, p.title, p.start_date, p.end_date, p.progress, p.created_at, m.member_id, m.name, m.profile_image-->
-<!--        from project p-->
-<!--                 join member_project mp on mp.project_id = p.project_id-->
-<!--                 join member m on mp.member_id = m.member_id-->
-<!--                 join project_authority pa on mp.authority_id = pa.authority_id-->
-<!--        where pa.authority = 'ADMIN' and p.project_id in (select project_id from member_project where member_id = #{memberId}) and m.member_id = #{memberId}-->
-<!--        order by p.project_id desc-->
-<!--    </select>-->
+    <select id="findByMemberIdPartOfAdmin">
+        select p.project_id, p.title, p.start_date, p.end_date, p.progress, p.created_at, m.member_id, m.name, m.profile_image
+        from project p
+                 join member_project mp on mp.project_id = p.project_id
+                 join member m on mp.member_id = m.member_id
+                 join project_authority pa on mp.authority_id = pa.authority_id
+        where pa.authority = 'ADMIN' and p.project_id in (select project_id from member_project where member_id = #{memberId}) and m.member_id = #{memberId}
+        order by p.project_id desc
+    </select>
 
 </mapper>
