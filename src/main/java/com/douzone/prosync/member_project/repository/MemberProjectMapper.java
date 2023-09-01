@@ -39,4 +39,6 @@ public interface MemberProjectMapper {
 
     List<Long> findProjectIdsByMemberId(Long memberId);
 
+
+
 }

@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.authorization.mapper.ProjectAuthorizationMapper">
-    <select id="getUserPermissonList" resultType="GetProjectAuthorizationResponse">
+    <select id="getUserAuthorization" resultType="GetProjectAuthorizationResponse">
         SELECT mp.member_id, mp.project_id, pa.authority_id, pa.authority
 	    from member_project mp
 	        LEFT JOIN project_authority pa on mp.authority_id = pa.authority_id
-	    WHERE mp.member_id =#{memberId};
+	    WHERE mp.member_id =#{memberId} and mp.project_id=#{projectId} and mp.status = 'ACTIVE';
     </select>
 </mapper>
