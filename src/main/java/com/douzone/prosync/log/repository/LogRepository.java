@@ -17,7 +17,7 @@ public interface LogRepository {
 
     List<LogResponse> getLogList(LogSearchCondition condition);
 
-    Long updateLog(LogPatchDto dto);
+    Long updateLog(Long logId,LogPatchDto dto);
 
 
     LogResponse findById(Long logId);
