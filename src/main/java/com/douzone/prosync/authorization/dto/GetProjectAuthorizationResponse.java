@@ -12,6 +12,7 @@ public class GetProjectAuthorizationResponse {
     private Long projectId;
     private Long authorityId;
     private String authority;
+    private String status;
 
 }
 

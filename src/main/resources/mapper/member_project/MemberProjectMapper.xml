@@ -36,8 +36,10 @@
     <select id="findProjectIdsByMemberId">
         select project_id from member_project
         where member_id = #{memberId}
-        and status = 'active';
+          and status = 'active';
     </select>
+
+
 
 
 </mapper>

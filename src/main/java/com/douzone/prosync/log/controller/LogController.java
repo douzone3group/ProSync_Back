@@ -29,29 +29,46 @@ public class LogController {
     private final LogRepository logRepository;
 
 
-    @DeleteMapping("/projectlog/{id}")
-    public ResponseEntity<LogSimpleResponse> deleteLog(@PathVariable("id") Long logId) {
+    /**
+     * 로그 삭제하기
+     * ADMIN
+     */
+    @DeleteMapping("/projectlog/{project-id}/{log-id}")
+    public ResponseEntity<LogSimpleResponse> deleteLog(@PathVariable("project-id") Long projectId, @PathVariable("log-id") Long logId) {
         LogSimpleResponse logSimpleResponse = logService.deleteLog(logId);
         return new ResponseEntity<>(logSimpleResponse, HttpStatus.OK);
     }
 
 
-    @GetMapping("/projectlog")
-    public PageInfo<LogResponse> getLogList(LogSearchCondition condition){
+    /**
+     * 로그 목록 조회
+     * ADMIN
+     */
+    @GetMapping("/projectlog/{project-id}")
+    public PageInfo<LogResponse> getLogList(@PathVariable("project-id") Long projectId, LogSearchCondition condition){
 
-        return new PageInfo<>(logRepository.getLogList(condition), PAGE_NAVI);
+        LogSearchCondition logSearchCondition = condition.of(projectId, condition);
+        return new PageInfo<>(logRepository.getLogList(logSearchCondition), PAGE_NAVI);
 
     }
 
-    @PatchMapping("/projectlog/{id}")
-    public LogSimpleResponse updateLog(LogPatchDto dto){
+    /**
+     * 로그 업데이트 하기
+     * ADMIN
+     */
+    @PatchMapping("/projectlog/{project-id}/{log-id}")
+    public ResponseEntity updateLog(@PathVariable("log-id") Long logId, LogPatchDto dto){
 
-        Long id = logRepository.updateLog(dto);
-        return new LogSimpleResponse(id);
+        LogSimpleResponse logSimpleResponse= logService.updateLog(logId,dto);
+        return new ResponseEntity<>(logSimpleResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/projectlog/count/{project-id}")
-    public Integer getLogListCount(@PathVariable("project-id") Long projectId){
-        return logRepository.getLogListCount(projectId);
+    /**
+     * 로그 갯수 조회
+     * ADMIN
+     */
+    @GetMapping("/projectlog/{project-id}/count")
+    public ResponseEntity getLogListCount(@PathVariable("project-id") Long projectId){
+        return new ResponseEntity<>(logRepository.getLogListCount(projectId), HttpStatus.OK);
     }
 }

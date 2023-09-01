@@ -68,8 +68,8 @@ decorator:
 # Todo : jwt 비밀키 수정해야합니다!
 jwt:
   secret: ENC(60x2uchdWvw5j3q6dS1lezZUv8jGnbgk/Uwe45e96aPYbtModiEcQqG72yc/mYMaoOOmJi1bgFsRwQ/CrbS1muBThG5HwpcbL1v+lhGGPhC/XZ0NKwgTPUL+Xs51fel55tbUYyx5eQk=)
-  token-validity-in-seconds: 900  # 60 * 15 15분 -> 초
-  refresh-token-validity-in-seconds: 2592000 #1209600 # 60 * 60 * 24 * 30 30일 -> 초
+  token-validity-in-seconds: 10  # 60 * 15 15분 -> 초
+  refresh-token-validity-in-seconds: 10 #1209600 # 60 * 60 * 24 * 30 30일 -> 초
 
 
 mail:

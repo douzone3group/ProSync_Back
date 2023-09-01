@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Builder
 public class LogPatchDto {
 
-    private Long logId;
 
     private String content;
 

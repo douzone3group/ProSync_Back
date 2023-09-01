@@ -16,7 +16,7 @@ public interface LogService {
 
     PageInfo<LogResponse> getLogList(LogSearchCondition condition);
 
-    LogSimpleResponse updateLog(LogPatchDto dto);
+    LogSimpleResponse updateLog(Long logId,LogPatchDto dto);
 
     Integer getLogListCount(Long projectId);
 

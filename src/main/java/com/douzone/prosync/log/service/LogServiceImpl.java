@@ -223,9 +223,9 @@ public class LogServiceImpl implements LogService {
         }
 
         @Override
-        public LogSimpleResponse updateLog(LogPatchDto dto){
+        public LogSimpleResponse updateLog(Long logId,LogPatchDto dto){
 
-            Long id = logRepository.updateLog(dto);
+            Long id = logRepository.updateLog(logId,dto);
             return new LogSimpleResponse(id);
         }
 

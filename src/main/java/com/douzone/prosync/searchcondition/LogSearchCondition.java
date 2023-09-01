@@ -15,4 +15,13 @@ public class LogSearchCondition {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String content;
+
+    public LogSearchCondition of(Long projectId, LogSearchCondition condition) {
+        return LogSearchCondition.builder()
+                .projectId(projectId)
+                .logCode(condition.logCode)
+                .startDate(condition.startDate)
+                .endDate(condition.endDate)
+                .content(condition.content).build();
+    }
 }

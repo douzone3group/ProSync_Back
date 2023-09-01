@@ -19,7 +19,7 @@
             log_code=#{logPatchDto.logCode},
             url=#{logPatchDto.url},
             modified_at=#{logPatchDto.modifiedAt}
-        where log_id = #{logPatchDto.logId}
+        where log_id = #{logId}
     </update>
 
 
