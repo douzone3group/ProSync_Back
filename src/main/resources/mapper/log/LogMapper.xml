@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.log.mapper.LogMapper">
     <insert id="saveLog" useGeneratedKeys="true" keyProperty="logId">
         insert into log (created_at, content, is_deleted, project_id, modified_at, log_code, url)
-        values (#{logDto.createdAt}, #{logDto.content}, #{logDto.isDeleted}, #{logDto.projectId}, #{logDto.modifiedAt}, #{logDto.logCode}, #{logDto.url})
+        values (#{logDto.createdAt}, #{logDto.content}, #{logDto.isDeleted}, #{logDto.projectId}, #{logDto.modifiedAt},
+                #{logDto.logCode}, #{logDto.url})
     </insert>
 
     <insert id="saveMemberLog" useGeneratedKeys="true" keyProperty="memberLogId">
@@ -18,22 +19,22 @@
             log_code=#{logPatchDto.logCode},
             url=#{logPatchDto.url},
             modified_at=#{logPatchDto.modifiedAt}
-        where log_id = #{logPatchDto.logId}
+        where log_id = #{logId}
     </update>
-
 
 
     <update id="deleteLog">
         update log
-        set is_deleted=true,
-        modified_at=#{modifiedAt}
+        set is_deleted= true,
+            modified_at=#{modifiedAt}
         where log_id = #{logId}
     </update>
 
     <select id="findById" resultType="LogResponse">
         select log_id, content, code, created_at, modified_at, url
         from log
-        where log_id = #{logId} and is_deleted = false
+        where log_id = #{logId}
+          and is_deleted = false
     </select>
 
 
@@ -58,6 +59,9 @@
     </select>
 
     <select id="getLogListCount" resultType="Integer">
-        select count(*) from log where project_id = #{projectId} and is_deleted = false;
+        select count(*)
+        from log
+        where project_id = #{projectId}
+          and is_deleted = false;
     </select>
 </mapper>

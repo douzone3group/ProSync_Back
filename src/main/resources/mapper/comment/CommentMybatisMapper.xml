@@ -42,4 +42,10 @@
           and c.is_deleted is null;
     </select>
 
+    <select id="findbyId" resultType="com.douzone.prosync.comment.entity.Comment">
+        SELECT *
+        FROM comment
+        WHERE
+            comment_id = #{commentId} and is_deleted is null
+    </select>
 </mapper>

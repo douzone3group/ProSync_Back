@@ -25,10 +25,6 @@ public class MybatisLogRepository implements LogRepository{
         return dto.getLogId();
     }
 
-//    @Override
-//    public Long saveMemberLog(Long memberId, Long logId) {
-//        return null;
-//    }
 
     @Override
     public Long deleteLog(Long logId) {
@@ -42,9 +38,9 @@ public class MybatisLogRepository implements LogRepository{
     }
 
     @Override
-    public Long updateLog(LogPatchDto dto) {
-        logMapper.update(dto);
-        return dto.getLogId();
+    public Long updateLog(Long logId,LogPatchDto dto) {
+        logMapper.update(logId,dto);
+        return logId;
     }
 
     @Override

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,8 +16,8 @@ public class ProjectAuthorizationRepository {
 
 
     // 프로젝트 권한 가져오기
-    public List<GetProjectAuthorizationResponse> getUserPermissonList(Long memberId){
-        return authorizationMapper.getUserPermissonList(memberId);
+    public Optional<GetProjectAuthorizationResponse> getUserAuthorization(Long memberId, Long projectId){
+        return authorizationMapper.getUserAuthorization(memberId, projectId);
     }
 
 }

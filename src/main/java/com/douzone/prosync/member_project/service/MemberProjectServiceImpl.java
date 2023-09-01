@@ -72,6 +72,12 @@ public class MemberProjectServiceImpl implements MemberProjectService {
     public void updateProjectMember(Long projectMemberId, MemberProjectRequestDto dto, Long memberId) {
 
         Integer row = projectMemberMapper.updateAuthorityOfProjectMember(projectMemberId, dto.getAuthority());
+
+        MemberProject memberProject = projectMemberMapper.findProjectMemberById(projectMemberId).orElse(null);
+
+
+
+
         if (row < 1) {
             throw new ApplicationException(ErrorCode.PROJECT_MEMBER_NOT_FOUND);
         }
@@ -95,6 +101,12 @@ public class MemberProjectServiceImpl implements MemberProjectService {
     @Override
     public List<MemberProjectResponseDto> findProjectMembers(Long projectId) {
         return projectMemberMapper.findProjectMembers(projectId);
+    }
+
+    // 회원에 해당하는 프로젝트 리스트 조회
+    @Override
+    public List<Long> findProjectIdsByMemberId(Long memberId) {
+        return projectMemberMapper.findProjectIdsByMemberId(memberId);
     }
 
     // 프로젝트 회원 삭제
