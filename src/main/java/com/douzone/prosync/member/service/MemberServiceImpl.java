@@ -13,6 +13,8 @@ import com.douzone.prosync.member.dto.request.MemberPostDto;
 import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
+import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
+import com.douzone.prosync.member_project.service.MemberProjectService;
 import com.douzone.prosync.redis.RedisService;
 import com.douzone.prosync.security.jwt.HmacAndBase64;
 import com.douzone.prosync.security.jwt.RefreshTokenProvider;
@@ -32,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import static com.douzone.prosync.constant.ConstantPool.AUTHORIZATION_HEADER;
 import static com.douzone.prosync.constant.ConstantPool.REFRESH_HEADER;
@@ -59,6 +62,8 @@ public class MemberServiceImpl implements MemberService{
     private final TokenProvider tokenProvider;
 
     private final RefreshTokenProvider refreshTokenProvider;
+
+    private final MemberProjectService memberProjectService;
 
 
 
@@ -107,6 +112,17 @@ public class MemberServiceImpl implements MemberService{
      */
     public void updateMemberDelete(Long memberId, HttpServletRequest request){
         memberRepository.findById(memberId).orElseThrow(()->new ApplicationException(ErrorCode.USER_NOT_FOUND));
+
+        // 회원이 가입했던 프로젝트들 탈퇴하는 과정
+        List<Long> projectIds = memberProjectService.findProjectIdsByMemberId(memberId);
+
+        for (int i=0;i<projectIds.size();i++) {
+
+            memberProjectService.exitProjectMember(projectIds.get(i),memberId);
+
+            //Todo: 회원이 탈퇴하였다고 알려주기(본인이 나간거지만 탈퇴했다고 알려주기)
+        }
+
         memberRepository.updateDeleted(memberId);
 
         try {

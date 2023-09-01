@@ -35,4 +35,6 @@ public interface MemberService {
      void verifyCertificationNumber(CertificationCodeDto code);
 
      String loginProcess(MemberLoginDto loginDto,HttpHeaders httpHeaders, HttpServletRequest request);
+
+
 }

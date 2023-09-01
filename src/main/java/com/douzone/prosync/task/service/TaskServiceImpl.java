@@ -3,9 +3,12 @@ package com.douzone.prosync.task.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
-import com.douzone.prosync.member_project.entity.MemberProject;
+
+import com.douzone.prosync.log.dto.LogConditionDto;
+import com.douzone.prosync.log.logenum.LogCode;
+import com.douzone.prosync.log.service.LogServiceImpl;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
-import com.douzone.prosync.member_project.service.MemberProjectService;
+import com.douzone.prosync.notification.dto.NotificationConditionDto;
 import com.douzone.prosync.notification.notienum.NotificationCode;
 import com.douzone.prosync.notification.service.NotificationService;
 import com.douzone.prosync.project.entity.Project;
@@ -28,6 +31,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.douzone.prosync.member.dto.response.MemberGetResponse.*;
+
 
 @Service
 @Transactional
@@ -37,6 +42,9 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
     private final TaskStatusService taskStatusService;
     private final ProjectService projectService;
+
+    private final LogServiceImpl logService;
+
     private final MemberProjectMapper memberProjectMapper;
 
     private final NotificationService notificationService;
@@ -75,8 +83,25 @@ public class TaskServiceImpl implements TaskService {
 
 
         // Todo: 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
-//        taskMapper.
-//        notificationService.saveAndSendNotification(memberId, NotificationCode.TASK_REMOVE, task, );
+        List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskId);
+        List<Long> memberIds  = taskMembers.stream()
+                .map(TaskMemberResponseDto::getMemberId)
+                .collect(Collectors.toList());
+
+        // 알림 전달
+        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                .fromMemberId(memberId)
+                .code(NotificationCode.TASK_REMOVE)
+                .memberIds(memberIds)
+                .subject(task)
+                .build());
+
+        // 로그 전달
+        logService.saveLog(LogConditionDto.builder()
+                .fromMemberId(memberId)
+                .code(LogCode.TASK_REMOVE)
+                .projectId(task.getProjectId())
+                .subject(task).build());
     }
 
     @Transactional(readOnly = true)
@@ -131,9 +156,15 @@ public class TaskServiceImpl implements TaskService {
         // TODO : projectMemberId 값이 프로젝트 회원 아닌 경우 예외
 
         taskMapper.saveTaskMember(taskId, projectMemberIds);
+        List<Long> memberIds = memberProjectMapper.findMemberIdsListById(projectMemberIds);
 
-        notificationService.saveAndSendNotification(memberId, NotificationCode.TASK_ASSIGNMENT,
-                task, projectMemberIds);
+        // 알림 전달
+        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                .fromMemberId(memberId)
+                .code(NotificationCode.TASK_ASSIGNMENT)
+                .memberIds(memberIds)
+                .taskId(task.getTaskId())
+                .subject(task).build());
 
     }
 
@@ -146,7 +177,7 @@ public class TaskServiceImpl implements TaskService {
 
         taskMapper.deleteTaskMember(taskId, projectMemberIds);
 
-        notificationService.saveAndSendNotification(memberId, NotificationCode.TASK_EXCLUDED, task, projectMemberIds);
+
     }
 
     @Override

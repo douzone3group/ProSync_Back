@@ -58,7 +58,7 @@ public class CommentController {
     }
 
     //     댓글 수정
-    @PatchMapping("/comments/{comment-id}")
+    @PatchMapping("/tasks/{task-id}/comments/{comment-id}")
     @Operation(summary = "댓글 수정", description = "업무에 대한 댓글을 생성합니다.", tags = "comment")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = CommentSimpleResponse.class),
@@ -101,7 +101,7 @@ public class CommentController {
 
 
     // 댓글 삭제
-    @DeleteMapping("/comments/{comment-id}")
+    @DeleteMapping("/tasks/{task-id}/comments/{comment-id}")
     @ApiOperation(value = "댓글 삭제", notes = "댓글을 소프트 삭제 한다", tags = "comment")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "successfully retrieved", response = CommentSimpleResponse.class),
