@@ -1,6 +1,7 @@
 package com.douzone.prosync.file.dto;
 
 import com.douzone.prosync.file.entity.File;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FileResponseDto {
 
     @ApiModelProperty(value = "파일식별자", example = "1")
@@ -26,18 +28,30 @@ public class FileResponseDto {
     @ApiModelProperty(value = "생성일자", example = "2023-08-27 22:25:26")
     private String createdAt;
 
+    @ApiModelProperty(value = "파일정보식별자", example = "1")
+    private Long fileInfoId;
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
     public static FileResponseDto response(File file, Boolean isResponse) {
-        String fileName = isResponse ? changeFileNameFormat(file.getFileName()) : file.getFileName();
-        return FileResponseDto.builder()
+        FileResponseDto response = FileResponseDto.builder()
                 .fileId(file.getFileId())
                 .path(file.getPath())
                 .size(file.getSize())
-                .fileName(fileName)
+                .fileName(file.getFileName())
                 .createdAt(file.getCreatedAt().toString().replace("T", " "))
                 .build();
+
+        if (isResponse) {
+            changeFileNameFormat(response);
+        }
+        return response;
     }
 
-    private static String changeFileNameFormat(String fileName) {
-        return fileName.substring(0, fileName.lastIndexOf("-"));
+    public static void changeFileNameFormat(FileResponseDto dto) {
+        String fileName = dto.getFileName();
+        dto.setFileName(fileName.substring(0, fileName.lastIndexOf("-")));
     }
 }

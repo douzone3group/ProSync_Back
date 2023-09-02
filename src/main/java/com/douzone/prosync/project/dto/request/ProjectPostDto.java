@@ -42,7 +42,9 @@ public  class ProjectPostDto {
     @ApiModelProperty(value = "프로젝트 공개여부", required = true, example = "프로젝트 공개여부")
     private Boolean isPublic;
 
-    @ApiModelProperty(value = "프로젝트 이미지", required = true, example = "프로젝트 이미지")
+    @ApiModelProperty(value = "파일식별자", required = true, example = "1")
+    private Long fileId;
+
     private String projectImage;
 
 }

@@ -8,17 +8,24 @@ public class FileInfo {
 
     private Long fileInfoId;
 
-    private String tableName;
+    private FileTableName tableName;
 
     private Long tableKey;
 
     private Long fileId;
 
-    public static FileInfo create(String tableName, Long tableKey, Long fileId) {
+    public static FileInfo create(FileTableName tableName, Long tableKey, Long fileId) {
         return FileInfo.builder()
                 .tableName(tableName)
                 .tableKey(tableKey)
                 .fileId(fileId)
                 .build();
+    }
+
+    public enum FileTableName {
+        MEMBERS,
+        TASKS,
+        PROJECTS,
+        COMMENTS
     }
 }

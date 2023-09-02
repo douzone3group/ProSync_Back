@@ -3,7 +3,9 @@ package com.douzone.prosync.task.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
-
+import com.douzone.prosync.file.dto.FileRequestDto;
+import com.douzone.prosync.file.entity.FileInfo;
+import com.douzone.prosync.file.service.FileService;
 import com.douzone.prosync.log.dto.LogConditionDto;
 import com.douzone.prosync.log.logenum.LogCode;
 import com.douzone.prosync.log.service.LogServiceImpl;
@@ -31,8 +33,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.douzone.prosync.member.dto.response.MemberGetResponse.*;
-
 
 @Service
 @Transactional
@@ -48,6 +48,7 @@ public class TaskServiceImpl implements TaskService {
     private final MemberProjectMapper memberProjectMapper;
 
     private final NotificationService notificationService;
+    private final FileService fileService;
 
 
     @Override
@@ -58,7 +59,18 @@ public class TaskServiceImpl implements TaskService {
         verifyTaskStatus(findProject.getProjectId(), dto.getTaskStatusId(), memberId);
 
         taskMapper.save(dto, projectId);
-        return dto.getTaskId();
+        Long taskId = dto.getTaskId();
+
+        //TODO : 조건 수정
+        if (!dto.getFileIds().isEmpty()) {
+            List<FileInfo> fileInfos = dto.getFileIds()
+                    .stream()
+                    .map(fileId -> FileInfo.create(FileInfo.FileTableName.TASKS, taskId, fileId))
+                    .collect(Collectors.toList());
+            fileService.saveFileInfoList(fileInfos);
+        }
+
+        return taskId;
     }
 
     @Override
@@ -71,6 +83,7 @@ public class TaskServiceImpl implements TaskService {
         if (Optional.ofNullable(dto.getTaskStatusId()).isPresent()) {
             verifyTaskStatus(findTask.getProjectId(), dto.getTaskStatusId(), memberId);
         }
+        //TODO : 파일 수정 추가
 
         taskMapper.update(dto);
     }
@@ -102,6 +115,9 @@ public class TaskServiceImpl implements TaskService {
                 .code(LogCode.TASK_REMOVE)
                 .projectId(task.getProjectId())
                 .subject(task).build());
+
+        fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.TASKS, taskId));
+
     }
 
     @Transactional(readOnly = true)

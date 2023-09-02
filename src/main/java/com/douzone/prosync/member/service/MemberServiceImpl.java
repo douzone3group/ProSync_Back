@@ -2,6 +2,12 @@ package com.douzone.prosync.member.service;
 
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+import com.douzone.prosync.file.basic.BasicImage;
+import com.douzone.prosync.file.dto.FileRequestDto;
+import com.douzone.prosync.file.dto.FileResponseDto;
+import com.douzone.prosync.file.entity.File;
+import com.douzone.prosync.file.entity.FileInfo;
+import com.douzone.prosync.file.service.FileService;
 import com.douzone.prosync.mail.dto.CertificationCodeDto;
 import com.douzone.prosync.mail.dto.MailDto;
 import com.douzone.prosync.mail.service.AuthenticateService;
@@ -35,6 +41,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Optional;
 
 import static com.douzone.prosync.constant.ConstantPool.AUTHORIZATION_HEADER;
 import static com.douzone.prosync.constant.ConstantPool.REFRESH_HEADER;
@@ -65,7 +72,7 @@ public class MemberServiceImpl implements MemberService{
 
     private final MemberProjectService memberProjectService;
 
-
+    private final FileService fileService;
 
 
     /**
@@ -96,7 +103,24 @@ public class MemberServiceImpl implements MemberService{
      * 프로필 수정
      */
     public void updateMemberProfile(Long memberId, MemberPatchProfileDto dto){
-        memberRepository.findById(memberId).orElseThrow(() ->new ApplicationException(ErrorCode.USER_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+
+        // 프로젝트 이미지 - fileId 값이 있는 경우
+        if (Optional.ofNullable(dto.getFileId()).isPresent()) {
+
+            // 기본이미지 아닐 경우 기존 file 삭제
+            if (!member.getProfileImage().equals(BasicImage.BASIC_USER_IMAGE.getPath())) {
+                FileRequestDto profileImage = FileRequestDto.create(FileInfo.FileTableName.MEMBERS, memberId);
+                FileResponseDto findProfileFile = fileService.findFilesByTableInfo(profileImage, false).get(0);
+                fileService.delete(findProfileFile.getFileInfoId());
+            }
+
+            // 회원 이미지 세팅
+            File file = fileService.findFile(dto.getFileId());
+            fileService.saveFileInfo(FileInfo.create(FileInfo.FileTableName.MEMBERS, memberId, file.getFileId()));
+            dto.setProfileImage(file.getPath());
+        }
+
         memberRepository.updateProfile(memberId, dto);
     }
     /**
@@ -131,6 +155,8 @@ public class MemberServiceImpl implements MemberService{
         } catch (UnsupportedEncodingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new ApplicationException(ErrorCode.CRYPT_ERROR);
         }
+
+        fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.MEMBERS, memberId));
 
     }
 

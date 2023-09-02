@@ -15,8 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Component
 public class AwsFileHandler implements FileHandler {
@@ -70,11 +69,10 @@ public class AwsFileHandler implements FileHandler {
     }
 
     private String makeFileName(String originFileName) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         return new StringBuilder()
                 .append(originFileName)
                 .append("-")
-                .append(LocalDateTime.now().format(dateTimeFormatter))
+                .append(UUID.randomUUID())
                 .toString();
     }
 
