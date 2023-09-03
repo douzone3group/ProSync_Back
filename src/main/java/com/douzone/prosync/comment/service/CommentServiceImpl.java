@@ -21,11 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class CommentServiceImpl implements CommentService {
 
     private final TaskServiceImpl taskService;
@@ -46,7 +48,6 @@ public class CommentServiceImpl implements CommentService {
         commentMybatisMapper.createComment(dto);
         Long commentId = dto.getCommentId();
 
-        //TODO : 조건 수정
         if (!dto.getFileIds().isEmpty()) {
             List<FileInfo> fileInfos = FileInfo.createFileInfos(dto.getFileIds(), FileInfo.FileTableName.COMMENT, commentId);
             fileService.saveFileInfoList(fileInfos);
@@ -60,7 +61,11 @@ public class CommentServiceImpl implements CommentService {
     public void update(CommentPatchDto dto, Long memberId) {
         verifyCommentMember(dto.getCommentId(), memberId);
         commentMybatisMapper.updateComment(dto);
-        // TODO : 파일 로직 추가
+
+        if (!dto.getFileIds().isEmpty()) {
+            List<FileInfo> fileInfos = FileInfo.createFileInfos(dto.getFileIds(), FileInfo.FileTableName.COMMENT, dto.getCommentId());
+            fileService.saveFileInfoList(fileInfos);
+        }
     }
 
     @Override

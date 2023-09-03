@@ -41,8 +41,9 @@
         </foreach>
     </insert>
     <update id="deleteFiles">
-        UPDATE file f SET f.is_deleted = true, modified_at = now()
-        JOIN file_info fi ON f.file_id = fi.file_id
+        UPDATE file f
+            JOIN file_info fi ON f.file_id = fi.file_id
+            SET f.is_deleted = true, f.modified_at = now()
         WHERE fi.table_name = #{tableName} AND fi.table_key = #{tableKey}
     </update>
 </mapper>

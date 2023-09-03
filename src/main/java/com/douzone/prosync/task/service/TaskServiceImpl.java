@@ -61,7 +61,6 @@ public class TaskServiceImpl implements TaskService {
         taskMapper.save(dto, projectId);
         Long taskId = dto.getTaskId();
 
-        //TODO : 조건 수정
         if (!dto.getFileIds().isEmpty()) {
             List<FileInfo> fileInfos = FileInfo.createFileInfos(dto.getFileIds(), FileInfo.FileTableName.TASK, taskId);
             fileService.saveFileInfoList(fileInfos);
@@ -80,8 +79,12 @@ public class TaskServiceImpl implements TaskService {
         if (Optional.ofNullable(dto.getTaskStatusId()).isPresent()) {
             verifyTaskStatus(findTask.getProjectId(), dto.getTaskStatusId(), memberId);
         }
-        //TODO : 파일 수정 추가
 
+        // file
+        if (!dto.getFileIds().isEmpty()) {
+            List<FileInfo> fileInfos = FileInfo.createFileInfos(dto.getFileIds(), FileInfo.FileTableName.TASK, dto.getTaskId());
+            fileService.saveFileInfoList(fileInfos);
+        }
         taskMapper.update(dto);
     }
 

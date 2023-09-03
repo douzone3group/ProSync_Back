@@ -17,7 +17,6 @@ public interface FileService {
 
     List<FileResponseDto> findFilesByTableInfo(FileRequestDto dto, Boolean isResponse);
 
-    //  TODO: 각 도메인 서비스 계층에서 쓰기
     void saveFileInfo(FileInfo fileInfo);
 
     void saveFileInfoList(List<FileInfo> fileInfoList);

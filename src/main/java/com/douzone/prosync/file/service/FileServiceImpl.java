@@ -63,8 +63,8 @@ public class FileServiceImpl implements FileService {
     // 각 도메인 서비스계층에서 삭제시 사용
     @Override
     public void deleteFileList(FileRequestDto dto) {
-        fileMapper.deleteFiles(dto); // file - soft delete
         fileMapper.deleteFileInfos(dto);
+        fileMapper.deleteFiles(dto); // file - soft delete
     }
 
 
@@ -94,6 +94,11 @@ public class FileServiceImpl implements FileService {
     // 각 도메인의 저장, 수정시 사용
     @Override
     public void saveFileInfoList(List<FileInfo> fileInfoList) {
+        fileInfoList.forEach(fileInfo -> {
+            if (fileMapper.findFileInfoByFileId(fileInfo.getFileId()).size() != 0) {
+                throw new ApplicationException(ErrorCode.FILE_INFO_EXISTS);
+            }
+        });
         fileMapper.saveFileInfoList(fileInfoList);
     }
 

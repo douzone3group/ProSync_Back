@@ -29,5 +29,6 @@ public class CommentPostDto {
 
     private Long memberProjectId;
 
+    @ApiModelProperty(value = "파일식별자", example = "[1, 2, 3]")
     private List<Long> fileIds = new ArrayList<>();
 }
