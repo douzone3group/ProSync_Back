@@ -55,7 +55,6 @@ public class FileServiceImpl implements FileService {
         if (row < 1) {
             throw new ApplicationException(ErrorCode.FILE_NOT_FOUND);
         }
-        fileMapper.deleteFile(fileInfo.getFileId()); // soft delete
     }
 
 
@@ -64,7 +63,6 @@ public class FileServiceImpl implements FileService {
     @Override
     public void deleteFileList(FileRequestDto dto) {
         fileMapper.deleteFileInfos(dto);
-        fileMapper.deleteFiles(dto); // file - soft delete
     }
 
 

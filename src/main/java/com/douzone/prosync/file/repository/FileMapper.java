@@ -16,13 +16,8 @@ public interface FileMapper {
 
     void saveFileList(List<File> fileList);
 
-    @Select("SELECT * FROM file WHERE file_id=#{fileId} AND is_deleted IS NULL")
+    @Select("SELECT * FROM file WHERE file_id=#{fileId}")
     Optional<File> findById(Long fileId);
-
-    @Delete("UPDATE file SET is_deleted = true WHERE file_id = #{fileId}")
-    void deleteFile(Long fileId);
-
-    void deleteFiles(FileRequestDto fileInfo);
 
     List<FileResponseDto> findFilesByTableInfo(FileRequestDto fileInfo);
 
@@ -31,16 +26,16 @@ public interface FileMapper {
 
     void saveFileInfoList(List<FileInfo> fileInfoList);
 
-    @Select("SELECT * FROM file_info WHERE file_info_id = #{fileInfoId}")
+    @Select("SELECT * FROM file_info WHERE file_info_id = #{fileInfoId} AND deleted_at IS NULL")
     Optional<FileInfo> findFileInfo(Long fileInfoId);
 
-    @Delete("DELETE FROM file_info WHERE file_info_id = #{fileInfoId}")
+    @Update("UPDATE file_info SET deleted_at = now() WHERE file_info_id = #{fileInfoId}")
     Integer deleteFileInfo(Long fileInfoId);
 
-    @Delete("DELETE FROM file_info WHERE table_name = #{tableName} AND table_key = #{tableKey}")
+    @Update("UPDATE file_info SET deleted_at = now() WHERE table_name = #{tableName} AND table_key = #{tableKey}")
     void deleteFileInfos(FileRequestDto dto);
 
-    @Select("SELECT * FROM file_info WHERE file_id = #{fileId}")
+    @Select("SELECT * FROM file_info WHERE file_id = #{fileId} AND deleted_at IS NULL")
     List<FileInfo> findFileInfoByFileId(Long fileId);
 
 }

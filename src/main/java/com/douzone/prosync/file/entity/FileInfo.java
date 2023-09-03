@@ -1,6 +1,7 @@
 package com.douzone.prosync.file.entity;
 
 import lombok.*;
+import org.joda.time.LocalDateTime;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,8 @@ public class FileInfo {
     private Long tableKey;
 
     private Long fileId;
+
+    private LocalDateTime deletedAt;
 
     public enum FileTableName {
         MEMBER,

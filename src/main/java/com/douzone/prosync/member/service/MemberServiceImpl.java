@@ -19,7 +19,6 @@ import com.douzone.prosync.member.dto.request.MemberPostDto;
 import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
-import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
 import com.douzone.prosync.member_project.service.MemberProjectService;
 import com.douzone.prosync.redis.RedisService;
 import com.douzone.prosync.security.jwt.HmacAndBase64;
@@ -41,7 +40,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Optional;
 
 import static com.douzone.prosync.constant.ConstantPool.AUTHORIZATION_HEADER;
 import static com.douzone.prosync.constant.ConstantPool.REFRESH_HEADER;
@@ -108,17 +106,17 @@ public class MemberServiceImpl implements MemberService{
         // 프로젝트 이미지 - fileId 값이 있는 경우
         if (dto.getFileId() != null) {
 
+            // 회원 이미지 세팅
+            File file = fileService.findFile(dto.getFileId());
+            fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.MEMBER, memberId, file.getFileId()));
+            dto.setProfileImage(file.getPath());
+
             // 기본이미지 아닐 경우 기존 file 삭제
             if (!member.getProfileImage().equals(BasicImage.BASIC_USER_IMAGE.getPath())) {
                 FileRequestDto profileImage = FileRequestDto.create(FileInfo.FileTableName.MEMBER, memberId);
                 FileResponseDto findProfileFile = fileService.findFilesByTableInfo(profileImage, false).get(0);
                 fileService.delete(findProfileFile.getFileInfoId());
             }
-
-            // 회원 이미지 세팅
-            File file = fileService.findFile(dto.getFileId());
-            fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.MEMBER, memberId, file.getFileId()));
-            dto.setProfileImage(file.getPath());
 
         } else {
             dto.setProfileImage(member.getProfileImage());

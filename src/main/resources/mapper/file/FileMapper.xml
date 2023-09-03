@@ -3,30 +3,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.file.repository.FileMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="fileId">
-        INSERT INTO file(size, path, created_at, file_name, modified_at)
-        VALUES (#{size}, #{path}, now(), #{fileName}, now())
+        INSERT INTO file(size, path, created_at, file_name)
+        VALUES (#{size}, #{path}, now(), #{fileName})
     </insert>
-
-    <update id="delete">
-        UPDATE file
-        SET is_deleted = true, modified_at=now()
-        WHERE file_id=#{fileId} and is_deleted IS NULL;
-    </update>
-
-    <select id="findFilesByTableInfo" resultType="FileResponseDto">
-        SELECT f.file_id, f.size, f.path, f.created_at, f.file_name, f.is_deleted, fi.file_info_id
-        FROM file_info fi
-        JOIN file f ON fi.file_id = f.file_id
-        WHERE fi.table_name = #{tableName} AND fi.table_key = #{tableKey}
-        AND f.is_deleted IS NULL
-    </select>
 
     <insert id="saveFileList" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="fileId">
-        INSERT INTO file (size, path, created_at, modified_at, file_name) VALUES
+        INSERT INTO file (size, path, created_at, file_name) VALUES
         <foreach collection="fileList" item="file" separator=",">
-            (#{file.size}, #{file.path}, now(), now(), #{file.fileName})
+            (#{file.size}, #{file.path}, now(), #{file.fileName})
         </foreach>
     </insert>
+
+    <select id="findFilesByTableInfo" resultType="FileResponseDto">
+        SELECT f.file_id, f.size, f.path, f.created_at, f.file_name, fi.file_info_id
+        FROM file_info fi
+                 JOIN file f ON fi.file_id = f.file_id
+        WHERE fi.table_name = #{tableName} AND fi.table_key = #{tableKey} AND fi.deleted_at IS NULL
+    </select>
 
     <!--  file info  -->
     <insert id="saveFileInfo" useGeneratedKeys="true" keyProperty="fileInfoId">
@@ -40,10 +33,4 @@
             (#{fileInfo.tableName}, #{fileInfo.tableKey}, #{fileInfo.fileId})
         </foreach>
     </insert>
-    <update id="deleteFiles">
-        UPDATE file f
-            JOIN file_info fi ON f.file_id = fi.file_id
-            SET f.is_deleted = true, f.modified_at = now()
-        WHERE fi.table_name = #{tableName} AND fi.table_key = #{tableKey}
-    </update>
 </mapper>

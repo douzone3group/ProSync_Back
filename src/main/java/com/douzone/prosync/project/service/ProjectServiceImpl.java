@@ -79,17 +79,17 @@ public class ProjectServiceImpl implements ProjectService {
         // 프로젝트 이미지 - fileId 값이 있는 경우
         if (dto.getFileId() != null) {
 
+            // 프로젝트 이미지 세팅
+            File file = fileService.findFile(dto.getFileId());
+            fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.PROJECT, dto.getProjectId(), file.getFileId()));
+            dto.setProjectImage(file.getPath());
+
             // 기본 프로젝트 이미지가 아니면 기존 file 삭제
             if (!findProject.getProjectImage().equals(BasicImage.BASIC_PROJECT_IMAGE.getPath())) {
                 FileRequestDto projectImage = FileRequestDto.create(FileInfo.FileTableName.PROJECT, dto.getProjectId());
                 FileResponseDto findProjectImage = fileService.findFilesByTableInfo(projectImage, false).get(0);
                 fileService.delete(findProjectImage.getFileInfoId());
             }
-
-            // 프로젝트 이미지 세팅
-            File file = fileService.findFile(dto.getFileId());
-            fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.PROJECT, dto.getProjectId(), file.getFileId()));
-            dto.setProjectImage(file.getPath());
 
         } else {
             dto.setProjectImage(findProject.getProjectImage());
