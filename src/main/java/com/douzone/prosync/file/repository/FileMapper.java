@@ -40,4 +40,7 @@ public interface FileMapper {
     @Delete("DELETE FROM file_info WHERE table_name = #{tableName} AND table_key = #{tableKey}")
     void deleteFileInfos(FileRequestDto dto);
 
+    @Select("SELECT * FROM file_info WHERE file_id = #{fileId}")
+    List<FileInfo> findFileInfoByFileId(Long fileId);
+
 }

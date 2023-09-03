@@ -83,6 +83,9 @@ public class FileServiceImpl implements FileService {
     // 각 도메인의 저장, 수정시 사용
     @Override
     public void saveFileInfo(FileInfo fileInfo) {
+        if (fileMapper.findFileInfoByFileId(fileInfo.getFileId()).size() != 0) {
+            throw new ApplicationException(ErrorCode.FILE_INFO_EXISTS);
+        }
         fileMapper.saveFileInfo(fileInfo);
     }
 

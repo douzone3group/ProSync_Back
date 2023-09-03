@@ -106,7 +106,7 @@ public class MemberServiceImpl implements MemberService{
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
         // 프로젝트 이미지 - fileId 값이 있는 경우
-        if (Optional.ofNullable(dto.getFileId()).isPresent()) {
+        if (dto.getFileId() != null) {
 
             // 기본이미지 아닐 경우 기존 file 삭제
             if (!member.getProfileImage().equals(BasicImage.BASIC_USER_IMAGE.getPath())) {
@@ -119,6 +119,9 @@ public class MemberServiceImpl implements MemberService{
             File file = fileService.findFile(dto.getFileId());
             fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.MEMBER, memberId, file.getFileId()));
             dto.setProfileImage(file.getPath());
+
+        } else {
+            dto.setProfileImage(member.getProfileImage());
         }
 
         memberRepository.updateProfile(memberId, dto);

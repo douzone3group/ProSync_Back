@@ -54,7 +54,7 @@ public class ProjectServiceImpl implements ProjectService {
         memberProjectMapper.saveProjectAdmin(dto.getProjectId(), memberId, MemberProject.MemberProjectStatus.ACTIVE);
 
         // 프로젝트 이미지 - fileId 값이 있는 경우
-        if (Optional.ofNullable(dto.getFileId()).isPresent()) {
+        if (dto.getFileId() != null) {
             File file = fileService.findFile(dto.getFileId());
             fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.PROJECT, projectId, file.getFileId()));
             dto.setProjectImage(file.getPath());
@@ -77,7 +77,7 @@ public class ProjectServiceImpl implements ProjectService {
         Project findProject = findProject(dto.getProjectId());
 
         // 프로젝트 이미지 - fileId 값이 있는 경우
-        if (Optional.ofNullable(dto.getFileId()).isPresent()) {
+        if (dto.getFileId() != null) {
 
             // 기본 프로젝트 이미지가 아니면 기존 file 삭제
             if (!findProject.getProjectImage().equals(BasicImage.BASIC_PROJECT_IMAGE.getPath())) {
@@ -90,7 +90,11 @@ public class ProjectServiceImpl implements ProjectService {
             File file = fileService.findFile(dto.getFileId());
             fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.PROJECT, dto.getProjectId(), file.getFileId()));
             dto.setProjectImage(file.getPath());
+
+        } else {
+            dto.setProjectImage(findProject.getProjectImage());
         }
+
         projectMapper.updateProject(dto);
     }
 
