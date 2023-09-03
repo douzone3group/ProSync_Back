@@ -22,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,10 +48,7 @@ public class CommentServiceImpl implements CommentService {
 
         //TODO : 조건 수정
         if (!dto.getFileIds().isEmpty()) {
-            List<FileInfo> fileInfos = dto.getFileIds()
-                    .stream()
-                    .map(fileId -> FileInfo.create(FileInfo.FileTableName.COMMENTS, commentId, fileId))
-                    .collect(Collectors.toList());
+            List<FileInfo> fileInfos = FileInfo.createFileInfos(dto.getFileIds(), FileInfo.FileTableName.COMMENT, commentId);
             fileService.saveFileInfoList(fileInfos);
         }
 
@@ -71,7 +67,7 @@ public class CommentServiceImpl implements CommentService {
     public void delete(Long commentId, Long memberId) {
         verifyCommentMember(commentId, memberId);
         commentMybatisMapper.deleteComment(commentId);
-        fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.COMMENTS, commentId));
+        fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.COMMENT, commentId));
     }
 
     @Override

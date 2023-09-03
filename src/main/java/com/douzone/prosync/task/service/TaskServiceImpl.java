@@ -63,10 +63,7 @@ public class TaskServiceImpl implements TaskService {
 
         //TODO : 조건 수정
         if (!dto.getFileIds().isEmpty()) {
-            List<FileInfo> fileInfos = dto.getFileIds()
-                    .stream()
-                    .map(fileId -> FileInfo.create(FileInfo.FileTableName.TASKS, taskId, fileId))
-                    .collect(Collectors.toList());
+            List<FileInfo> fileInfos = FileInfo.createFileInfos(dto.getFileIds(), FileInfo.FileTableName.TASK, taskId);
             fileService.saveFileInfoList(fileInfos);
         }
 
@@ -116,7 +113,7 @@ public class TaskServiceImpl implements TaskService {
                 .projectId(task.getProjectId())
                 .subject(task).build());
 
-        fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.TASKS, taskId));
+        fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.TASK, taskId));
 
     }
 

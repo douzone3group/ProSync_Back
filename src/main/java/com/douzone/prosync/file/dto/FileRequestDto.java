@@ -1,19 +1,22 @@
 package com.douzone.prosync.file.dto;
 
 import com.douzone.prosync.file.entity.FileInfo;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
+
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FileRequestDto {
 
-    @NotBlank
     private FileInfo.FileTableName tableName;
 
-    @NotBlank
     private Long tableKey;
 
     public static FileRequestDto create(FileInfo.FileTableName tableName, Long tableKey) {

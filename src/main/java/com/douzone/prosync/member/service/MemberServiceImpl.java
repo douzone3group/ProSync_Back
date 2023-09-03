@@ -110,14 +110,14 @@ public class MemberServiceImpl implements MemberService{
 
             // 기본이미지 아닐 경우 기존 file 삭제
             if (!member.getProfileImage().equals(BasicImage.BASIC_USER_IMAGE.getPath())) {
-                FileRequestDto profileImage = FileRequestDto.create(FileInfo.FileTableName.MEMBERS, memberId);
+                FileRequestDto profileImage = FileRequestDto.create(FileInfo.FileTableName.MEMBER, memberId);
                 FileResponseDto findProfileFile = fileService.findFilesByTableInfo(profileImage, false).get(0);
                 fileService.delete(findProfileFile.getFileInfoId());
             }
 
             // 회원 이미지 세팅
             File file = fileService.findFile(dto.getFileId());
-            fileService.saveFileInfo(FileInfo.create(FileInfo.FileTableName.MEMBERS, memberId, file.getFileId()));
+            fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.MEMBER, memberId, file.getFileId()));
             dto.setProfileImage(file.getPath());
         }
 
@@ -156,7 +156,7 @@ public class MemberServiceImpl implements MemberService{
             throw new ApplicationException(ErrorCode.CRYPT_ERROR);
         }
 
-        fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.MEMBERS, memberId));
+        fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.MEMBER, memberId));
 
     }
 

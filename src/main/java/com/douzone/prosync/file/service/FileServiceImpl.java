@@ -73,7 +73,7 @@ public class FileServiceImpl implements FileService {
     public List<FileResponseDto> findFilesByTableInfo(FileRequestDto dto, Boolean isResponse) {
         List<FileResponseDto> files = fileMapper.findFilesByTableInfo(dto);
         if (isResponse) {
-            files.forEach(FileResponseDto::changeFileNameFormat);
+            files.forEach(file -> file.setFileName(FileResponseDto.getOriginalFileName(file.getFileName())));
         }
         return files;
     }

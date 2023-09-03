@@ -16,7 +16,7 @@ public interface FileMapper {
 
     void saveFileList(List<File> fileList);
 
-    @Select("select * from file where file_id=#{fileId} where is_deleted is null")
+    @Select("SELECT * FROM file WHERE file_id=#{fileId} AND is_deleted IS NULL")
     Optional<File> findById(Long fileId);
 
     @Delete("UPDATE file SET is_deleted = true WHERE file_id = #{fileId}")

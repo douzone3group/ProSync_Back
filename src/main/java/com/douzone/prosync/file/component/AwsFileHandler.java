@@ -71,7 +71,7 @@ public class AwsFileHandler implements FileHandler {
     private String makeFileName(String originFileName) {
         return new StringBuilder()
                 .append(originFileName)
-                .append("-")
+                .append("_")
                 .append(UUID.randomUUID())
                 .toString();
     }

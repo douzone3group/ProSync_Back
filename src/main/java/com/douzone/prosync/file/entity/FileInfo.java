@@ -2,6 +2,9 @@ package com.douzone.prosync.file.entity;
 
 import lombok.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Builder
 @Getter
 public class FileInfo {
@@ -14,7 +17,14 @@ public class FileInfo {
 
     private Long fileId;
 
-    public static FileInfo create(FileTableName tableName, Long tableKey, Long fileId) {
+    public enum FileTableName {
+        MEMBER,
+        TASK,
+        PROJECT,
+        COMMENT
+    }
+
+    public static FileInfo createFileInfo(FileTableName tableName, Long tableKey, Long fileId) {
         return FileInfo.builder()
                 .tableName(tableName)
                 .tableKey(tableKey)
@@ -22,10 +32,10 @@ public class FileInfo {
                 .build();
     }
 
-    public enum FileTableName {
-        MEMBERS,
-        TASKS,
-        PROJECTS,
-        COMMENTS
+    public static List<FileInfo> createFileInfos(List<Long> fileIds, FileTableName tableName, Long tableKey) {
+        return fileIds
+                .stream()
+                .map(fileId -> FileInfo.createFileInfo(tableName, tableKey, fileId))
+                .collect(Collectors.toList());
     }
 }

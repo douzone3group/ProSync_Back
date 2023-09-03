@@ -45,13 +45,12 @@ public class FileResponseDto {
                 .build();
 
         if (isResponse) {
-            changeFileNameFormat(response);
+            response.setFileName(getOriginalFileName(response.getFileName()));
         }
         return response;
     }
 
-    public static void changeFileNameFormat(FileResponseDto dto) {
-        String fileName = dto.getFileName();
-        dto.setFileName(fileName.substring(0, fileName.lastIndexOf("-")));
+    public static String getOriginalFileName(String fileName) {
+       return fileName.substring(0, fileName.lastIndexOf("_"));
     }
 }
