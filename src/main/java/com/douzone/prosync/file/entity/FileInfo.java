@@ -18,7 +18,7 @@ public class FileInfo {
 
     private Long fileId;
 
-    private LocalDateTime deletedAt;
+    private String deletedAt;
 
     public enum FileTableName {
         MEMBER,

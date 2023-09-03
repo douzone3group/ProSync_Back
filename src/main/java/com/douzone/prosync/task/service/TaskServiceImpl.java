@@ -162,7 +162,7 @@ public class TaskServiceImpl implements TaskService {
 
         GetTaskResponse task = verifyExistTask(taskId);
 
-        // 이미 담당자로 지정되어있는 경우 경우
+        // 이미 담당자로 지정되어있는 경우
         List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskId);
         taskMembers.forEach(taskMember -> {
             if (projectMemberIds.contains(taskMember.getMemberProjectId())) {

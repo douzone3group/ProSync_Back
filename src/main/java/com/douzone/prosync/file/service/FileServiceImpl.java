@@ -81,6 +81,7 @@ public class FileServiceImpl implements FileService {
     // 각 도메인의 저장, 수정시 사용
     @Override
     public void saveFileInfo(FileInfo fileInfo) {
+        findFile(fileInfo.getFileId());
         if (fileMapper.findFileInfoByFileId(fileInfo.getFileId()).size() != 0) {
             throw new ApplicationException(ErrorCode.FILE_INFO_EXISTS);
         }
@@ -93,6 +94,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public void saveFileInfoList(List<FileInfo> fileInfoList) {
         fileInfoList.forEach(fileInfo -> {
+            findFile(fileInfo.getFileId());
             if (fileMapper.findFileInfoByFileId(fileInfo.getFileId()).size() != 0) {
                 throw new ApplicationException(ErrorCode.FILE_INFO_EXISTS);
             }
@@ -103,6 +105,7 @@ public class FileServiceImpl implements FileService {
 
     // 파일 조회
     // 파일 정보 식별자로 파일 정보를 찾음
+    @Override
     public File findFile(Long fileId) {
         return fileMapper.findById(fileId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.FILE_NOT_FOUND));

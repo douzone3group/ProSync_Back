@@ -35,7 +35,7 @@ public interface FileMapper {
     @Update("UPDATE file_info SET deleted_at = now() WHERE table_name = #{tableName} AND table_key = #{tableKey}")
     void deleteFileInfos(FileRequestDto dto);
 
-    @Select("SELECT * FROM file_info WHERE file_id = #{fileId} AND deleted_at IS NULL")
+    @Select("SELECT * FROM file_info WHERE file_id = #{fileId}")
     List<FileInfo> findFileInfoByFileId(Long fileId);
 
 }
