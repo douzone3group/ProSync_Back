@@ -33,4 +33,9 @@
             (#{fileInfo.tableName}, #{fileInfo.tableKey}, #{fileInfo.fileId})
         </foreach>
     </insert>
+
+    <select id="findFilesWithNoFileInfo">
+        SELECT * FROM file
+        WHERE file_id NOT IN (SELECT file_id FROM file_info)
+    </select>
 </mapper>

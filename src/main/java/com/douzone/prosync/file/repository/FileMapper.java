@@ -6,6 +6,7 @@ import com.douzone.prosync.file.entity.File;
 import com.douzone.prosync.file.entity.FileInfo;
 import org.apache.ibatis.annotations.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,9 @@ public interface FileMapper {
 
     List<FileResponseDto> findFilesByTableInfo(FileRequestDto fileInfo);
 
+    @Select("SELECT * FROM file_info WHERE file_id = #{fileId}")
+    Optional<FileInfo> findFileInfoByFileId(Long fileId);
+
     // file info
     void saveFileInfo(FileInfo fileInfo);
 
@@ -35,7 +39,17 @@ public interface FileMapper {
     @Update("UPDATE file_info SET deleted_at = now() WHERE table_name = #{tableName} AND table_key = #{tableKey}")
     void deleteFileInfos(FileRequestDto dto);
 
-    @Select("SELECT * FROM file_info WHERE file_id = #{fileId}")
-    List<FileInfo> findFileInfoByFileId(Long fileId);
+
+    // 테이블 데이터 삭제 - 정기 삭제시 사용
+    @Delete("DELETE FROM file where file_id = #{fileId}")
+    void deleteActualFile(Long fileId);
+
+    @Delete("DELETE FROM file_info where file_info_id = #{fileInfoId}")
+    void deleteActualFileInfo(Long fileInfoId);
+
+    @Select("SELECT * FROM file_info WHERE deleted_at <= #{dateTime}")
+    List<FileInfo> findDeletedFile(LocalDateTime dateTime);
+
+    List<File> findFilesWithNoFileInfo();
 
 }
