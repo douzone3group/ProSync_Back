@@ -8,6 +8,8 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @ApiModel("[REQUEST] TASK - POST")
@@ -42,6 +44,9 @@ public class TaskPostDto {
 
         @ApiModelProperty(value = "업무상태", example = "1")
         private Long taskStatusId;
+
+        @ApiModelProperty(value = "파일식별자", example = "[1, 2, 3]")
+        private List<Long> fileIds = new ArrayList<>();
 
 
         public void setTaskStatusId(Long taskStatusId) {

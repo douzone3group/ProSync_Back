@@ -4,6 +4,12 @@ package com.douzone.prosync.project.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+import com.douzone.prosync.file.basic.BasicImage;
+import com.douzone.prosync.file.dto.FileRequestDto;
+import com.douzone.prosync.file.dto.FileResponseDto;
+import com.douzone.prosync.file.entity.File;
+import com.douzone.prosync.file.entity.FileInfo;
+import com.douzone.prosync.file.service.FileService;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
 import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
@@ -35,6 +41,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectMapper projectMapper;
     private final MemberProjectMapper memberProjectMapper;
     private final TaskStatusService taskStatusService;
+    private final FileService fileService;
 
     // 프로젝트 생성
     public Long save(ProjectPostDto dto, Long memberId) {
@@ -45,6 +52,16 @@ public class ProjectServiceImpl implements ProjectService {
         createDefaultTaskStatus(projectId);
 
         memberProjectMapper.saveProjectAdmin(dto.getProjectId(), memberId, MemberProject.MemberProjectStatus.ACTIVE);
+
+        // 프로젝트 이미지 - fileId 값이 있는 경우
+        if (dto.getFileId() != null) {
+            File file = fileService.findFile(dto.getFileId());
+            fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.PROJECT, projectId, file.getFileId()));
+            dto.setProjectImage(file.getPath());
+        } else { // 기본 프로젝트 이미지 세팅
+            dto.setProjectImage(BasicImage.BASIC_PROJECT_IMAGE.getPath());
+        }
+
         return projectId;
     }
 
@@ -57,11 +74,28 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 프로젝트 수정
     public void update(ProjectPatchDto dto) {
-        Integer row = projectMapper.updateProject(dto);
-        if (row < 1) {
-            throw new ApplicationException(ErrorCode.PROJECT_NOT_FOUND);
+        Project findProject = findProject(dto.getProjectId());
+
+        // 프로젝트 이미지 - fileId 값이 있는 경우
+        if (dto.getFileId() != null) {
+
+            // 프로젝트 이미지 세팅
+            File file = fileService.findFile(dto.getFileId());
+            fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.PROJECT, dto.getProjectId(), file.getFileId()));
+            dto.setProjectImage(file.getPath());
+
+            // 기본 프로젝트 이미지가 아니면 기존 file 삭제
+            if (!findProject.getProjectImage().equals(BasicImage.BASIC_PROJECT_IMAGE.getPath())) {
+                FileRequestDto projectImage = FileRequestDto.create(FileInfo.FileTableName.PROJECT, dto.getProjectId());
+                FileResponseDto findProjectImage = fileService.findFilesByTableInfo(projectImage, false).get(0);
+                fileService.delete(findProjectImage.getFileInfoId());
+            }
+
+        } else {
+            dto.setProjectImage(findProject.getProjectImage());
         }
 
+        projectMapper.updateProject(dto);
     }
 
     // 프로젝트 삭제 (소프트)
@@ -70,6 +104,7 @@ public class ProjectServiceImpl implements ProjectService {
         if (row < 1) {
             throw new ApplicationException(ErrorCode.PROJECT_NOT_FOUND);
         }
+        fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.PROJECT, projectId));
     }
 
     //프로젝트 조회

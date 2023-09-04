@@ -21,9 +21,10 @@ public class MemberPatchProfileDto {
         private String intro;
 
 
-        // Todo: 파일 image 연결
-        @ApiModelProperty(value = "프로필 이미지",example = "default")
-        @NotNull @NotBlank
+        @ApiModelProperty(value = "파일식별자", example = "1")
+        private Long fileId;
+
+        @Setter
         private String profileImage;
 
 }

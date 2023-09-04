@@ -7,6 +7,9 @@ import com.douzone.prosync.comment.repository.CommentMybatisMapper;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+import com.douzone.prosync.file.dto.FileRequestDto;
+import com.douzone.prosync.file.entity.FileInfo;
+import com.douzone.prosync.file.service.FileService;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
 import com.douzone.prosync.member_project.service.MemberProjectService;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
@@ -18,11 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class CommentServiceImpl implements CommentService {
 
     private final TaskServiceImpl taskService;
@@ -30,6 +35,8 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMybatisMapper commentMybatisMapper;
 
     private final MemberProjectService memberProjectService;
+
+    private final FileService fileService;
 
     @Override
     public Long save(CommentPostDto dto) {
@@ -39,8 +46,14 @@ public class CommentServiceImpl implements CommentService {
         MemberProjectResponseDto projectMember = memberProjectService.findProjectMember(projectId, dto.getMemberId());
         dto.setMemberProjectId(projectMember.getMemberProjectId());
         commentMybatisMapper.createComment(dto);
+        Long commentId = dto.getCommentId();
 
-        return dto.getCommentId();
+        if (!dto.getFileIds().isEmpty()) {
+            List<FileInfo> fileInfos = FileInfo.createFileInfos(dto.getFileIds(), FileInfo.FileTableName.COMMENT, commentId);
+            fileService.saveFileInfoList(fileInfos);
+        }
+
+        return commentId;
     }
 
 
@@ -48,12 +61,18 @@ public class CommentServiceImpl implements CommentService {
     public void update(CommentPatchDto dto, Long memberId) {
         verifyCommentMember(dto.getCommentId(), memberId);
         commentMybatisMapper.updateComment(dto);
+
+        if (!dto.getFileIds().isEmpty()) {
+            List<FileInfo> fileInfos = FileInfo.createFileInfos(dto.getFileIds(), FileInfo.FileTableName.COMMENT, dto.getCommentId());
+            fileService.saveFileInfoList(fileInfos);
+        }
     }
 
     @Override
     public void delete(Long commentId, Long memberId) {
         verifyCommentMember(commentId, memberId);
         commentMybatisMapper.deleteComment(commentId);
+        fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.COMMENT, commentId));
     }
 
     @Override
