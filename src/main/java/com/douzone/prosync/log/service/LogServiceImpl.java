@@ -1,6 +1,7 @@
 package com.douzone.prosync.log.service;
 
 
+import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.log.dto.LogConditionDto;
@@ -14,14 +15,18 @@ import com.douzone.prosync.member.repository.MemberRepository;
 import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.notification.dto.ContentUrlContainer;
+import com.douzone.prosync.notification.dto.response.NotificationResponse;
 import com.douzone.prosync.project.dto.request.ProjectPatchDto;
 import com.douzone.prosync.project.dto.response.GetProjectResponse;
 import com.douzone.prosync.project.entity.Project;
 import com.douzone.prosync.project.service.ProjectService;
 import com.douzone.prosync.searchcondition.LogSearchCondition;
+import com.douzone.prosync.searchcondition.NotificationSearchCondition;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -215,11 +220,10 @@ public class LogServiceImpl implements LogService {
             return new LogSimpleResponse(id);
         }
 
+
         @Override
         public PageInfo<LogResponse> getLogList(LogSearchCondition condition){
-
             return new PageInfo<>(logRepository.getLogList(condition), PAGE_NAVI);
-
         }
 
         @Override
@@ -233,4 +237,21 @@ public class LogServiceImpl implements LogService {
         public Integer getLogListCount(Long projectId){
             return logRepository.getLogListCount(projectId);
         }
+
+    @Override
+    public PageResponseDto<LogResponse> getLogPageList(Long projectId, LogSearchCondition condition, Pageable pageable) {
+        int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
+
+        PageHelper.startPage(pageNum, pageable.getPageSize());
+
+        LogSearchCondition logSearchCondition = condition.of(projectId, condition);
+
+        List<LogResponse> logResponseList = logRepository.getLogList(logSearchCondition);
+
+        PageInfo<LogResponse> pageInfo = new PageInfo<>(logResponseList);
+
+        return new PageResponseDto<>(pageInfo);
     }
+
+
+}

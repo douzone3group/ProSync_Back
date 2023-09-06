@@ -1,10 +1,12 @@
 package com.douzone.prosync.notification.controller;
 
+import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.notification.dto.request.NotificationListRequestDto;
 import com.douzone.prosync.notification.dto.response.NotificationResponse;
 import com.douzone.prosync.notification.dto.response.NotificationTargetSimpleResponse;
 import com.douzone.prosync.notification.mapper.NotificationMapper;
 import com.douzone.prosync.notification.service.WebNotificationServiceImpl;
+import com.douzone.prosync.searchcondition.NotificationSearchCondition;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiResponse;
@@ -14,6 +16,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +25,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 
+import java.awt.print.Pageable;
 import java.security.Principal;
+import java.util.List;
 
 import static com.douzone.prosync.constant.ConstantPool.*;
 
@@ -63,17 +69,11 @@ public class NotificationController {
             @ApiResponse(code = 500, message = "server error")
     })
     @Transactional(readOnly = true)
-    public ResponseEntity<PageInfo<NotificationResponse>> notificationPageList(@RequestBody  NotificationListRequestDto requestDto,@Parameter(hidden = true) Principal principal){
+    public ResponseEntity<PageResponseDto<NotificationResponse>> notificationPageList(@RequestBody  NotificationListRequestDto requestDto,@Parameter(hidden = true) Principal principal){
 
-        if(requestDto.getPageNum() == null){
-            requestDto.setPageNum(DEFAULT_PAGE_NUM);
-            if(requestDto.getPageSize() == null){
-                requestDto.setPageSize(DEFAULT_PAGE_SIZE);
-            }
-        }
+        PageResponseDto<NotificationResponse> notificationPageList = notificationService.getNotificationPageList(requestDto, principal);
 
-        PageHelper.startPage(requestDto.getPageNum(), requestDto.getPageSize());
-        return new ResponseEntity<>(new PageInfo<>(mapper.getNotificationList(requestDto.of(Long.parseLong(principal.getName()))), PAGE_NAVI), HttpStatus.OK);
+        return new ResponseEntity<>(notificationPageList, HttpStatus.OK);
     }
 
     /**

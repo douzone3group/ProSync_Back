@@ -74,6 +74,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
+
         }
 
 
@@ -92,7 +93,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         switch (httpMethod) {
 
-            case "GET":{
+            case "GET": {
                 if (requestUri.equals("my-projects") || requestUri.equals("projects")) {
                     log.debug("{}", "[GET] 1");
                     return;
@@ -141,6 +142,11 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                    checkProjectPublic(memberId, projectId);
                    return;
                }
+
+               else {
+                   System.out.println("통과");
+               }
+
             }
             break;
 

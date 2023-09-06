@@ -4,6 +4,7 @@ import com.douzone.prosync.notification.notienum.NotificationCode;
 import com.douzone.prosync.searchcondition.NotificationSearchCondition;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDateTime;
 
@@ -30,12 +31,23 @@ public class NotificationListRequestDto {
     private Integer pageSize;
 
     public NotificationSearchCondition of(Long memberId){
-        return NotificationSearchCondition.builder()
-                .memberId(memberId)
-                .content(content)
-                .startDate(startDate)
-                .endDate(endDate)
-                .notiCode(notiCode.getCode())
-                .build();
+        if (notiCode==null) {
+            return NotificationSearchCondition.builder()
+                    .memberId(memberId)
+                    .content(content)
+                    .startDate(startDate)
+                    .endDate(endDate)
+                    .notiCode(null)
+                    .build();
+        } else {
+            return NotificationSearchCondition.builder()
+                    .memberId(memberId)
+                    .content(content)
+                    .startDate(startDate)
+                    .endDate(endDate)
+                    .notiCode(notiCode.getCode())
+                    .build();
+        }
+
     }
 }
