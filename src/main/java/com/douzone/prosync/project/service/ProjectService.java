@@ -13,9 +13,9 @@ public interface ProjectService {
 
     Long save(ProjectPostDto dto, Long memberId);
 
-    void update(ProjectPatchDto dto);
+    void update(ProjectPatchDto dto, Long memberId);
 
-    void delete(Long projectId);
+    void delete(Long projectId, Long memberId);
 
     Project findProject(Long projectId);
 

@@ -26,6 +26,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.security.Principal;
+import java.util.Optional;
 
 @Slf4j
 @Validated
@@ -82,9 +83,10 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity updateProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
-                                        @PathVariable("project-id") Long projectId, @RequestBody @Valid ProjectPatchDto dto) {
+                                        @PathVariable("project-id") Long projectId, @RequestBody @Valid ProjectPatchDto dto,
+                                        @Parameter(hidden = true) @ApiIgnore Principal principal) {
         dto.setProjectId(projectId);
-        projectService.update(dto);
+        projectService.update(dto,getMemberId(principal));
         return new ResponseEntity(new ProjectSimpleResponse(projectId), HttpStatus.OK);
     }
 
@@ -100,8 +102,9 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity deleteProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
-                                        @PathVariable("project-id") @Positive Long projectId) {
-        projectService.delete(projectId);
+                                        @PathVariable("project-id") @Positive Long projectId,
+                                        @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        projectService.delete(projectId, getMemberId(principal));
         return new ResponseEntity(new ProjectSimpleResponse(projectId), HttpStatus.NO_CONTENT);
     }
 
@@ -151,6 +154,12 @@ public class ProjectController {
             @ApiIgnore Principal principal) {
         PageResponseDto<GetProjectsResponse> response = projectService.findMyProjects(Long.parseLong(principal.getName()), pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private Long getMemberId(Principal principal) {
+        return Optional.ofNullable(principal)
+                .map(p -> Long.parseLong(p.getName()))
+                .orElse(null);
     }
 
 }

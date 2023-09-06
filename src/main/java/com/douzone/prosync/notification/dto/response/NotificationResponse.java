@@ -12,7 +12,7 @@ public class NotificationResponse {
     private Long notificationTargetId;
     private boolean isRead;
     private String content;
-    private String code;
+    private NotificationCode code;
     private LocalDateTime createdAt;
     private String url;
 }

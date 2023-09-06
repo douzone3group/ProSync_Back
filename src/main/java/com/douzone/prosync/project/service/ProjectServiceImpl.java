@@ -4,9 +4,15 @@ package com.douzone.prosync.project.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+import com.douzone.prosync.log.dto.LogConditionDto;
+import com.douzone.prosync.log.logenum.LogCode;
+import com.douzone.prosync.log.service.LogService;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
 import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
+import com.douzone.prosync.notification.dto.NotificationConditionDto;
+import com.douzone.prosync.notification.notienum.NotificationCode;
+import com.douzone.prosync.notification.service.NotificationService;
 import com.douzone.prosync.project.dto.request.ProjectPatchDto;
 import com.douzone.prosync.project.dto.request.ProjectPostDto;
 import com.douzone.prosync.project.dto.request.ProjectSearchCond;
@@ -36,6 +42,10 @@ public class ProjectServiceImpl implements ProjectService {
     private final MemberProjectMapper memberProjectMapper;
     private final TaskStatusService taskStatusService;
 
+    private final NotificationService notificationService;
+
+    private final LogService logService;
+
     // 프로젝트 생성
     public Long save(ProjectPostDto dto, Long memberId) {
 
@@ -56,20 +66,57 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 프로젝트 수정
-    public void update(ProjectPatchDto dto) {
+    public void update(ProjectPatchDto dto, Long memberId) {
         Integer row = projectMapper.updateProject(dto);
         if (row < 1) {
             throw new ApplicationException(ErrorCode.PROJECT_NOT_FOUND);
         }
 
+        Project project = projectMapper.findById(dto.getProjectId()).get();
+
+        List<Long> memberIds = projectMapper.findMembersInProject(project.getProjectId());
+
+
+        // 알림 저장 및 전달
+        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                .fromMemberId(memberId)
+                .code(NotificationCode.PROJECT_MODIFICATION)
+                .memberIds(memberIds)
+                .projectId(dto.getProjectId())
+                .subject(project).build());
+
+        // 로그 저장
+        logService.saveLog(LogConditionDto.builder()
+                .fromMemberId(memberId)
+                .code(LogCode.PROJECT_MODIFICATION)
+                .projectId(dto.getProjectId())
+                .subject(project).build());
+
     }
 
     // 프로젝트 삭제 (소프트)
-    public void delete(Long projectId) {
+    public void delete(Long projectId, Long memberId) {
+
+        Project project = projectMapper.findById(projectId).orElseThrow(()-> new ApplicationException(ErrorCode.PROJECT_NOT_FOUND));
+        List<Long> memberIds = projectMapper.findMembersInProject(project.getProjectId());
+
         Integer row = projectMapper.deleteProject(projectId);
-        if (row < 1) {
-            throw new ApplicationException(ErrorCode.PROJECT_NOT_FOUND);
-        }
+
+
+        // 알림 저장 및 전달
+        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                .fromMemberId(memberId)
+                .code(NotificationCode.PROJECT_REMOVE)
+                .memberIds(memberIds)
+                .subject(project).build());
+
+        // 로그 저장
+        logService.saveLog(LogConditionDto.builder()
+                .fromMemberId(memberId)
+                .code(LogCode.PROJECT_REMOVE)
+                .projectId(projectId)
+                .subject(project).build());
+
     }
 
     //프로젝트 조회

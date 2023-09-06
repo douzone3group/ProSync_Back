@@ -31,4 +31,6 @@ public interface ProjectMapper {
 
     List<GetProjectsResponse> findByMemberIdPartOfAdmin(Long memberId);
 
+    List<Long> findMembersInProject(Long projectId);
+
 }

@@ -5,6 +5,7 @@ import com.douzone.prosync.comment.dto.request.CommentPostDto;
 import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
 import com.douzone.prosync.comment.entity.Comment;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
+import com.douzone.prosync.task.dto.TaskSimpleDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -31,4 +32,7 @@ public interface CommentMybatisMapper {
     Optional<MemberProjectResponseDto> findCommentMember(Long commentId);
 
     Comment findbyId(Long commentId);
+
+    @Select("select t.task_id, t.title, t.project_id from comment c join task t on c.task_id=t.task_id where c.comment_id = #{commentId}")
+    TaskSimpleDto findTaskbyId(Long commentId);
 }

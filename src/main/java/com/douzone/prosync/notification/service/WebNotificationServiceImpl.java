@@ -3,7 +3,6 @@ package com.douzone.prosync.notification.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
-import com.douzone.prosync.log.logenum.LogCode;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
@@ -23,14 +22,13 @@ import com.douzone.prosync.notification.notienum.NotificationPlatform;
 import com.douzone.prosync.notification.repository.MapEmitterRepository;
 import com.douzone.prosync.notification.repository.MybatisNotificationRepository;
 import com.douzone.prosync.project.dto.response.GetProjectResponse;
+import com.douzone.prosync.project.entity.Project;
 import com.douzone.prosync.searchcondition.NotificationSearchCondition;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -55,7 +53,6 @@ public class WebNotificationServiceImpl implements NotificationService{
 
     private final MemberRepository memberRepository;
 
-    private final MemberProjectMapper memberProjectMapper;
 
     private final NotificationMapper mapper;
 
@@ -152,42 +149,37 @@ public class WebNotificationServiceImpl implements NotificationService{
             }
                 break;
             case "프로젝트지정":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((GetProjectResponse) dto.getSubject()).getName()+" 프로젝트의 구성원으로 수락하셨습니다.");
+                container.setContent(fromMember.getName()+"님이 "+ ((Project) dto.getSubject()).getTitle()+" 프로젝트의 구성원으로 수락하셨습니다.");
                 container.setUrl(FRONT_SERVER_HOST+"/projects/"+dto.getProjectId());
             }
                 break;
             case "프로젝트제외":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((GetProjectResponse) dto.getSubject()).getName()+" 프로젝트의 구성원에서 제외하셨습니다.");
+                container.setContent(fromMember.getName()+"님이 "+ ((Project) dto.getSubject()).getTitle()+" 프로젝트의 구성원에서 제외하셨습니다.");
                 container.setUrl(FRONT_SERVER_HOST+"/notifications");
             }
                 break;
-            case "프로젝트권한변경":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((GetProjectResponse) dto.getSubject()).getName()+" 프로젝트에 대한 권한을 변경하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/projects/"+dto.getProjectId());
-            }
-                break;
             case "프로젝트수정":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((GetProjectResponse) dto.getSubject()).getName()+" 프로젝트에 대한 정보를 수정하셨습니다.");
+                container.setContent(fromMember.getName()+"님이 "+ ((Project) dto.getSubject()).getTitle()+" 프로젝트에 대한 정보를 수정하셨습니다.");
                 container.setUrl(FRONT_SERVER_HOST + "/projects/" + dto.getProjectId());
             }
                 break;
             case "프로젝트삭제":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((GetProjectResponse) dto.getSubject()).getName()+" 프로젝트를 삭제하셨습니다.");
+                container.setContent(fromMember.getName()+"님이 "+ ((Project) dto.getSubject()).getTitle()+" 프로젝트를 삭제하셨습니다.");
                 container.setUrl(FRONT_SERVER_HOST+"/notifications");
             }
                 break;
             case "댓글추가":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무에 댓글을 추가하셨습니다.");
+                container.setContent(fromMember.getName()+"님이 "+ dto.getSubject()+" 업무에 댓글을 추가하셨습니다.");
                 container.setUrl(FRONT_SERVER_HOST+"/tasks/"+dto.getTaskId());
             }
                 break;
             case "댓글삭제":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무에 댓글을 삭제하셨습니다.");
+                container.setContent(fromMember.getName()+"님이 "+ dto.getSubject()+" 업무에 댓글을 삭제하셨습니다.");
                 container.setUrl(FRONT_SERVER_HOST+"/tasks/"+dto.getTaskId());
             }
                 break;
             case "댓글수정":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무에 댓글을 수정하셨습니다.");
+                container.setContent(fromMember.getName()+"님이 "+ dto.getSubject()+" 업무에 댓글을 수정하셨습니다.");
                 container.setUrl(FRONT_SERVER_HOST+"/tasks/"+dto.getTaskId());
             }
                 break;
@@ -197,10 +189,10 @@ public class WebNotificationServiceImpl implements NotificationService{
                 Member member = memberRepository.findById(dto.getMemberId()).orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
                 if (dto.getAuthority().name().equals("ADMIN")) {
-                    container.setContent("프로젝트의 관리자가 "+fromMember.getName()+"님에서 "+member.getName()+ "으로 변경되었습니다.");
+                    container.setContent(((Project)dto.getSubject()).getTitle() +" 프로젝트의 관리자가 "+fromMember.getName()+"님에서 "+member.getName()+ "으로 변경되었습니다.");
                     container.setUrl(FRONT_SERVER_HOST+"/projects/" + dto.getProjectId());
                 } else {
-                    container.setContent(member.getName()+"님의 권한이 "+ dto.getAuthority().name()+"으로 변경되었습니다.");
+                    container.setContent(((Project)dto.getSubject()).getTitle()+" 프로젝트에서"+member.getName()+"님의 권한이 "+ dto.getAuthority().name()+"으로 변경되었습니다.");
                     container.setUrl(FRONT_SERVER_HOST+"/projects/" + dto.getProjectId());
                 }
 
@@ -241,7 +233,7 @@ public class WebNotificationServiceImpl implements NotificationService{
 
         notificationTargetList.stream().forEach((target) -> {
             NotificationResponse notification = new NotificationResponse(target.getNotificationId(),
-                    target.isRead(), container.getContent(), code.getCode(), container.getDate(), container.getUrl());
+                    target.isRead(), container.getContent(), code, container.getDate(), container.getUrl());
 
             try {
                 send((target.getMemberId()),new NotificationData(notification));

@@ -12,10 +12,10 @@ import java.util.List;
 @Builder
 public class NotificationConditionDto {
 
-    // 로그의 원인 제공자
+    // 알림의 원인 제공자
     private Long fromMemberId;
 
-    // 로그 코드
+    // 알림 코드
     private NotificationCode code;
 
     // 단수의 대상

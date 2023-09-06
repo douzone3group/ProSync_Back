@@ -17,7 +17,7 @@ public interface MemberProjectService {
 
     List<MemberProjectResponseDto> findProjectMembers(Long projectId);
 
-    void deleteProjectMember(Long projectMemberId);
+    void deleteProjectMember(Long projectMemberId, Long memberId);
 
     void exitProjectMember(Long projectId, Long memberId);
 

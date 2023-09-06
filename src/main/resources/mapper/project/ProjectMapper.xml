@@ -92,4 +92,11 @@
         order by p.project_id desc
     </select>
 
+    <select id="findMembersInProject">
+        select member_id
+        from member_project
+        where project_id = #{projectId} and status = 'ACTIVE'
+    </select>
+
+
 </mapper>

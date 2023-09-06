@@ -40,5 +40,9 @@ public interface MemberProjectMapper {
     List<Long> findProjectIdsByMemberId(Long memberId);
 
 
+    @Select("select mp.member_id from member_project mp join project_authority pa on mp.authority_id = pa.authority_id where project_id = #{projectId} and pa.authority = 'ADMIN'")
+    Long findAdminByProjectId(Long projectId);
+
+
 
 }
