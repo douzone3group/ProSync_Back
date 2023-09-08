@@ -22,5 +22,5 @@ public interface LogService {
 
     Integer getLogListCount(Long projectId);
 
-    PageResponseDto<LogResponse> getLogPageList(Long projectId, LogSearchCondition condition, Pageable pageable);
+    PageResponseDto<LogResponse> getLogPageList(LogSearchCondition condition, Pageable pageable);
 }

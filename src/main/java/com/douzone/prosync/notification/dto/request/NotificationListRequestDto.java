@@ -3,6 +3,7 @@ package com.douzone.prosync.notification.dto.request;
 import com.douzone.prosync.notification.notienum.NotificationCode;
 import com.douzone.prosync.searchcondition.NotificationSearchCondition;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.parameters.P;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Schema(description = "알림 리스트 요청 DTO")
 @Data
+@AllArgsConstructor
 public class NotificationListRequestDto {
 
     @Schema(description = "알림 코드", example = "업무제외")
@@ -24,11 +26,6 @@ public class NotificationListRequestDto {
     @Schema(description = "단어 검색 조건", example = "업무")
     private String content;
 
-    @Schema(description = "현재 페이지", defaultValue = "1", example = "4")
-    private Integer pageNum;
-
-    @Schema(description = "한 페이지의 데이터 갯수",defaultValue = "10", example = "20")
-    private Integer pageSize;
 
     public NotificationSearchCondition of(Long memberId){
         if (notiCode==null) {
@@ -45,7 +42,7 @@ public class NotificationListRequestDto {
                     .content(content)
                     .startDate(startDate)
                     .endDate(endDate)
-                    .notiCode(notiCode.getCode())
+                    .notiCode(notiCode.name())
                     .build();
         }
 

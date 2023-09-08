@@ -29,6 +29,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.List;
+
 import static com.douzone.prosync.constant.ConstantPool.FRONT_SERVER_HOST;
 
 @Configuration
@@ -39,6 +41,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOriginPattern(FRONT_SERVER_HOST);
+        config.setExposedHeaders(List.of("Authorization", "Refresh"));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 

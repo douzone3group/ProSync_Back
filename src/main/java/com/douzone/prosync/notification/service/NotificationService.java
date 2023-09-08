@@ -7,6 +7,7 @@ import com.douzone.prosync.notification.dto.response.NotificationResponse;
 import com.douzone.prosync.notification.dto.response.NotificationTargetSimpleResponse;
 import com.douzone.prosync.notification.notienum.NotificationCode;
 import com.douzone.prosync.searchcondition.NotificationSearchCondition;
+import org.springframework.data.domain.Pageable;
 
 import java.security.Principal;
 import java.util.List;
@@ -18,6 +19,6 @@ public interface NotificationService {
 
      NotificationTargetSimpleResponse updateNotificationIsRead(Long targetId, Long memberId);
 
-     PageResponseDto<NotificationResponse> getNotificationPageList(NotificationListRequestDto requestDto, Principal principal);
+     PageResponseDto<NotificationResponse> getNotificationPageList(NotificationListRequestDto requestDto, Pageable pageable, Principal principal);
 
 }

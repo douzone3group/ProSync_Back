@@ -3,6 +3,7 @@ package com.douzone.prosync.notification.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+import com.douzone.prosync.log.dto.response.LogResponse;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
@@ -29,6 +30,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -203,7 +205,7 @@ public class WebNotificationServiceImpl implements NotificationService{
 
         // 알림을 저장하고 pk 값 불러온다.
         Long notificationId = notificationRepository.saveNotification(NotificationDto.builder()
-                .code(code.getCode())
+                .code(code)
                 .fromMemberId(dto.getFromMemberId())
                 .createdAt(date)
                 .content(container.getContent())
@@ -270,16 +272,12 @@ public class WebNotificationServiceImpl implements NotificationService{
     }
 
     @Override
-    public PageResponseDto<NotificationResponse> getNotificationPageList(NotificationListRequestDto requestDto, Principal principal) {
-        if(requestDto.getPageNum() == null){
-            requestDto.setPageNum(DEFAULT_PAGE_NUM);
-            if(requestDto.getPageSize() == null){
-                requestDto.setPageSize(DEFAULT_PAGE_SIZE);
-            }
-        }
+    public PageResponseDto<NotificationResponse> getNotificationPageList(NotificationListRequestDto requestDto, Pageable pageable, Principal principal) {
 
-        PageHelper.startPage(requestDto.getPageNum(), requestDto.getPageSize());
+        int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
 
+        PageHelper.startPage(pageNum, pageable.getPageSize());
+        
         NotificationSearchCondition notificationSearchCondition = requestDto.of(Long.parseLong(principal.getName()));
 
         List<NotificationResponse> notificationList = mapper.getNotificationList(notificationSearchCondition);

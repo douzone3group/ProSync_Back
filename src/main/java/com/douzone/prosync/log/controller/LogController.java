@@ -5,6 +5,7 @@ import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.log.dto.request.LogPatchDto;
 import com.douzone.prosync.log.dto.response.LogResponse;
 import com.douzone.prosync.log.dto.response.LogSimpleResponse;
+import com.douzone.prosync.log.logenum.LogCode;
 import com.douzone.prosync.log.repository.LogRepository;
 import com.douzone.prosync.log.service.LogService;
 import com.douzone.prosync.notification.dto.response.NotificationResponse;
@@ -17,10 +18,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
+import static com.douzone.prosync.constant.ConstantPool.DEFAULT_PAGE_SIZE;
 import static com.douzone.prosync.constant.ConstantPool.PAGE_NAVI;
 
 
@@ -55,9 +60,19 @@ public class LogController {
      */
     @Operation(summary = "로그 목록 조회", description = "로그 목록을 조회한다", tags = "log")
     @GetMapping("/projectlog/{project-id}")
-    public ResponseEntity<PageResponseDto<LogResponse>> getLogList(@Parameter(example = "1", description = "프로젝트 식별자", required = true) @PathVariable("project-id") Long projectId, LogSearchCondition condition, Pageable pageable){
+    public ResponseEntity<PageResponseDto<LogResponse>> getLogList(@Parameter(example = "1", description = "프로젝트 식별자", required = true)
+                                                                    @PathVariable("project-id") Long projectId,
+                                                                    @RequestParam(required = false) LogCode logCode,
+                                                                   @RequestParam(required = false) LocalDateTime startDate,
+                                                                   @RequestParam(required = false) LocalDateTime endDate,
+                                                                   @RequestParam(required = false) String content,
+                                                                   @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable){
 
-        PageResponseDto<LogResponse> logPageList = logService.getLogPageList(projectId ,condition, pageable);
+        LogSearchCondition condition = new LogSearchCondition(projectId, logCode, startDate, endDate, content);
+
+        PageResponseDto<LogResponse> logPageList = logService.getLogPageList(condition, pageable);
+
+
 
         return new ResponseEntity<>(logPageList, HttpStatus.OK);
 

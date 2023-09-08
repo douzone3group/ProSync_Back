@@ -39,12 +39,12 @@
 
 
     <select id="getLogList" resultType="LogResponse">
-        select log_id, content, code, created_at, modified_at, url
+        select log_id, content, log_code, created_at, modified_at, url
         from log
         <where>
             project_id=#{condition.projectId} and is_deleted = false
             <if test="condition.logCode != null">
-                AND log_code = #{logCode}
+                AND log_code = #{condition.logCode}
             </if>
             <if test="condition.startDate != null">
                 AND created_at &gt;= #{condition.startDate}

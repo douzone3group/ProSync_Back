@@ -1,5 +1,6 @@
 package com.douzone.prosync.log.dto;
 
+import com.douzone.prosync.log.logenum.LogCode;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -21,7 +22,7 @@ public class LogDto {
 
     private LocalDateTime modifiedAt;
 
-    private String logCode;
+    private LogCode logCode;
 
     private String url;
 

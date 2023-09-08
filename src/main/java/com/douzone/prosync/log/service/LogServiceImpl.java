@@ -175,7 +175,7 @@ public class LogServiceImpl implements LogService {
         }
 
         Long logId = logRepository.saveLog(LogDto.builder()
-                .logCode(code)
+                .logCode(dto.getCode())
                 .createdAt(container.getDate())
                 .content(container.getContent())
                 .isDeleted(false)
@@ -213,14 +213,12 @@ public class LogServiceImpl implements LogService {
         }
 
     @Override
-    public PageResponseDto<LogResponse> getLogPageList(Long projectId, LogSearchCondition condition, Pageable pageable) {
+    public PageResponseDto<LogResponse> getLogPageList(LogSearchCondition condition, Pageable pageable) {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
 
         PageHelper.startPage(pageNum, pageable.getPageSize());
 
-        LogSearchCondition logSearchCondition = condition.of(projectId, condition);
-
-        List<LogResponse> logResponseList = logRepository.getLogList(logSearchCondition);
+        List<LogResponse> logResponseList = logRepository.getLogList(condition);
 
         PageInfo<LogResponse> pageInfo = new PageInfo<>(logResponseList);
 

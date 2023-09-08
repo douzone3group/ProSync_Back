@@ -28,6 +28,8 @@ import javax.validation.constraints.Positive;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.douzone.prosync.constant.ConstantPool.DEFAULT_PAGE_SIZE;
+
 @Slf4j
 @Validated
 @Controller
@@ -126,7 +128,7 @@ public class ProjectController {
             @ApiImplicitParam(name = "sort", dataType = "string", paramType = "query", value = "정렬기준 (최신순 - 기본, 마감임박순)", defaultValue = "latest", example = "latest or endDate")}
     )
     public ResponseEntity<PageResponseDto<GetProjectsResponse>> getProjectList(
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = 8) Pageable pageable,
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean bookmark,
             @RequestParam(required = false) String sort,
@@ -150,7 +152,7 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity<PageResponseDto<GetProjectsResponse>> getMemberProjects(
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = 8) Pageable pageable,
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = DEFAULT_PAGE_SIZE) Pageable pageable,
             @ApiIgnore Principal principal) {
         PageResponseDto<GetProjectsResponse> response = projectService.findMyProjects(Long.parseLong(principal.getName()), pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
