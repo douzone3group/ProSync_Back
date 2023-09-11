@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,4 +28,7 @@ public class CommentPostDto {
     private Long taskId;
 
     private Long memberProjectId;
+
+    @ApiModelProperty(value = "파일식별자", example = "[1, 2, 3]")
+    private List<Long> fileIds = new ArrayList<>();
 }
