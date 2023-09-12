@@ -18,8 +18,6 @@ public class File {
 
     private String fileName;
 
-    private Boolean isDeleted;
-
 
     public static File create(Long size, String path, String fileName) {
         return File.builder()

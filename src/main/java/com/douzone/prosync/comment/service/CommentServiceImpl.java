@@ -10,6 +10,9 @@ import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.log.dto.LogConditionDto;
 import com.douzone.prosync.log.logenum.LogCode;
 import com.douzone.prosync.log.service.LogService;
+import com.douzone.prosync.file.dto.FileRequestDto;
+import com.douzone.prosync.file.entity.FileInfo;
+import com.douzone.prosync.file.service.FileService;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
 import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.service.MemberProjectService;
@@ -28,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +40,7 @@ import static com.douzone.prosync.notification.notienum.NotificationCode.COMMENT
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class CommentServiceImpl implements CommentService {
 
     private final TaskServiceImpl taskService;
@@ -50,6 +55,8 @@ public class CommentServiceImpl implements CommentService {
 
     private final LogService logService;
 
+    private final FileService fileService;
+
     @Override
     public Long save(CommentPostDto dto) {
         findExistTask(dto);
@@ -58,6 +65,7 @@ public class CommentServiceImpl implements CommentService {
         MemberProjectResponseDto projectMember = memberProjectService.findProjectMember(projectId, dto.getMemberId());
         dto.setMemberProjectId(projectMember.getMemberProjectId());
         commentMybatisMapper.createComment(dto);
+        Long commentId = dto.getCommentId();
 
         TaskSimpleDto taskDto = commentMybatisMapper.findTaskbyId(dto.getCommentId());
 
@@ -90,7 +98,12 @@ public class CommentServiceImpl implements CommentService {
 
 
 
-        return dto.getCommentId();
+        if (!dto.getFileIds().isEmpty()) {
+            List<FileInfo> fileInfos = FileInfo.createFileInfos(dto.getFileIds(), FileInfo.FileTableName.COMMENT, commentId);
+            fileService.saveFileInfoList(fileInfos);
+        }
+
+        return commentId;
     }
 
 
@@ -125,6 +138,11 @@ public class CommentServiceImpl implements CommentService {
                 .projectId(taskDto.getProejctId())
                 .taskId(taskDto.getTaskId())
                 .subject(taskDto.getTitle()).build());
+
+        if (!dto.getFileIds().isEmpty()) {
+            List<FileInfo> fileInfos = FileInfo.createFileInfos(dto.getFileIds(), FileInfo.FileTableName.COMMENT, dto.getCommentId());
+            fileService.saveFileInfoList(fileInfos);
+        }
     }
 
     @Override
@@ -158,6 +176,8 @@ public class CommentServiceImpl implements CommentService {
                 .projectId(taskDto.getProejctId())
                 .taskId(taskDto.getTaskId())
                 .subject(taskDto.getTitle()).build());
+
+        fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.COMMENT, commentId));
     }
 
     @Override

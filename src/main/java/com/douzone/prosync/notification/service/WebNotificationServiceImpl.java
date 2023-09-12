@@ -1,8 +1,9 @@
 package com.douzone.prosync.notification.service;
 
+import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
-import com.douzone.prosync.log.logenum.LogCode;
+import com.douzone.prosync.log.dto.response.LogResponse;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
@@ -11,23 +12,30 @@ import com.douzone.prosync.notification.dto.ContentUrlContainer;
 import com.douzone.prosync.notification.dto.NotificationConditionDto;
 import com.douzone.prosync.notification.dto.NotificationDto;
 import com.douzone.prosync.notification.dto.NotificationTargetDto;
+import com.douzone.prosync.notification.dto.request.NotificationListRequestDto;
 import com.douzone.prosync.notification.dto.response.NotificationData;
 import com.douzone.prosync.notification.dto.response.NotificationResponse;
 import com.douzone.prosync.notification.dto.response.NotificationTargetSimpleResponse;
 import com.douzone.prosync.notification.entity.NotificationTarget;
+import com.douzone.prosync.notification.mapper.NotificationMapper;
 import com.douzone.prosync.notification.notienum.NotificationCode;
 import com.douzone.prosync.notification.notienum.NotificationPlatform;
 import com.douzone.prosync.notification.repository.MapEmitterRepository;
 import com.douzone.prosync.notification.repository.MybatisNotificationRepository;
 import com.douzone.prosync.project.dto.response.GetProjectResponse;
 import com.douzone.prosync.project.entity.Project;
+import com.douzone.prosync.searchcondition.NotificationSearchCondition;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +55,8 @@ public class WebNotificationServiceImpl implements NotificationService{
 
     private final MemberRepository memberRepository;
 
+
+    private final NotificationMapper mapper;
 
     /**
      * 서버에서 클라이언트로 data 전송
@@ -195,7 +205,7 @@ public class WebNotificationServiceImpl implements NotificationService{
 
         // 알림을 저장하고 pk 값 불러온다.
         Long notificationId = notificationRepository.saveNotification(NotificationDto.builder()
-                .code(code.getCode())
+                .code(code)
                 .fromMemberId(dto.getFromMemberId())
                 .createdAt(date)
                 .content(container.getContent())
@@ -260,4 +270,22 @@ public class WebNotificationServiceImpl implements NotificationService{
         notificationRepository.updateIsRead(true, targetId);
         return new NotificationTargetSimpleResponse(targetId);
     }
+
+    @Override
+    public PageResponseDto<NotificationResponse> getNotificationPageList(NotificationListRequestDto requestDto, Pageable pageable, Principal principal) {
+
+        int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
+
+        PageHelper.startPage(pageNum, pageable.getPageSize());
+        
+        NotificationSearchCondition notificationSearchCondition = requestDto.of(Long.parseLong(principal.getName()));
+
+        List<NotificationResponse> notificationList = mapper.getNotificationList(notificationSearchCondition);
+
+        PageInfo<NotificationResponse> pageInfo = new PageInfo<>(notificationList);
+
+        return new PageResponseDto<>(pageInfo);
+    }
+
+
 }

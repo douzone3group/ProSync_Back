@@ -1,13 +1,28 @@
 package com.douzone.prosync.file.dto;
 
-import io.swagger.annotations.ApiModelProperty;
+import com.douzone.prosync.file.entity.FileInfo;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+
 
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FileRequestDto {
 
-    @ApiModelProperty(value = "파일아이디", required = true, example = "[1, 2, 3]")
-    private List<Long> fileIds;
+    private FileInfo.FileTableName tableName;
+
+    private Long tableKey;
+
+    public static FileRequestDto create(FileInfo.FileTableName tableName, Long tableKey) {
+        return FileRequestDto.builder()
+                .tableName(tableName)
+                .tableKey(tableKey)
+                .build();
+    }
 }

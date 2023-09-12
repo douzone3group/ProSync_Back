@@ -3,7 +3,9 @@ package com.douzone.prosync.task.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
-
+import com.douzone.prosync.file.dto.FileRequestDto;
+import com.douzone.prosync.file.entity.FileInfo;
+import com.douzone.prosync.file.service.FileService;
 import com.douzone.prosync.log.dto.LogConditionDto;
 import com.douzone.prosync.log.logenum.LogCode;
 import com.douzone.prosync.log.service.LogServiceImpl;
@@ -33,8 +35,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.douzone.prosync.member.dto.response.MemberGetResponse.*;
-
 
 @Service
 @Transactional
@@ -50,6 +50,7 @@ public class TaskServiceImpl implements TaskService {
     private final MemberProjectMapper memberProjectMapper;
 
     private final NotificationService notificationService;
+    private final FileService fileService;
 
 
     @Override
@@ -60,7 +61,14 @@ public class TaskServiceImpl implements TaskService {
         verifyTaskStatus(findProject.getProjectId(), dto.getTaskStatusId(), memberId);
 
         taskMapper.save(dto, projectId);
-        return dto.getTaskId();
+        Long taskId = dto.getTaskId();
+
+        if (!dto.getFileIds().isEmpty()) {
+            List<FileInfo> fileInfos = FileInfo.createFileInfos(dto.getFileIds(), FileInfo.FileTableName.TASK, taskId);
+            fileService.saveFileInfoList(fileInfos);
+        }
+
+        return taskId;
     }
 
     @Override
@@ -74,6 +82,11 @@ public class TaskServiceImpl implements TaskService {
             verifyTaskStatus(findTask.getProjectId(), dto.getTaskStatusId(), memberId);
         }
 
+        // file
+        if (!dto.getFileIds().isEmpty()) {
+            List<FileInfo> fileInfos = FileInfo.createFileInfos(dto.getFileIds(), FileInfo.FileTableName.TASK, dto.getTaskId());
+            fileService.saveFileInfoList(fileInfos);
+        }
         taskMapper.update(dto);
 
         // 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
@@ -131,6 +144,9 @@ public class TaskServiceImpl implements TaskService {
                 .code(LogCode.TASK_REMOVE)
                 .projectId(task.getProjectId())
                 .subject(task).build());
+
+        fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.TASK, taskId));
+
     }
 
     @Transactional(readOnly = true)

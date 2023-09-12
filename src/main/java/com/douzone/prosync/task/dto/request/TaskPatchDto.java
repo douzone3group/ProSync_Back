@@ -7,7 +7,8 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -40,4 +41,6 @@ public class TaskPatchDto {
     @ApiModelProperty(value = "업무상태식별자", example = "1")
     private Long taskStatusId;
 
+    @ApiModelProperty(value = "파일식별자", example = "[1, 2, 3]")
+    private List<Long> fileIds = new ArrayList<>();
 }
