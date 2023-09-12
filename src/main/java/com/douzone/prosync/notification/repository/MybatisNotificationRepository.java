@@ -1,5 +1,6 @@
 package com.douzone.prosync.notification.repository;
 
+import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.notification.dto.NotificationDto;
 import com.douzone.prosync.notification.dto.NotificationTargetDto;
 import com.douzone.prosync.notification.dto.response.NotificationResponse;
@@ -7,7 +8,9 @@ import com.douzone.prosync.notification.entity.Notification;
 import com.douzone.prosync.notification.entity.NotificationTarget;
 import com.douzone.prosync.notification.mapper.NotificationMapper;
 import com.douzone.prosync.searchcondition.NotificationSearchCondition;
+import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

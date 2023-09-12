@@ -86,9 +86,9 @@
     <select id="getNotificationList" resultType="NotificationResponse">
         select t.notification_target_id,  t.is_read, n.content, n.noti_code, n.created_at, n.url
         from notification_target t
-        LEFT JOIN notification n on t.notification_id = n.notification_id
+        JOIN notification n on t.notification_id = n.notification_id
         <where>
-            t.member_id=#{condition.memberId}
+            t.member_id=#{condition.memberId} and t.platform='WEB'
             <if test="condition.notiCode != null">
                 And n.noti_code = #{condition.notiCode}
             </if>

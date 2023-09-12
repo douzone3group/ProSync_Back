@@ -27,12 +27,18 @@ public class MemberPostDto {
         @NotNull
         private String password;
 
+
+        @ApiModelProperty(example = "hong")
+        @NotNull
+        @NotBlank
+        private String name;
+
         public MemberDto of(String modifiedPassword) {
                return MemberDto.builder()
                        .email(email)
                        .password(modifiedPassword)
                        .profileImage(BasicImage.BASIC_USER_IMAGE.getPath())
-                       .name("닉네임을 정해주세요.")
+                       .name(name)
                        .modifiedAt(Timestamp.from(Instant.now()))
                        .createdAt(Timestamp.from(Instant.now()))
                        .intro("소개를 입력하세요.")

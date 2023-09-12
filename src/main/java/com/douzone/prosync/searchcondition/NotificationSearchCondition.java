@@ -1,5 +1,6 @@
 package com.douzone.prosync.searchcondition;
 
+import com.douzone.prosync.notification.notienum.NotificationCode;
 import lombok.Builder;
 import lombok.Data;
 

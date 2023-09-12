@@ -26,6 +26,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.security.Principal;
 
+import static com.douzone.prosync.constant.ConstantPool.DEFAULT_PAGE_SIZE;
+
 @Controller
 @RequiredArgsConstructor
 @Validated
@@ -91,7 +93,7 @@ public class CommentController {
             @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query", value = "한페이지에 보여질 요소 개수", defaultValue = "10", example = "20")})
     public ResponseEntity<PageResponseDto<GetCommentsResponse>> findAllComment(
             @Parameter(description = "업무 식별자",required = true,example = "1") @PathVariable("task-id") Long taskId,
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size=8, sort="commentId", direction = Sort.Direction.DESC) Pageable pageable){
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size=DEFAULT_PAGE_SIZE, sort="commentId", direction = Sort.Direction.DESC) Pageable pageable){
 
         PageResponseDto<GetCommentsResponse> response = commentService.findCommentList(taskId, pageable);
         return new ResponseEntity(response, HttpStatus.OK);

@@ -34,6 +34,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
+import static com.douzone.prosync.constant.ConstantPool.DEFAULT_PAGE_SIZE;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -121,7 +123,7 @@ public class TaskController {
     })
     public ResponseEntity<PageResponseDto<GetTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
                                                                                           @RequestParam(required = false) String search,
-                                                                                          @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = 8) Pageable pageable,
+                                                                                          @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable,
                                                                                           @RequestParam(required = false) boolean isActive,
                                                                                           @RequestParam(required = false) String view,
                                                                                           @RequestParam(required = false) String status,
