@@ -3,12 +3,10 @@ package com.douzone.prosync.task_status.dto;
 import com.douzone.prosync.task_status.basic.BasicTaskStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 public class TaskStatusDto {
@@ -16,6 +14,7 @@ public class TaskStatusDto {
     @ApiModel("[REQUEST] TASK_STATUS - POST")
     @Getter
     @Builder
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class PostDto {
 
@@ -28,18 +27,13 @@ public class TaskStatusDto {
 
         @ApiModelProperty(value = "색상", required = true, example = "#000000")
         @NotBlank
-        @Pattern(regexp = "#\\d{6}", message = "#6자리 숫자 형식으로 입력하세요. (예 : #000000)")
+        @Pattern(regexp = "^#\\w{6}$", message = "#6자리를 입력하세요. (예 : #000000)")
         private String color;
 
         @Setter
-        @NotBlank
+        @NotNull
         @ApiModelProperty(value = "순서", required = true, example = "1")
         private Integer seq;
-
-        public PostDto(String taskStatus, String color) {
-            this.taskStatus = taskStatus;
-            this.color = color;
-        }
 
         public static PostDto createNoStatus() {
             return PostDto.builder()
@@ -86,7 +80,7 @@ public class TaskStatusDto {
 
 
         @ApiModelProperty(value = "색상", example = "#000000")
-        @Pattern(regexp = "#\\d{6}", message = "#6자리 숫자 형식으로 입력하세요. (예 : #000000)")
+        @Pattern(regexp = "^#\\w{6}$", message = "#6자리로 입력하세요. (예 : #000000)")
         private String color;
 
         @ApiModelProperty(value = "보여질 순서 (순서지정하지 않을 경우 -> 0)", example = "1")
