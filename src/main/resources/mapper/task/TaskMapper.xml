@@ -34,7 +34,7 @@
                 end_date=#{endDate},
             </if>
             <if test="taskStatusId != null">
-                task_status=#{taskStatusId},
+                task_status_id=#{taskStatusId},
             </if>
         </set>
         WHERE task_id = #{taskId}

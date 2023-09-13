@@ -24,7 +24,7 @@ public class MemberProjectResponseDto {
     private ProjectMemberAuthority authority;
 
     @ApiModelProperty(value = "회원 이름", example = "1")
-    private String username;
+    private String name;
 
     @ApiModelProperty(value = "회원 프로필", example = "1")
     private String profileImage;
