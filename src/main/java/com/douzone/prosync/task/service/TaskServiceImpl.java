@@ -9,7 +9,6 @@ import com.douzone.prosync.file.service.FileService;
 import com.douzone.prosync.log.dto.LogConditionDto;
 import com.douzone.prosync.log.logenum.LogCode;
 import com.douzone.prosync.log.service.LogServiceImpl;
-import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.entity.MemberProject.MemberProjectStatus;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.notification.dto.NotificationConditionDto;
@@ -261,7 +260,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskMemberResponseDto> findTaskMembers(Long taskId, long memberId) {
+    public List<TaskMemberResponseDto> findTaskMembers(Long taskId, Long memberId) {
         return taskMapper.findTaskMembers(taskId);
     }
 

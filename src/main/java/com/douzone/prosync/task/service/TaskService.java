@@ -26,5 +26,5 @@ public interface TaskService {
 
     void deleteTaskMember(Long taskId, List<Long> projectMemberIds, Long memberId);
 
-    List<TaskMemberResponseDto> findTaskMembers(Long taskId, long parseLong);
+    List<TaskMemberResponseDto> findTaskMembers(Long taskId, Long memberId);
 }
