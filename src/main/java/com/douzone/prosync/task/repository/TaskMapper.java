@@ -1,11 +1,14 @@
 package com.douzone.prosync.task.repository;
 
-import com.douzone.prosync.member.dto.response.MemberGetResponse;
+import com.douzone.prosync.task.dto.request.TaskMemberResponseDto;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
 import com.douzone.prosync.task.dto.request.TaskPostDto;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
 import com.douzone.prosync.task.dto.response.GetTasksResponse;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +29,11 @@ public interface TaskMapper {
 
     void update(TaskPatchDto dto);
 
-    void saveTaskMember(@Param("taskId") Long taskId, @Param("memberIds") List<Long> memberIds);
+    void saveTaskMember(@Param("taskId") Long taskId, @Param("projectMemberIds") List<Long> projectMemberIds);
 
-    void deleteTaskMember(Long taskId, List<Long> memberIds);
+    void deleteTaskMember(@Param("taskId") Long taskId, @Param("projectMemberIds") List<Long> projectMemberIds);
 
-    List<MemberGetResponse.SimpleResponse> findTaskMembers(Long taskId);
+    List<TaskMemberResponseDto> findTaskMembers(Long taskId);
 
     List<GetTasksResponse> findTasks(@Param("projectId") Long projectId, @Param("search") String search, @Param("isActive") Boolean isActive);
 }

@@ -15,11 +15,10 @@ public interface LogMapper {
 
     void saveLog(LogDto logDto);
 
-//    void saveMemberLog(MemberLogDto memberLogDto);
 
 
 
-    void update(LogPatchDto logPatchDto);
+    void update(@Param("logId") Long logId,@Param("logPatchDto")LogPatchDto logPatchDto);
 
 
     void deleteLog(@Param("logId")Long logId,@Param("modifiedAt") LocalDateTime modifiedAt);

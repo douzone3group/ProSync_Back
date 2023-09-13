@@ -1,5 +1,6 @@
 package com.douzone.prosync.file.service;
 
+import com.douzone.prosync.file.dto.FileRequestDto;
 import com.douzone.prosync.file.dto.FileResponseDto;
 import com.douzone.prosync.file.entity.File;
 import com.douzone.prosync.file.entity.FileInfo;
@@ -12,21 +13,17 @@ public interface FileService {
 
     List<FileResponseDto> uploadFile(List<MultipartFile> multipartFiles);
 
-    // soft delete
-    void delete(Long fileId);
+    void delete(Long fileInfoId);
 
-    void deleteActualFile(Long fileId);
-
-    void deleteActualFileList(List<Long> fileIdList);
-
-    List<FileResponseDto> findFileList(List<Long> fileIds, Boolean isResponse);
-
-    File findFile(Long fileId);
+    List<FileResponseDto> findFilesByTableInfo(FileRequestDto dto, Boolean isResponse);
 
     void saveFileInfo(FileInfo fileInfo);
 
     void saveFileInfoList(List<FileInfo> fileInfoList);
 
-    List<FileResponseDto> findFilesByTableInfo(String tableName, Long tableKey);
+    void deleteFileList(FileRequestDto dto);
+
+    File findFile(Long fileId);
 
 }
+

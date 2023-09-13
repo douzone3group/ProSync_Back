@@ -2,10 +2,12 @@ package com.douzone.prosync.comment.repository;
 
 import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
+import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
 import com.douzone.prosync.comment.entity.Comment;
-import com.douzone.prosync.project.entity.Project;
+import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
+import com.douzone.prosync.task.dto.TaskSimpleDto;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,14 +18,21 @@ public interface CommentMybatisMapper {
     void createComment(CommentPostDto dto);
 
     // 댓글 목록 조회
-//    List<Comment> findAllComments();
+    List<GetCommentsResponse> findAllComments(Long taskId);
 
     // 댓글 수정
     void updateComment(CommentPatchDto dto);
 
     // 댓글 삭제
-    void deleteComment(Integer commentId);
+    void deleteComment(Long commentId);
 
-//     댓글 멤버 검증
-    Optional<Comment> checkMember(Integer commentId,Long memberId);
+    @Select("select project_id from task where task_id = #{taskId} and is_deleted is null")
+    Long findProjectIdByTask(Long taskId);
+
+    Optional<MemberProjectResponseDto> findCommentMember(Long commentId);
+
+    Comment findbyId(Long commentId);
+
+    @Select("select t.task_id, t.title, t.project_id from comment c join task t on c.task_id=t.task_id where c.comment_id = #{commentId}")
+    TaskSimpleDto findTaskbyId(Long commentId);
 }

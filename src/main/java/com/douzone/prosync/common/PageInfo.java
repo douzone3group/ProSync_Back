@@ -20,5 +20,4 @@ public class PageInfo {
 
     @ApiModelProperty(value = "총 페이지 수", example = "1")
     private int totalPages;
-
 }

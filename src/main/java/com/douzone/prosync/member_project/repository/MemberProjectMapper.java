@@ -35,4 +35,14 @@ public interface MemberProjectMapper {
     @Insert("insert into member_project(project_id, member_id, authority_id, status) values(#{projectId}, #{memberId}, 3, #{status})")
     Integer saveProjectAdmin(@Param("projectId") Long projectId, @Param("memberId") Long memberId, @Param("status") MemberProject.MemberProjectStatus status);
 
+    List<Long> findMemberIdsListById(@Param("memberProjectsId")List<Long> memberProjects);
+
+    List<Long> findProjectIdsByMemberId(Long memberId);
+
+
+    @Select("select mp.member_id from member_project mp join project_authority pa on mp.authority_id = pa.authority_id where project_id = #{projectId} and pa.authority = 'ADMIN'")
+    Long findAdminByProjectId(Long projectId);
+
+
+
 }

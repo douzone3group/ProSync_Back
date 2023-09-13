@@ -18,6 +18,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,8 +58,9 @@ public class MemberProjectController {
      */
     @DeleteMapping("/project-members/{project-member-id}")
     @Operation(summary = "프로젝트 회원 삭제", description = "프로젝트 관리자가 프로젝트의 회원을 삭제(강퇴)합니다.", tags = "member_project")
-    public ResponseEntity deleteProjectMember(@Parameter(description = "프로젝트회원식별자", required = true, example = "1")@PathVariable("project-member-id") Long projectMemberId) {
-        memberProjectService.deleteProjectMember(projectMemberId);
+    public ResponseEntity deleteProjectMember(@Parameter(description = "프로젝트회원식별자", required = true, example = "1")@PathVariable("project-member-id") Long projectMemberId,
+                                              @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        memberProjectService.deleteProjectMember(projectMemberId, getMemberId(principal));
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -71,7 +73,7 @@ public class MemberProjectController {
     public ResponseEntity patchProjectMember(@Parameter(description = "프로젝트회원식별자", required = true, example = "1")@PathVariable("project-member-id") Long projectMemberId,
                                              @RequestBody MemberProjectRequestDto dto,
                                              @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        memberProjectService.updateProjectMember(projectMemberId, dto, Long.parseLong(principal.getName()));
+        memberProjectService.updateProjectMember(projectMemberId, dto, getMemberId(principal));
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -106,8 +108,14 @@ public class MemberProjectController {
     @Operation(summary = "프로젝트에서 나가기", description = "프로젝트 회원이 프로젝트에서 나갑니다. admin일 경우 금지되며, 권한 위임 후 나갈 수 있습니다.", tags = "member_project")
     public ResponseEntity deleteProjectMemberBySelf(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId,
                                                     @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        memberProjectService.exitProjectMember(projectId, Long.parseLong(principal.getName()));
+        memberProjectService.exitProjectMember(projectId, getMemberId(principal));
         return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    private Long getMemberId(Principal principal) {
+        return Optional.ofNullable(principal)
+                .map(p -> Long.parseLong(p.getName()))
+                .orElse(null);
     }
 
 }

@@ -51,11 +51,12 @@ public enum ErrorCode {
     // FILE
     INVALID_FILE_TYPE(HttpStatus.FORBIDDEN, "Invalid file type"),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not founded"),
+    FILE_INFO_EXISTS(HttpStatus.CONFLICT, "File Info exists"),
 
     // NOTIFICATION
     CONNECTION_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "Sse Connection is failed"),
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Notification not founded"),
-    NOTIFICATION_CANT_READ(HttpStatus.FORBIDDEN, "Notification not read");
+    NOTIFICATION_CANT_READ(HttpStatus.FORBIDDEN, "Notification not read"),
 
 
     // LOG
@@ -63,6 +64,10 @@ public enum ErrorCode {
 
     // COMMENTS
 
+
+    // AUTHORIZATION
+    MEMBER_NOT_INCLUDED_IN_PROJECT(HttpStatus.FORBIDDEN,"Member not included in project"),
+    INAPPROPRIATE_PERMISSION(HttpStatus.FORBIDDEN, "Unauthorized User");
 
     private HttpStatus status;
     private String message;

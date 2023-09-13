@@ -1,7 +1,8 @@
-package com.douzone.prosync.log.dto;
+package com.douzone.prosync.notification.dto;
 
 import com.douzone.prosync.log.logenum.LogCode;
 import com.douzone.prosync.member_project.status.ProjectMemberAuthority;
+import com.douzone.prosync.notification.notienum.NotificationCode;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,13 +10,13 @@ import java.util.List;
 
 @Getter
 @Builder
-public class LogConditionDto {
+public class NotificationConditionDto {
 
-    // 로그의 원인 제공자
+    // 알림의 원인 제공자
     private Long fromMemberId;
 
-    // 로그 코드
-    private LogCode code;
+    // 알림 코드
+    private NotificationCode code;
 
     // 단수의 대상
     private Long memberId;
@@ -40,5 +41,4 @@ public class LogConditionDto {
 
     // 권한 변경 시 권한 객체
     private ProjectMemberAuthority authority;
-
 }

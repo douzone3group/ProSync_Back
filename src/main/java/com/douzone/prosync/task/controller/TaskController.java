@@ -3,7 +3,8 @@ package com.douzone.prosync.task.controller;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.common.SingleResponseDto;
 import com.douzone.prosync.member.dto.response.MemberGetResponse;
-import com.douzone.prosync.task.dto.request.TaskMemberDto;
+import com.douzone.prosync.task.dto.request.TaskMemberRequestDto;
+import com.douzone.prosync.task.dto.request.TaskMemberResponseDto;
 import com.douzone.prosync.task.dto.request.TaskPatchDto;
 import com.douzone.prosync.task.dto.request.TaskPostDto;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
@@ -20,7 +21,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +33,8 @@ import javax.validation.constraints.Positive;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+
+import static com.douzone.prosync.constant.ConstantPool.DEFAULT_PAGE_SIZE;
 
 
 @RestController
@@ -121,7 +123,7 @@ public class TaskController {
     })
     public ResponseEntity<PageResponseDto<GetTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
                                                                                           @RequestParam(required = false) String search,
-                                                                                          @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = 8) Pageable pageable,
+                                                                                          @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable,
                                                                                           @RequestParam(required = false) boolean isActive,
                                                                                           @RequestParam(required = false) String view,
                                                                                           @RequestParam(required = false) String status,
@@ -154,9 +156,9 @@ public class TaskController {
     @PostMapping("/tasks/{task-id}/members")
     @Operation(summary = "업무 담당자 지정", description = "특정 업무에 대한 담당자들을 지정합니다.", tags = "task")
     public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> postTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
-                                                                                @RequestBody TaskMemberDto requestBody,
+                                                                                @RequestBody TaskMemberRequestDto requestBody,
                                                                                 @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        taskService.createTaskMember(taskId, requestBody.getMemberIds(), Long.parseLong(principal.getName()));
+        taskService.createTaskMember(taskId, requestBody.getProjectMemberIds(), Long.parseLong(principal.getName()));
         return new ResponseEntity(new SingleResponseDto<>(new TaskSimpleResponse(taskId)), HttpStatus.OK);
     }
 
@@ -167,9 +169,9 @@ public class TaskController {
     @DeleteMapping("/tasks/{task-id}/members")
     @Operation(summary = "업무 담당자 삭제", description = "특정 업무에 대한 담당자들을 삭제합니다.", tags = "task")
     public ResponseEntity<SingleResponseDto<TaskSimpleResponse>> deleteTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
-                                                                                  @RequestBody TaskMemberDto requestBody,
+                                                                                  @RequestBody TaskMemberRequestDto requestBody,
                                                                                   @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        taskService.deleteTaskMember(taskId, requestBody.getMemberIds(), Long.parseLong(principal.getName()));
+        taskService.deleteTaskMember(taskId, requestBody.getProjectMemberIds(), Long.parseLong(principal.getName()));
         return new ResponseEntity(new SingleResponseDto<>(new TaskSimpleResponse(taskId)), HttpStatus.OK);
     }
 
@@ -182,7 +184,7 @@ public class TaskController {
     @Operation(summary = "업무 담당자 목록 조회", description = "특정 업무에 대한 담당자를 전체 조회합니다.", tags = "task")
     public ResponseEntity<SingleResponseDto<List<MemberGetResponse.SimpleResponse>>> getTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
                                                                                                    @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        List<MemberGetResponse.SimpleResponse> res = taskService.findTaskMembers(taskId, getMemberId(principal));
+        List<TaskMemberResponseDto> res = taskService.findTaskMembers(taskId, getMemberId(principal));
         return new ResponseEntity(new SingleResponseDto<>(res), HttpStatus.OK);
     }
 

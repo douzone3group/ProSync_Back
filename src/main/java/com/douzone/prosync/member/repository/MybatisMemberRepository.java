@@ -45,7 +45,7 @@ public class MybatisMemberRepository implements MemberRepository {
     };
 
     public List<Member> getMemberList(List<Long> memberIds) {
-        return memberMapper.getMeberList(memberIds);
+        return memberMapper.getMemberList(memberIds);
     }
 
 

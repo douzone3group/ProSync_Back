@@ -4,18 +4,14 @@ import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
 import com.douzone.prosync.comment.dto.response.CommentSimpleResponse;
 import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
-import com.douzone.prosync.comment.entity.Comment;
 import com.douzone.prosync.comment.service.CommentService;
 import com.douzone.prosync.common.PageResponseDto;
-import com.douzone.prosync.exception.ApplicationException;
-import com.douzone.prosync.exception.ErrorCode;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -29,8 +25,8 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.security.Principal;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.douzone.prosync.constant.ConstantPool.DEFAULT_PAGE_SIZE;
 
 @Controller
 @RequiredArgsConstructor
@@ -50,22 +46,21 @@ public class CommentController {
             @ApiResponse(code = 404, message = "not found"),
             @ApiResponse(code = 500, message = "server error"),
     })
-    public ResponseEntity<CommentSimpleResponse> PostComment(
+    public ResponseEntity<CommentSimpleResponse> postComment(
             @Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
             @RequestBody CommentPostDto dto,
             @Parameter(hidden = true) @ApiIgnore Principal principal) {
 
         // 업무 존재 여부 확인
-
         dto.setMemberId(Long.valueOf(principal.getName()));
         dto.setTaskId(taskId);
-        Integer commentId = commentService.save(dto);
+        Long commentId = commentService.save(dto);
 
         return new ResponseEntity<>(new CommentSimpleResponse(commentId), HttpStatus.CREATED);
     }
 
     //     댓글 수정
-    @PatchMapping("/comments/{comment-id}")
+    @PatchMapping("/tasks/{task-id}/comments/{comment-id}")
     @Operation(summary = "댓글 수정", description = "업무에 대한 댓글을 생성합니다.", tags = "comment")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = CommentSimpleResponse.class),
@@ -73,15 +68,12 @@ public class CommentController {
             @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity updateComment(
-            @Parameter(description = "댓글 식별자", required = true, example = "1") @PathVariable("comment-id") Integer commentId,
+            @Parameter(description = "댓글 식별자", required = true, example = "1") @PathVariable("comment-id") Long commentId,
             @RequestBody @Valid CommentPatchDto dto,
             @Parameter(hidden = true) @ApiIgnore Principal principal) {
 
-        // 작성한 멤버인지 검증
-        isWriter(commentId, principal);
-
         dto.setCommentId(commentId);
-        commentService.update(dto);
+        commentService.update(dto, Long.parseLong(principal.getName()));
         return new ResponseEntity(new CommentSimpleResponse(commentId), HttpStatus.OK);
     }
 
@@ -101,22 +93,17 @@ public class CommentController {
             @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query", value = "한페이지에 보여질 요소 개수", defaultValue = "10", example = "20")})
     public ResponseEntity<PageResponseDto<GetCommentsResponse>> findAllComment(
             @Parameter(description = "업무 식별자",required = true,example = "1") @PathVariable("task-id") Long taskId,
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size=8, sort="commentId", direction = Sort.Direction.DESC) Pageable pageable){
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size=DEFAULT_PAGE_SIZE, sort="commentId", direction = Sort.Direction.DESC) Pageable pageable){
 
-
-        Page<Comment> pages = commentService.findCommentList(taskId,pageable);
-        List<Comment> comments = pages.getContent();
-        List<GetCommentsResponse> commentsResponses
-                = comments.stream().map(GetCommentsResponse::of).collect(Collectors.toList());
-
-        return new ResponseEntity(new PageResponseDto<>(commentsResponses,pages), HttpStatus.OK);
+        PageResponseDto<GetCommentsResponse> response = commentService.findCommentList(taskId, pageable);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
 
 
 
     // 댓글 삭제
-    @DeleteMapping("/comments/{comment-id}")
+    @DeleteMapping("/tasks/{task-id}/comments/{comment-id}")
     @ApiOperation(value = "댓글 삭제", notes = "댓글을 소프트 삭제 한다", tags = "comment")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "successfully retrieved", response = CommentSimpleResponse.class),
@@ -124,23 +111,11 @@ public class CommentController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity deleteComment(
-            @Parameter(description = "댓글 식별자", required = true, example = "1") @PathVariable("comment-id") Integer commentId,
+            @Parameter(description = "댓글 식별자", required = true, example = "1") @PathVariable("comment-id") Long commentId,
             @ApiIgnore Principal principal) {
 
-        // 작성한 멤버인지 검증
-        isWriter(commentId, principal);
-
-        commentService.delete(commentId);
+        commentService.delete(commentId, Long.parseLong(principal.getName()));
         return new ResponseEntity(new CommentSimpleResponse(commentId), HttpStatus.NO_CONTENT);
     }
-
-    private void isWriter(Integer commentId, Principal principal) {
-        boolean isCommentOwner = commentService.checkMember(commentId,Long.valueOf(principal.getName()));
-
-        if(!isCommentOwner) {
-            throw new ApplicationException(ErrorCode.ACCESS_FORBIDDEN);
-        }
-    }
-
 
 }

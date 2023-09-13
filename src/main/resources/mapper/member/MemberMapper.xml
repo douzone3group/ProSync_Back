@@ -42,7 +42,7 @@
         where email = #{email} and is_deleted = false
     </select>
 
-    <select id="getMeberList" resultType="Member">
+    <select id="getMemberList" resultType="Member">
         select * from member
         where member_id in
         <foreach collection="memberIds" item="id" open="(" separator="," close=")">

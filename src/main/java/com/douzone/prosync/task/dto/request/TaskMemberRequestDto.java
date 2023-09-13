@@ -8,8 +8,9 @@ import java.util.List;
 
 @Getter
 @ApiModel("[REQUEST] MEMBER_TASK - POST")
-public class TaskMemberDto {
+public class TaskMemberRequestDto {
 
-    @ApiModelProperty(value = "회원식별자", example = "[ 1, 2, 3 ]")
-    private List<Long> memberIds;
+
+    @ApiModelProperty(value = "프로젝트회원식별자", example = "[ 1, 2, 3 ]")
+    private List<Long> projectMemberIds;
 }
