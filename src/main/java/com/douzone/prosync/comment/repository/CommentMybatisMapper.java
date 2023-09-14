@@ -3,6 +3,7 @@ package com.douzone.prosync.comment.repository;
 import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
 import com.douzone.prosync.comment.dto.response.GetCommentsResponse;
+import com.douzone.prosync.comment.entity.Comment;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -28,4 +29,6 @@ public interface CommentMybatisMapper {
     Long findProjectIdByTask(Long taskId);
 
     Optional<MemberProjectResponseDto> findCommentMember(Long commentId);
+
+    Comment findbyId(Long commentId);
 }

@@ -20,4 +20,6 @@ public interface MemberProjectService {
     void deleteProjectMember(Long projectMemberId);
 
     void exitProjectMember(Long projectId, Long memberId);
+
+    List<Long> findProjectIdsByMemberId(Long memberId);
 }

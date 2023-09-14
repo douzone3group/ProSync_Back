@@ -19,5 +19,4 @@ public interface CommentService {
 
     // 댓글 리스트 조회
     PageResponseDto findCommentList(Long taskId, Pageable pageable);
-
 }
