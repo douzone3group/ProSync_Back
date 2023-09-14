@@ -11,5 +11,5 @@ public class TaskSimpleDto {
 
     private String title;
 
-    private Long proejctId;
+    private Long projectId;
 }
