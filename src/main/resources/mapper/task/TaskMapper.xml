@@ -34,7 +34,7 @@
                 end_date=#{endDate},
             </if>
             <if test="taskStatusId != null">
-                task_status=#{taskStatusId},
+                task_status_id=#{taskStatusId},
             </if>
         </set>
         WHERE task_id = #{taskId}
@@ -95,5 +95,14 @@
                  JOIN member m ON m.member_id = mp.member_id
                  JOIN task t on t.task_id = mpt.task_id
         WHERE mpt.task_id = #{taskId} AND t.is_deleted IS NULL;
+    </select>
+
+    <select id="findTaskMembersDeleted">
+        SELECT mp.member_project_id, mp.status, m.member_id, m.profile_image, m.name
+        FROM member_project_task mpt
+                 JOIN member_project mp ON mpt.member_project_id = mp.member_project_id
+                 JOIN member m ON m.member_id = mp.member_id
+                 JOIN task t on t.task_id = mpt.task_id
+        WHERE mpt.task_id = #{taskId};
     </select>
 </mapper>

@@ -131,58 +131,58 @@ public class WebNotificationServiceImpl implements NotificationService{
 
         switch (code.getCode()) {
             case "업무삭제": {
-                container.setContent(fromMember.getName()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무를 삭제하셨습니다.") ;
-                container.setUrl(FRONT_SERVER_HOST+"/notifications");
+                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" ] 업무를 삭제하셨습니다.") ;
+                container.setUrl("/notifications");
             }
                 break;
             case "업무지정":   {
-                container.setContent(fromMember.getName()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무로 배정하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/tasks/"+dto.getTaskId());
+                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" ] 업무로 배정하셨습니다.");
+                container.setUrl("/projects/"+dto.getProjectId()+"/tasks/"+dto.getTaskId());
             }
                 break;
             case "업무수정":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무를 수정하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/tasks/"+dto.getTaskId());
+                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" ] 업무를 수정하셨습니다.");
+                container.setUrl("/projects/"+dto.getProjectId()+"/tasks/"+dto.getTaskId());
             }
                 break;
             case "업무제외":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" 업무에서 제외하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/tasks/"+dto.getTaskId());
+                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" ] 업무에서 제외하셨습니다.");
+                container.setUrl("/projects/"+dto.getProjectId()+"/tasks/"+dto.getTaskId());
             }
                 break;
             case "프로젝트지정":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((Project) dto.getSubject()).getTitle()+" 프로젝트의 구성원으로 수락하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/projects/"+dto.getProjectId());
+                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ ((Project) dto.getSubject()).getTitle()+" ] 프로젝트의 구성원으로 수락하셨습니다.");
+                container.setUrl("/projects/"+dto.getProjectId());
             }
                 break;
             case "프로젝트제외":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((Project) dto.getSubject()).getTitle()+" 프로젝트의 구성원에서 제외하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/notifications");
+                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ ((Project) dto.getSubject()).getTitle()+" ] 프로젝트의 구성원에서 제외하셨습니다.");
+                container.setUrl("/notifications");
             }
                 break;
             case "프로젝트수정":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((Project) dto.getSubject()).getTitle()+" 프로젝트에 대한 정보를 수정하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST + "/projects/" + dto.getProjectId());
+                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ ((Project) dto.getSubject()).getTitle()+" ] 프로젝트에 대한 정보를 수정하셨습니다.");
+                container.setUrl("/projects/" + dto.getProjectId());
             }
                 break;
             case "프로젝트삭제":  {
-                container.setContent(fromMember.getName()+"님이 "+ ((Project) dto.getSubject()).getTitle()+" 프로젝트를 삭제하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/notifications");
+                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ ((Project) dto.getSubject()).getTitle()+" ] 프로젝트를 삭제하셨습니다.");
+                container.setUrl("/notifications");
             }
                 break;
             case "댓글추가":  {
-                container.setContent(fromMember.getName()+"님이 "+ dto.getSubject()+" 업무에 댓글을 추가하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/tasks/"+dto.getTaskId());
+                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 추가하셨습니다.");
+                container.setUrl("/projects/"+dto.getProjectId()+"/tasks/"+dto.getTaskId());
             }
                 break;
             case "댓글삭제":  {
-                container.setContent(fromMember.getName()+"님이 "+ dto.getSubject()+" 업무에 댓글을 삭제하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/tasks/"+dto.getTaskId());
+                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 삭제하셨습니다.");
+                container.setUrl("/projects/"+dto.getProjectId()+"/tasks/"+dto.getTaskId());
             }
                 break;
             case "댓글수정":  {
-                container.setContent(fromMember.getName()+"님이 "+ dto.getSubject()+" 업무에 댓글을 수정하셨습니다.");
-                container.setUrl(FRONT_SERVER_HOST+"/tasks/"+dto.getTaskId());
+                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 수정하셨습니다.");
+                container.setUrl("/projects/"+dto.getProjectId()+"/tasks/"+dto.getTaskId());
             }
                 break;
             case "권한변경":  {
@@ -191,11 +191,11 @@ public class WebNotificationServiceImpl implements NotificationService{
                 Member member = memberRepository.findById(dto.getMemberId()).orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
                 if (dto.getAuthority().name().equals("ADMIN")) {
-                    container.setContent(((Project)dto.getSubject()).getTitle() +" 프로젝트의 관리자가 "+fromMember.getName()+"님에서 "+member.getName()+ "으로 변경되었습니다.");
-                    container.setUrl(FRONT_SERVER_HOST+"/projects/" + dto.getProjectId());
+                    container.setContent("[ "+((Project)dto.getSubject()).getTitle() +" ] 프로젝트의 관리자가 [ "+fromMember.getName()+" ] 님에서 [ "+member.getName()+ " ] 으로 변경되었습니다.");
+                    container.setUrl("/projects/" + dto.getProjectId());
                 } else {
-                    container.setContent(((Project)dto.getSubject()).getTitle()+" 프로젝트에서"+member.getName()+"님의 권한이 "+ dto.getAuthority().name()+"으로 변경되었습니다.");
-                    container.setUrl(FRONT_SERVER_HOST+"/projects/" + dto.getProjectId());
+                    container.setContent("[ "+((Project)dto.getSubject()).getTitle()+" ] 프로젝트에서 [ "+member.getName()+" ] 님의 권한이 [ "+ dto.getAuthority().name()+" ] 으로 변경되었습니다.");
+                    container.setUrl("/projects/" + dto.getProjectId());
                 }
 
             }
@@ -215,6 +215,8 @@ public class WebNotificationServiceImpl implements NotificationService{
         // 알림 타겟을 memberIds의 memberId와 알림 id를 이용하여 복수로 저장한다.
         List<NotificationTargetDto> dtoList = new ArrayList<>();
 
+        System.out.println("알림 보낼 멤버 리스트:"+dto.getMemberIds());
+
         dto.getMemberIds().stream().forEach((id) -> dtoList.add(
                 NotificationTargetDto.builder()
                         .notificationId(notificationId)
@@ -228,10 +230,13 @@ public class WebNotificationServiceImpl implements NotificationService{
 
         ));
 
+
+
         notificationRepository.saveNotificationTargetList(dtoList);
 
         // 알림 id에 해당하는 알림 타겟을 꺼내와서 for문을 돌며 수취인의 memberId에 해당하는 SseEmitter를 통해 알림을 전송한다.
         List<NotificationTarget> notificationTargetList = notificationRepository.getNotificationTagetListByNotificationId(notificationId);
+
 
         notificationTargetList.stream().forEach((target) -> {
             NotificationResponse notification = new NotificationResponse(target.getNotificationId(),

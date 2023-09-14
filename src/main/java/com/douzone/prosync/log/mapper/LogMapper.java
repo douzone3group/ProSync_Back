@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper
 public interface LogMapper {
 
-    void saveLog(LogDto logDto);
+    void saveLog(@Param("logDto")LogDto logDto);
 
 
 

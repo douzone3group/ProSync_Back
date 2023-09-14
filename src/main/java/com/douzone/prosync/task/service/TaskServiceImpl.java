@@ -91,19 +91,23 @@ public class TaskServiceImpl implements TaskService {
 
         // 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
         List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskId);
-        List<Long> memberIds  = taskMembers.stream()
-                .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProjectStatus.ACTIVE))
-                .map(TaskMemberResponseDto::getMemberId)
-                .collect(Collectors.toList());
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.TASK_MODIFICATION)
-                .memberIds(memberIds)
-                .taskId(taskId)
-                .subject(findTask)
-                .build());
+        if (taskMembers.size() > 0) {
+            List<Long> memberIds = taskMembers.stream()
+                    .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProjectStatus.ACTIVE))
+                    .map(TaskMemberResponseDto::getMemberId)
+                    .collect(Collectors.toList());
+
+            // 알림 저장 및 전달
+            notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                    .fromMemberId(memberId)
+                    .code(NotificationCode.TASK_MODIFICATION)
+                    .memberIds(memberIds)
+                    .projectId(findTask.getProjectId())
+                    .taskId(taskId)
+                    .subject(findTask)
+                    .build());
+        }
 
 
         // 로그 저장
@@ -122,21 +126,26 @@ public class TaskServiceImpl implements TaskService {
         //soft delete
         taskMapper.delete(taskId);
 
-
         // 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
-        List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskId);
-        List<Long> memberIds  = taskMembers.stream()
-                .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProjectStatus.ACTIVE))
-                .map(TaskMemberResponseDto::getMemberId)
-                .collect(Collectors.toList());
+        List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembersDeleted(taskId);
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.TASK_REMOVE)
-                .memberIds(memberIds)
-                .subject(task)
-                .build());
+        if (taskMembers.size() > 0) {
+            List<Long> memberIds = taskMembers.stream()
+                    .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProjectStatus.ACTIVE))
+                    .map(TaskMemberResponseDto::getMemberId)
+                    .collect(Collectors.toList());
+
+            System.out.println("memberIds : " + memberIds);
+
+            // 알림 저장 및 전달
+            notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                    .fromMemberId(memberId)
+                    .code(NotificationCode.TASK_REMOVE)
+                    .memberIds(memberIds)
+                    .subject(task)
+                    .build());
+        }
+
 
         // 로그 저장
         logService.saveLog(LogConditionDto.builder()
@@ -194,7 +203,7 @@ public class TaskServiceImpl implements TaskService {
         // 이미 담당자로 지정되어있는 경우
         List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskId);
         taskMembers = taskMembers.stream()
-                .filter(taskMemberResponseDto -> taskMemberResponseDto.getStatus().equals(MemberProjectStatus.ACTIVE) ).collect(Collectors.toList());
+                .filter(taskMemberResponseDto -> taskMemberResponseDto.getStatus().equals(MemberProjectStatus.ACTIVE)).collect(Collectors.toList());
 
         taskMembers.forEach(taskMember -> {
             if (projectMemberIds.contains(taskMember.getMemberProjectId())) {
@@ -213,6 +222,7 @@ public class TaskServiceImpl implements TaskService {
                 .code(NotificationCode.TASK_ASSIGNMENT)
                 .memberIds(memberIds)
                 .taskId(task.getTaskId())
+                .projectId(task.getProjectId())
                 .subject(task).build());
 
 
@@ -244,6 +254,7 @@ public class TaskServiceImpl implements TaskService {
                 .code(NotificationCode.TASK_EXCLUDED)
                 .memberIds(memberIds)
                 .taskId(task.getTaskId())
+                .projectId(task.getProjectId())
                 .subject(task).build());
 
         // 로그 저장
@@ -254,8 +265,6 @@ public class TaskServiceImpl implements TaskService {
                 .projectId(task.getProjectId())
                 .taskId(task.getTaskId())
                 .subject(task).build());
-
-
 
 
     }
