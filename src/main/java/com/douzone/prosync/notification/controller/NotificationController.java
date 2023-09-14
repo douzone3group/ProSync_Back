@@ -2,6 +2,7 @@ package com.douzone.prosync.notification.controller;
 
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.notification.dto.request.NotificationListRequestDto;
+import com.douzone.prosync.notification.dto.request.NotificationTargetIdsDto;
 import com.douzone.prosync.notification.dto.response.NotificationResponse;
 import com.douzone.prosync.notification.dto.response.NotificationTargetSimpleResponse;
 import com.douzone.prosync.notification.mapper.NotificationMapper;
@@ -48,21 +49,22 @@ public class NotificationController {
      * 구독하기 (+ 안읽은 메시지 갯수 알림 보내주기)
      */
     // TODO: 토큰값을 이용하여 memberId를 사용하도록 수정
-    @GetMapping(value ="/subscribe/{id}", produces = "text/event-stream")
+    @GetMapping(value = "/subscribe/{id}", produces = "text/event-stream")
     @Operation(summary = "SSE 연결 구독하기", description = "클라이언트와 서버 간의 SSE 연결을 하고 연결 성공 시 사용자가 안읽은 알림에 대한 갯수를 보내줍니다.", tags = "notification")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = SseEmitter.class),
             @ApiResponse(code = 503, message = "server connection error")
     })
     @Transactional
-    public SseEmitter subscribe(Principal principal){
+    public SseEmitter subscribe(Principal principal) {
         return notificationService.subscribe(Long.parseLong(principal.getName()));
     }
 
 
     /**
      * 알림 검색 조건 및 페이지 관련 정보에 따른 페이지네이션 처리 로직
-     * @param requestDto 알림 검색 조건 및 페이지 관련 정보
+     *
+     * @param 알림 검색 조건 및 페이지 관련 정보
      * @return
      */
     @GetMapping("/notificationList")
@@ -78,7 +80,7 @@ public class NotificationController {
             @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam(required = false) String content,
             @Parameter(hidden = true) Principal principal,
-            @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable){
+            @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable) {
 
         NotificationListRequestDto requestDto = new NotificationListRequestDto(notiCode, startDate, endDate, content);
         PageResponseDto<NotificationResponse> notificationPageList = notificationService.getNotificationPageList(requestDto, pageable, principal);
@@ -88,6 +90,7 @@ public class NotificationController {
 
     /**
      * 알림 읽음 처리 로직
+     *
      * @param id 읽음 처리할 NotificationTarget pk
      * @return
      */
@@ -104,6 +107,24 @@ public class NotificationController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * 알림 읽음 처리 로직(복수)
+     */
+    // 알림 읽음 처리 로직
+    @PatchMapping("/notification/read")
+    @Operation(summary = "알림 읽음 처리", description = "사용자가 선택한 알림들을 읽음으로 업데이트합니다.", tags = "notification")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successfully retrieved", response = NotificationTargetSimpleResponse.class),
+            @ApiResponse(code = 403, message = "notification cant read"),
+            @ApiResponse(code = 404, message = "notification not found")
+    })
+    public ResponseEntity<NotificationTargetSimpleResponse> updateNotificationListIsRead(@Parameter(name = "notificationTargetIds", description = "알림 타겟 식별자(복수)", required = true, in = ParameterIn.DEFAULT)
+                                                                                         @RequestBody NotificationTargetIdsDto dto,
+                                                                                         @Parameter(hidden = true) Principal principal) {
+        System.out.println(dto.getKey());
+        System.out.println(dto.getNotificationTargetIds());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 
 }

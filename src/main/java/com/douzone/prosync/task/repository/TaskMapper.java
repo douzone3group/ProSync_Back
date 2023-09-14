@@ -35,5 +35,7 @@ public interface TaskMapper {
 
     List<TaskMemberResponseDto> findTaskMembers(Long taskId);
 
+    List<TaskMemberResponseDto> findTaskMembersDeleted(Long taskId);
+
     List<GetTasksResponse> findTasks(@Param("projectId") Long projectId, @Param("search") String search, @Param("isActive") Boolean isActive);
 }
