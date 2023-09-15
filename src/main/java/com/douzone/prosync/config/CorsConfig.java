@@ -41,6 +41,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOriginPattern(FRONT_SERVER_HOST);
+        config.setExposedHeaders(List.of("Authorization", "Refresh"));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setExposedHeaders(List.of("Authorization","Refresh"));

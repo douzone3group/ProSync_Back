@@ -42,8 +42,9 @@ public  class ProjectPatchDto {
     @ApiModelProperty(value = "프로젝트 공개여부", required = true, example = "프로젝트 공개여부")
     private Boolean isPublic;
 
-    @NotNull
-    @ApiModelProperty(value = "프로젝트 이미지", required = true, example = "프로젝트 이미지")
+    @ApiModelProperty(value = "파일식별자", example = "1")
+    private Long fileId;
+
     private String projectImage;
 
 }

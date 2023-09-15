@@ -18,14 +18,14 @@ public class LogListRequestDto {
 
     private Integer pageSize;
 
-    public LogSearchCondition of(Long projectId){
-        return LogSearchCondition.builder()
-                .projectId(projectId)
-                .content(content)
-                .startDate(startDate)
-                .endDate(endDate)
-                .logCode(logCode.getCode())
-                .build();
-
-    }
+//    public LogSearchCondition of(Long projectId){
+//        return LogSearchCondition.builder()
+//                .projectId(projectId)
+//                .content(content)
+//                .startDate(startDate)
+//                .endDate(endDate)
+//                .logCode(logCode)
+//                .build();
+//
+//    }
 }
