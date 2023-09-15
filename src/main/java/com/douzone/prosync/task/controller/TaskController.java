@@ -144,9 +144,12 @@ public class TaskController {
             @ApiResponse(code = 404, message = "task not found"),
             @ApiResponse(code = 500, message = "server error")
     })
-    public ResponseEntity<SingleResponseDto<GetTaskResponse>> getTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") Long taskId,
+    public ResponseEntity<GetTaskResponse.TaskMembersDto> getTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") Long taskId,
                                                                       @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        return new ResponseEntity<>(new SingleResponseDto<>(taskService.findTask(taskId, getMemberId(principal))), HttpStatus.OK);
+        Long memberId = getMemberId(principal);
+        GetTaskResponse task = taskService.findTask(taskId, memberId);
+        List<TaskMemberResponseDto> taskMembers = taskService.findTaskMembers(taskId, memberId);
+        return new ResponseEntity<>(new GetTaskResponse.TaskMembersDto(task, taskMembers), HttpStatus.OK);
     }
 
     /**
