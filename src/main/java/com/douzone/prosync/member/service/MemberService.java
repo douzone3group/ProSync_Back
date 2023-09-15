@@ -36,5 +36,4 @@ public interface MemberService {
 
      String loginProcess(MemberLoginDto loginDto,HttpHeaders httpHeaders, HttpServletRequest request);
 
-
 }

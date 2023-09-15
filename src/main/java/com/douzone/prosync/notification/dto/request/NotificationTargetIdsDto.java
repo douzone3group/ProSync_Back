@@ -10,5 +10,4 @@ import java.util.List;
 public class NotificationTargetIdsDto {
 
     private List<Long> notificationTargetIds;
-    private String key;
 }

@@ -4,6 +4,7 @@ import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.mail.dto.CertificationCodeDto;
 import com.douzone.prosync.mail.dto.MailDto;
+import com.douzone.prosync.member.dto.MemberEmailDto;
 import com.douzone.prosync.member.dto.request.*;
 import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.member.dto.response.MemberSimpleResponseDto;
@@ -35,6 +36,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -191,6 +193,15 @@ public class MemberController {
         return new ResponseEntity(principal.getName() + " 삭제완료", HttpStatus.OK);
     }
 
+
+    // 중복확인
+    @PostMapping("/idcheck")
+    public ResponseEntity idCheck(@RequestBody MemberEmailDto dto) {
+        String email = dto.getEmail();
+        System.out.println(email);
+        boolean res = memberService.duplicateInspection(email);
+        return new ResponseEntity(res, HttpStatus.OK);
+    }
 
 }
 
