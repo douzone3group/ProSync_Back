@@ -7,6 +7,7 @@ import com.douzone.prosync.notification.dto.response.NotificationResponse;
 import com.douzone.prosync.notification.dto.response.NotificationTargetSimpleResponse;
 import com.douzone.prosync.notification.mapper.NotificationMapper;
 import com.douzone.prosync.notification.notienum.NotificationCode;
+import com.douzone.prosync.notification.service.NotificationService;
 import com.douzone.prosync.notification.service.WebNotificationServiceImpl;
 import com.douzone.prosync.searchcondition.NotificationSearchCondition;
 import com.github.pagehelper.PageHelper;
@@ -29,8 +30,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.douzone.prosync.constant.ConstantPool.*;
@@ -114,17 +117,34 @@ public class NotificationController {
     @PatchMapping("/notification/read")
     @Operation(summary = "알림 읽음 처리", description = "사용자가 선택한 알림들을 읽음으로 업데이트합니다.", tags = "notification")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successfully retrieved", response = NotificationTargetSimpleResponse.class),
-            @ApiResponse(code = 403, message = "notification cant read"),
-            @ApiResponse(code = 404, message = "notification not found")
+            @ApiResponse(code = 200, message = "successfully retrieved", response = List.class),
+            @ApiResponse(code = 400, message = "notification cant update"),
     })
-    public ResponseEntity<NotificationTargetSimpleResponse> updateNotificationListIsRead(@Parameter(name = "notificationTargetIds", description = "알림 타겟 식별자(복수)", required = true, in = ParameterIn.DEFAULT)
+    public ResponseEntity<List<NotificationTargetSimpleResponse>> updateNotificationListIsRead(@Parameter(name = "notificationTargetIds", description = "알림 타겟 식별자(복수)", required = true, in = ParameterIn.DEFAULT)
                                                                                          @RequestBody NotificationTargetIdsDto dto,
                                                                                          @Parameter(hidden = true) Principal principal) {
-        System.out.println(dto.getKey());
-        System.out.println(dto.getNotificationTargetIds());
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        List<NotificationTargetSimpleResponse> response= notificationService.updateTargetListIsRead(dto.getNotificationTargetIds(),Long.parseLong(principal.getName()));
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    /**
+     * 알림 삭제 처리 로직(복수)
+     */
+    // 알림 읽음 처리 로직
+    @DeleteMapping("/notification/delete")
+    @Operation(summary = "알림 삭제 처리", description = "사용자가 선택한 알림들을 삭제합니다.", tags = "notification")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successfully retrieved", response = List.class),
+            @ApiResponse(code = 400, message = "notification cant delete")
+    })
+    public ResponseEntity<List<NotificationTargetSimpleResponse>> deleteNotificationList(@Parameter(name = "notificationTargetIds", description = "알림 타겟 식별자(복수)", required = true, in = ParameterIn.DEFAULT)
+                                                                                         @RequestBody NotificationTargetIdsDto dto,
+                                                                                         HttpServletRequest request,
+                                                                                         @Parameter(hidden = true) Principal principal) {
+
+        List<NotificationTargetSimpleResponse> response= notificationService.deleteTargetList(dto.getNotificationTargetIds(),Long.parseLong(principal.getName()));
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
 
 }

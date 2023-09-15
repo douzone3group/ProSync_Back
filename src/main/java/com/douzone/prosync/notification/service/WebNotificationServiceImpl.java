@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.douzone.prosync.constant.ConstantPool.*;
 
@@ -235,7 +237,7 @@ public class WebNotificationServiceImpl implements NotificationService{
         notificationRepository.saveNotificationTargetList(dtoList);
 
         // 알림 id에 해당하는 알림 타겟을 꺼내와서 for문을 돌며 수취인의 memberId에 해당하는 SseEmitter를 통해 알림을 전송한다.
-        List<NotificationTarget> notificationTargetList = notificationRepository.getNotificationTagetListByNotificationId(notificationId);
+        List<NotificationTarget> notificationTargetList = notificationRepository.getNotificationTargetListByNotificationId(notificationId);
 
 
         notificationTargetList.stream().forEach((target) -> {
@@ -290,6 +292,39 @@ public class WebNotificationServiceImpl implements NotificationService{
         PageInfo<NotificationResponse> pageInfo = new PageInfo<>(notificationList);
 
         return new PageResponseDto<>(pageInfo);
+    }
+
+    @Transactional
+    @Override
+    public List<NotificationTargetSimpleResponse> updateTargetListIsRead(List<Long> notificationTargetIds, Long memberId) {
+
+        // 본인의 알림 타겟에서 해당 타겟 id가 있는지 검증하기
+        if (mapper.getNotificationTargetListCount(notificationTargetIds,memberId)!=notificationTargetIds.size()) {
+            throw new ApplicationException(ErrorCode.NOTIFICATION_CANT_UPDATE);
+        }
+        mapper.updateTargetListIsRead(notificationTargetIds);
+
+        List<NotificationTargetSimpleResponse> list = notificationTargetIds.stream().map((targetId) ->
+             new NotificationTargetSimpleResponse(targetId)
+        ).collect(Collectors.toList());
+        return list;
+    }
+
+    @Transactional
+    @Override
+    public List<NotificationTargetSimpleResponse> deleteTargetList(List<Long> notificationTargetIds, Long memberId) {
+
+        // 본인의 알림 타겟에서 해당 타겟 id가 있는지 검증하기
+        if (mapper.getNotificationTargetListCount(notificationTargetIds,memberId)!=notificationTargetIds.size()) {
+            throw new ApplicationException(ErrorCode.NOTIFICATION_CANT_DELETE);
+        }
+
+        mapper.deleteTargetList(notificationTargetIds);
+
+        List<NotificationTargetSimpleResponse> list = notificationTargetIds.stream().map((targetId) ->
+                new NotificationTargetSimpleResponse(targetId)
+        ).collect(Collectors.toList());
+        return list;
     }
 
 
