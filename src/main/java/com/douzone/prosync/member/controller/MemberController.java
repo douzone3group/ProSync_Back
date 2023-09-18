@@ -198,7 +198,6 @@ public class MemberController {
     @PostMapping("/idcheck")
     public ResponseEntity idCheck(@RequestBody MemberEmailDto dto) {
         String email = dto.getEmail();
-        System.out.println(email);
         boolean res = memberService.duplicateInspection(email);
         return new ResponseEntity(res, HttpStatus.OK);
     }
