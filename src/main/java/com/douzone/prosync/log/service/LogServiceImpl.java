@@ -217,6 +217,7 @@ public class LogServiceImpl implements LogService {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
 
         PageHelper.startPage(pageNum, pageable.getPageSize());
+        System.out.println("로그 페이지 리스트 검색");
 
         List<LogResponse> logResponseList = logRepository.getLogList(condition);
 
