@@ -22,19 +22,19 @@
             </if>
         </set>
         WHERE task_status_id = #{taskStatusId}
-          AND is_deleted IS NULL;
+          AND is_deleted = false;
     </update>
     <select id="findExistsTaskStatus" resultType="int">
         SELECT count(*)
         FROM task_status
         WHERE task_status_id = #{taskStatusId}
-          AND is_deleted IS NULL;
+          AND is_deleted = false;
     </select>
     <select id="findTaskStatusByProject">
         SELECT task_status_id, color, task_status, seq, project_id
         FROM task_status
         <where>
-            project_id=#{projectId} AND is_deleted IS NULL
+            project_id=#{projectId} AND is_deleted = false
             <if test="isActive">
                 AND seq != 0
             </if>
@@ -44,6 +44,6 @@
     <select id="findTaskByTaskStatus">
         SELECT COUNT(*) FROM task_status ts
         JOIN task t ON t.task_status_id = ts.task_status_id
-        WHERE t.task_status_id = #{taskStatusId} AND ts.is_deleted IS NULL AND t.is_deleted IS NULL
+        WHERE t.task_status_id = #{taskStatusId} AND ts.is_deleted = false AND t.is_deleted = false
     </select>
 </mapper>

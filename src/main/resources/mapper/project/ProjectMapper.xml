@@ -16,26 +16,26 @@
             modified_at=now(),
             is_public=#{isPublic},
             project_image=#{projectImage}
-        where project_id=#{projectId} and is_deleted is null
+        where project_id=#{projectId} and is_deleted=false
     </update>
 
     <select id="findById" resultType="com.douzone.prosync.project.entity.Project">
         select * from project
-        where project_id=#{projectId} and is_deleted is null
+        where project_id=#{projectId} and is_deleted=false
 
     </select>
 
     <select id="findAllProjects" resultType="com.douzone.prosync.project.entity.Project">
         select *
         from project
-        where is_deleted is null
+        where is_deleted = false
         order by project_id desc
     </select>
 
     <update id="deleteProject">
         update project
         set is_deleted=true, modified_at=now()
-        where project_id=#{projectId} and is_deleted is null
+        where project_id=#{projectId} and is_deleted = false
     </update>
 
     <select id="findAll">
@@ -49,7 +49,7 @@
         </if>
         <where>
             (mp.member_id = #{memberId} or p.is_public = true)
-            and (p.is_deleted is null and pa.authority = 'ADMIN')
+            and (p.is_deleted = false and pa.authority = 'ADMIN')
             <if test="search != null and search != ''">
                 and ((p.title like concat('%', #{search}, '%'))
                 or (m.name like concat('%', #{search}, '%') and pa.authority = 'admin'))
