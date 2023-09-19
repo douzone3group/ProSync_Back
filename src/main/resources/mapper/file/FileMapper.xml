@@ -18,7 +18,7 @@
         SELECT f.file_id, f.size, f.path, f.created_at, f.file_name, fi.file_info_id
         FROM file_info fi
                  JOIN file f ON fi.file_id = f.file_id
-        WHERE fi.table_name = #{tableName} AND fi.table_key = #{tableKey} AND fi.deleted_at IS NULL
+        WHERE fi.table_name = #{tableName} AND fi.table_key = #{tableKey} AND fi.deleted_at is false
     </select>
 
     <!--  file info  -->
