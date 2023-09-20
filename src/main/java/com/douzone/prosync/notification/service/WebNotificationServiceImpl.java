@@ -134,7 +134,7 @@ public class WebNotificationServiceImpl implements NotificationService{
         switch (code.getCode()) {
             case "업무삭제": {
                 container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ ((GetTaskResponse) dto.getSubject()).getTitle()+" ] 업무를 삭제하셨습니다.") ;
-                container.setUrl("/notifications");
+                container.setUrl("/notification");
             }
                 break;
             case "업무지정":   {
@@ -159,7 +159,7 @@ public class WebNotificationServiceImpl implements NotificationService{
                 break;
             case "프로젝트제외":  {
                 container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ ((Project) dto.getSubject()).getTitle()+" ] 프로젝트의 구성원에서 제외하셨습니다.");
-                container.setUrl("/notifications");
+                container.setUrl("/notification");
             }
                 break;
             case "프로젝트수정":  {
@@ -169,7 +169,7 @@ public class WebNotificationServiceImpl implements NotificationService{
                 break;
             case "프로젝트삭제":  {
                 container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ ((Project) dto.getSubject()).getTitle()+" ] 프로젝트를 삭제하셨습니다.");
-                container.setUrl("/notifications");
+                container.setUrl("/notification");
             }
                 break;
             case "댓글추가":  {

@@ -65,7 +65,7 @@ public class LogServiceImpl implements LogService {
         switch (code) {
             case "업무삭제": {
                 container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무를 삭제하셨습니다.");
-                container.setUrl("/notificationList/projects/" +dto.getProjectId());
+                container.setUrl("/notification/projects/" +dto.getProjectId());
             }
             break;
             case "업무지정": {
@@ -137,7 +137,7 @@ public class LogServiceImpl implements LogService {
             case "프로젝트삭제": {
 
                 container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트를 삭제하셨습니다.");
-                container.setUrl("/notificationList/projects/" +dto.getProjectId());
+                container.setUrl("/notification/projects/" +dto.getProjectId());
             }
             break;
             case "댓글추가": {
