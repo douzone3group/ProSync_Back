@@ -293,7 +293,7 @@ public class TaskServiceImpl implements TaskService {
     private void verifyTaskStatus(Long projectId, Long taskStatusId, Long memberId) {
         taskStatusService.getTaskStatusByProject(projectId, false, memberId)
                 .stream()
-                .filter(status -> status.getTaskStatusId() == taskStatusId).findFirst()
+                .filter(status -> status.getTaskStatusId().equals(taskStatusId)).findFirst()
                 .orElseThrow(() -> new ApplicationException(ErrorCode.TASK_STATUS_NOT_FOUND));
     }
 

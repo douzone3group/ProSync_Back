@@ -11,18 +11,19 @@
         update comment
         set content=#{content},
             modified_at=now()
-        where comment_id=#{commentId} and is_deleted is null
+        where comment_id=#{commentId} and is_deleted is false
     </update>
 
     <update id="deleteComment">
         update comment
         set is_deleted=true, modified_at=now()
-        where comment_id=#{commentId} and is_deleted is null
+        where comment_id=#{commentId} and is_deleted is false
     </update>
 
     <select id="findAllComments" >
         select * from comment
-        where is_deleted is null and task_id = #{taskId}
+        where is_deleted is false and task_id = #{taskId}
+        order by comment_id desc
     </select>
 
     <select id="findCommentMember">
@@ -39,13 +40,13 @@
                  join member m on mp.member_id = m.member_id
                  join project_authority pa on pa.authority_id = mp.authority_id
         where c.comment_id = #{commentId}
-          and c.is_deleted is null;
+          and c.is_deleted is false;
     </select>
 
     <select id="findbyId" resultType="com.douzone.prosync.comment.entity.Comment">
         SELECT *
         FROM comment
         WHERE
-            comment_id = #{commentId} and is_deleted is null
+            comment_id = #{commentId} and is_deleted is false
     </select>
 </mapper>

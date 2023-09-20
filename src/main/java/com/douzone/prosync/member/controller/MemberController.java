@@ -172,7 +172,8 @@ public class MemberController {
     public ResponseEntity login(@Valid @RequestBody MemberLoginDto loginDto, HttpServletRequest request) {
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        return new ResponseEntity<>(memberService.loginProcess(loginDto, httpHeaders,request),httpHeaders, HttpStatus.OK);
+        Long memberId = Long.parseLong(memberService.loginProcess(loginDto, httpHeaders, request));
+        return new ResponseEntity<>(new MemberSimpleResponseDto(memberId), httpHeaders, HttpStatus.OK);
     }
 
     /**
