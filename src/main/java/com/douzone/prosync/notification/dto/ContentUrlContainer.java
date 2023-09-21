@@ -10,5 +10,5 @@ import java.time.LocalDateTime;
 public class ContentUrlContainer {
     public String content;
     public String url;
-    public LocalDateTime date;
+    public String date;
 }

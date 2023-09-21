@@ -13,7 +13,6 @@ public class LogResponse {
     private Long logId;
     private String content;
     private LogCode code;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private String createdAt;
     private String url;
 }

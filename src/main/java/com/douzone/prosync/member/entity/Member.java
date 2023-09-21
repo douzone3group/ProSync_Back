@@ -44,6 +44,9 @@ public class Member {
     @ApiModelProperty(value = "회원 소개글", example = "hi")
     private String intro;
 
+    @ApiModelProperty(value = "닉네임(이메일)", example = "hee(abcd@naver.com)")
+    private String nameEmail;
+
 
 
     // Todo: 파일 image 연결
