@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.douzone.prosync.constant.ConstantPool.*;
 
@@ -64,7 +65,7 @@ public class LogServiceImpl implements LogService {
 
         switch (code) {
             case "업무삭제": {
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무를 삭제하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무를 삭제하셨습니다.");
                 container.setUrl("/notification/projects/" +dto.getProjectId());
             }
             break;
@@ -76,18 +77,18 @@ public class LogServiceImpl implements LogService {
 
                 for (int i = 0; i < memberList.size(); i++) {
                     if (i == 0) {
-                        membersName.append(memberList.get(i).getName());
+                        membersName.append(memberList.get(i).getNameEmail());
                     } else {
-                        membersName.append(", " + memberList.get(i).getName());
+                        membersName.append(", " + memberList.get(i).getNameEmail());
                     }
                 }
 
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + membersName + " ] 님을 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무로 배정하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + membersName + " ] 님을 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무로 배정하셨습니다.");
                 container.setUrl("/projects/" +dto.getProjectId()+"/tasks/" + dto.getTaskId());
             }
             break;
             case "업무수정": {
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무를 수정하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무를 수정하셨습니다.");
                 container.setUrl("/projects/"+dto.getProjectId()+"/tasks/" + dto.getTaskId());
             }
             break;
@@ -99,61 +100,60 @@ public class LogServiceImpl implements LogService {
 
                 for (int i = 0; i < memberList.size(); i++) {
                     if (i == 0) {
-                        membersName.append(memberList.get(i).getName());
+                        membersName.append(memberList.get(i).getNameEmail());
                     } else {
-                        membersName.append(", " + memberList.get(i).getName());
+                        membersName.append(", " + memberList.get(i).getNameEmail());
                     }
                 }
 
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + membersName + " ] 님을 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무에서 제외하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + membersName + " ] 님을 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무에서 제외하셨습니다.");
                 container.setUrl("/projects/"+dto.getProjectId()+"/tasks/" + dto.getTaskId());
             }
             break;
             case "프로젝트지정": {
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트의 구성원으로 수락하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트의 구성원으로 수락하셨습니다.");
                 container.setUrl("/projects/" + dto.getProjectId());
             }
             break;
             case "프로젝트제외": {
-
-
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + dto.getMemberId() + " ] 님을 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트의 구성원에서 제외하셨습니다.");
+                Member member= memberRepository.findById(dto.getMemberId()).get();
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + member.getNameEmail() + " ] 님을 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트의 구성원에서 제외하셨습니다.");
                 container.setUrl("/projects/" + dto.getProjectId());
             }
             break;
             case "프로젝트탈퇴": {
 
 
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트를 탈퇴하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트를 탈퇴하셨습니다.");
                 container.setUrl("/projects/" + dto.getProjectId());
             }
             break;
             case "프로젝트수정": {
 
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트에 대한 정보를 수정하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트에 대한 정보를 수정하셨습니다.");
                 container.setUrl("/projects/" + dto.getProjectId());
             }
             break;
             case "프로젝트삭제": {
 
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트를 삭제하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트를 삭제하셨습니다.");
                 container.setUrl("/notification/projects/" +dto.getProjectId());
             }
             break;
             case "댓글추가": {
-                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 추가하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 추가하셨습니다.");
                 container.setUrl("/projects/"+dto.getProjectId()+"/tasks/"+dto.getTaskId());
             }
             break;
             case "댓글삭제": {
 
-                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 삭제하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 삭제하셨습니다.");
                 container.setUrl("/projects/"+dto.getProjectId()+"/tasks/"+dto.getTaskId());
             }
             break;
             case "댓글수정": {
 
-                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 수정하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 수정하셨습니다.");
                 container.setUrl("/projects/"+dto.getProjectId()+"/tasks/"+dto.getTaskId());
             }
             break;
@@ -163,10 +163,10 @@ public class LogServiceImpl implements LogService {
                 Member member = memberRepository.findById(dto.getMemberId()).orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
                 if (dto.getAuthority().name().equals("ADMIN")) {
-                    container.setContent("프로젝트의 관리자가 "+"[ "+fromMember.getName()+" ] 님에서 [ "+member.getName()+ "] 님으로 변경되었습니다.");
+                    container.setContent("프로젝트의 관리자가 "+"[ "+fromMember.getNameEmail()+" ] 님에서 [ "+member.getNameEmail()+ "] 님으로 변경되었습니다.");
                     container.setUrl("/projects/" + dto.getProjectId());
                 } else {
-                    container.setContent("[ "+member.getName()+" ] 님의 권한이 [ "+ dto.getAuthority().name()+" ] 으로 변경되었습니다.");
+                    container.setContent("[ "+member.getNameEmail()+" ] 님의 권한이 [ "+ dto.getAuthority().name()+" ] 으로 변경되었습니다.");
                     container.setUrl("/projects/" + dto.getProjectId());
                 }
             }

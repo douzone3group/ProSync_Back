@@ -32,13 +32,13 @@
     </update>
 
     <select id="findById" resultType="Member">
-        select member_id, email, password, name, created_at,modified_at, profile_image, intro, is_deleted
+        select member_id, email, password, name, name_email created_at,modified_at, profile_image, intro, is_deleted
         from member
         where member_id = #{memberId} and is_deleted = false
     </select>
 
     <select id="findByEmail" resultType="Member">
-        select member_id, email, password, name, created_at,modified_at, profile_image, intro, is_deleted
+        select member_id, email, password, name, name_email, created_at,modified_at, profile_image, intro, is_deleted
         from member
         where email = #{email} and is_deleted = false
     </select>
