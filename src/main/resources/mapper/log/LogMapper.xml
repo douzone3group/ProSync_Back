@@ -39,7 +39,7 @@
 
 
     <select id="getLogList" resultType="LogResponse">
-        select log_id, content, log_code, created_at, modified_at, url
+        select log_id, content, log_code, created_at, url
         from log
         <where>
             project_id=#{condition.projectId} and is_deleted = false

@@ -3,10 +3,8 @@ package com.douzone.prosync.notification.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
-import com.douzone.prosync.log.dto.response.LogResponse;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
-import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.notification.NoEmitterException;
 import com.douzone.prosync.notification.dto.ContentUrlContainer;
 import com.douzone.prosync.notification.dto.NotificationConditionDto;
@@ -22,7 +20,6 @@ import com.douzone.prosync.notification.notienum.NotificationCode;
 import com.douzone.prosync.notification.notienum.NotificationPlatform;
 import com.douzone.prosync.notification.repository.MapEmitterRepository;
 import com.douzone.prosync.notification.repository.MybatisNotificationRepository;
-import com.douzone.prosync.project.dto.response.GetProjectResponse;
 import com.douzone.prosync.project.entity.Project;
 import com.douzone.prosync.searchcondition.NotificationSearchCondition;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
@@ -38,6 +35,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -125,7 +123,11 @@ public class WebNotificationServiceImpl implements NotificationService{
         ContentUrlContainer container = new ContentUrlContainer();
 
         LocalDateTime date = LocalDateTime.now();
-        container.setDate(date);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        String formattedDateTime = date.format(formatter);
+        container.setDate(formattedDateTime);
 
         Member fromMember = memberRepository.findById(dto.getFromMemberId()).orElse(null);
         NotificationCode code = dto.getCode();
@@ -242,7 +244,7 @@ public class WebNotificationServiceImpl implements NotificationService{
 
         notificationTargetList.stream().forEach((target) -> {
             NotificationResponse notification = new NotificationResponse(target.getNotificationId(),
-                    target.isRead(), container.getContent(), code, container.getDate(), container.getUrl());
+                    target.isRead(), container.getContent(), code, container.getDate().toString(), container.getUrl());
 
             try {
                 send((target.getMemberId()),new NotificationData(notification));
@@ -291,6 +293,7 @@ public class WebNotificationServiceImpl implements NotificationService{
 
         PageInfo<NotificationResponse> pageInfo = new PageInfo<>(notificationList);
 
+
         return new PageResponseDto<>(pageInfo);
     }
 
@@ -326,6 +329,9 @@ public class WebNotificationServiceImpl implements NotificationService{
         ).collect(Collectors.toList());
         return list;
     }
+
+
+
 
 
 }

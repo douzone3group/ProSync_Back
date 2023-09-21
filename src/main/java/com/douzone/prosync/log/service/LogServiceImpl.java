@@ -58,7 +58,7 @@ public class LogServiceImpl implements LogService {
         ContentUrlContainer container = new ContentUrlContainer();
 
         LocalDateTime date = LocalDateTime.now();
-        container.setDate(date);
+
 
         Member fromMember = memberRepository.findById(dto.getFromMemberId()).orElse(null);
 
@@ -72,7 +72,7 @@ public class LogServiceImpl implements LogService {
 
                 List<Member> memberList = memberRepository.getMemberList(dto.getMemberIds());
 
-                StringBuffer membersName = null;
+                StringBuffer membersName = new StringBuffer();
 
                 for (int i = 0; i < memberList.size(); i++) {
                     if (i == 0) {
@@ -82,7 +82,7 @@ public class LogServiceImpl implements LogService {
                     }
                 }
 
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + membersName.toString() + " ] 님을 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무로 배정하셨습니다.");
+                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + membersName + " ] 님을 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무로 배정하셨습니다.");
                 container.setUrl("/projects/" +dto.getProjectId()+"/tasks/" + dto.getTaskId());
             }
             break;
@@ -95,7 +95,7 @@ public class LogServiceImpl implements LogService {
 
                 List<Member> memberList = memberRepository.getMemberList(dto.getMemberIds());
 
-                StringBuffer membersName = null;
+                StringBuffer membersName = new StringBuffer();;
 
                 for (int i = 0; i < memberList.size(); i++) {
                     if (i == 0) {
@@ -105,7 +105,7 @@ public class LogServiceImpl implements LogService {
                     }
                 }
 
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + membersName.toString() + " ] 님을 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무에서 제외하셨습니다.");
+                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + membersName + " ] 님을 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무에서 제외하셨습니다.");
                 container.setUrl("/projects/"+dto.getProjectId()+"/tasks/" + dto.getTaskId());
             }
             break;
@@ -176,11 +176,11 @@ public class LogServiceImpl implements LogService {
 
         Long logId = logRepository.saveLog(LogDto.builder()
                 .logCode(dto.getCode())
-                .createdAt(container.getDate())
+                .createdAt(date)
                 .content(container.getContent())
                 .isDeleted(false)
                 .projectId(dto.getProjectId())
-                .modifiedAt(container.getDate())
+                .modifiedAt(date)
                 .url(container.getUrl()).build());
 
 

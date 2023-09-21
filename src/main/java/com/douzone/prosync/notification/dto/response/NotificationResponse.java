@@ -13,6 +13,6 @@ public class NotificationResponse {
     private boolean isRead;
     private String content;
     private NotificationCode code;
-    private LocalDateTime createdAt;
+    private String createdAt;
     private String url;
 }
