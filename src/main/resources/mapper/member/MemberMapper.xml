@@ -3,8 +3,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.member.mapper.MemberMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="memberId">
-        insert into member (email, password, name,created_at,modified_at,is_deleted,intro,profile_image)
-        values (#{email}, #{password}, #{name},#{createdAt},#{modifiedAt},#{isDeleted},#{intro},#{profileImage})
+        insert into member (email, password, name,created_at,modified_at,is_deleted,intro,profile_image, name_email)
+        values (#{email}, #{password}, #{name},#{createdAt},#{modifiedAt},#{isDeleted},#{intro},#{profileImage}, CONCAT(#{name}, '(', #{email}, ')'))
     </insert>
 
     <update id="updateProfile">
@@ -12,7 +12,8 @@
         set name=#{profileDto.name},
             intro=#{profileDto.intro},
             profile_image=#{profileDto.profileImage},
-            modified_at=#{modifiedAt}
+            modified_at=#{modifiedAt},
+            name_email = CONCAT(#{profileDto.name},'(', SUBSTRING_INDEX(name_email, '(', -1))
         where member_id = #{memberId}
     </update>
 
