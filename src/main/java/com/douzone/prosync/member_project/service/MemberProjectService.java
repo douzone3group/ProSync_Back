@@ -9,6 +9,8 @@ public interface MemberProjectService {
 
     String createInviteLink(Long projectId);
 
+    String findInviteLink(Long projectId);
+
     Long createProjectMember(Long memberId, String inviteCode);
 
     void updateProjectMember(Long projectMemberIdt, MemberProjectRequestDto authority, Long memberId);

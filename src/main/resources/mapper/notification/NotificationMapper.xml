@@ -173,4 +173,8 @@
             #{targetId}
         </foreach>
     </delete>
+
+    <delete id="deleteAllTarget">
+        delete from notification_target where member_id = #{memberId}
+    </delete>
 </mapper>

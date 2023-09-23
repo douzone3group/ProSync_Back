@@ -46,9 +46,19 @@ public class MemberProjectServiceImpl implements MemberProjectService {
     // 프로젝트 초대 링크 생성
     @Override
     public String createInviteLink(Long projectId) {
+        return createInviteCodeForProject(projectId);
+    }
+
+    // 프로젝트 초대 링크 조회
+    @Override
+    public String findInviteLink(Long projectId) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
-        String result = values.get("invite_project:" + projectId);
-        return result != null ? result : createInviteCodeForProject(projectId);
+        String inviteCode = values.get("invite_project:" + projectId);
+
+        if (inviteCode == null) {
+            throw new ApplicationException(ErrorCode.PROJECT_INVITE_CODE_NOT_FOUND);
+        }
+        return inviteCode;
     }
 
     // 프로젝트_회원 저장

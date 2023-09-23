@@ -94,7 +94,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         switch (httpMethod) {
 
             case "GET": {
-                if (requestUri.equals("my-projects") || requestUri.equals("projects")) {
+                if (requestUri.equals("my-projects") || requestUri.equals("projects") || requestUri.equals("projectlog/admin")) {
                     log.debug("{}", "[GET] 1");
                     return;
                 }

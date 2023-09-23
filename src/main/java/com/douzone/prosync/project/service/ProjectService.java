@@ -23,6 +23,6 @@ public interface ProjectService {
 
     PageResponseDto<GetProjectsResponse> findMyProjects(Long memberId, Pageable pageable);
 
-    PageInfo<GetProjectsResponse> findMyProjectsPartOfAdmin(Long memberId, Pageable pageable);
+    PageResponseDto<GetProjectsResponse>  findMyProjectsPartOfAdmin(Long memberId, Pageable pageable);
 
 }

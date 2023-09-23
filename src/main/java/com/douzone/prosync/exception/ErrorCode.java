@@ -36,6 +36,7 @@ public enum ErrorCode {
     // PROJECT_MEMBER
     PROJECT_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "Project Member not founded"),
     PROJECT_MEMBER_EXISTS(HttpStatus.CONFLICT, "Project Member exists"),
+    PROJECT_INVITE_CODE_NOT_FOUND(HttpStatus.NOT_FOUND, "Project code not founded"),
 
     // TASK
     TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "Task not founded"),

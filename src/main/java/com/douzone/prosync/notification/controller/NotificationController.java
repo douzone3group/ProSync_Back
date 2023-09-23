@@ -131,9 +131,8 @@ public class NotificationController {
     /**
      * 알림 삭제 처리 로직(복수)
      */
-    // 알림 읽음 처리 로직
     @DeleteMapping("/notification/delete")
-    @Operation(summary = "알림 삭제 처리", description = "사용자가 선택한 알림들을 삭제합니다.", tags = "notification")
+    @Operation(summary = "선택 알림 삭제 처리", description = "사용자가 선택한 알림들을 삭제합니다.", tags = "notification")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = List.class),
             @ApiResponse(code = 400, message = "notification cant delete")
@@ -146,5 +145,18 @@ public class NotificationController {
         List<NotificationTargetSimpleResponse> response= notificationService.deleteTargetList(dto.getNotificationTargetIds(),Long.parseLong(principal.getName()));
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
+
+    @DeleteMapping("/notification/deleteAll")
+    @Operation(summary = "모든 알림 삭제 처리", description = "사용자의 모든 알림들을 삭제합니다.", tags = "notification")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successfully retrieved"),
+            @ApiResponse(code = 400, message = "notification cant delete")
+    })
+    public ResponseEntity deleteAllNotification(@Parameter(hidden = true) Principal principal) {
+        mapper.deleteAllTarget(Long.parseLong(principal.getName()));
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
 
 }
