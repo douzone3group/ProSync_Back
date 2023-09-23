@@ -35,6 +35,9 @@ public class MemberGetResponse {
     @ApiModelProperty(value = "프로필 이미지", example = "default")
     private String profileImage;
 
+    @ApiModelProperty(value = "닉네임(이메일)", example = "hee(abcd@naver.com)")
+    private String nameEmail;
+
 
     //멤버 관리 페이지에서 멤버 리스트들을 조회할 때 simpleResponse를 작성
     @Getter
@@ -56,6 +59,7 @@ public class MemberGetResponse {
                 .modifiedAt(member.getModifiedAt())
                 .createdAt(member.getCreatedAt())
                 .profileImage(member.getProfileImage())
+                .nameEmail(member.getNameEmail())
                 .build();
     }
 }

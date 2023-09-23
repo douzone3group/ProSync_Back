@@ -39,7 +39,7 @@
 
 
     <select id="getLogList" resultType="LogResponse">
-        select log_id, content, log_code, created_at, modified_at, url
+        select log_id, content, log_code, created_at, url
         from log
         <where>
             project_id=#{condition.projectId} and is_deleted = false
@@ -56,6 +56,7 @@
                 AND content like concat('%',#{condition.content},'%')
             </if>
         </where>
+        order by created_at desc
     </select>
 
     <select id="getLogListCount" resultType="Integer">

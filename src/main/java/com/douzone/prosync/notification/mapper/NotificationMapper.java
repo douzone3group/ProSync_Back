@@ -49,4 +49,6 @@ public interface NotificationMapper {
     void deleteTargetList(List<Long> targetIds);
 
     Integer getNotificationTargetListCount(@Param("targetIds") List<Long> targetIds,@Param("memberId")Long memberId);
+
+    void deleteAllTarget(Long memberId);
 }
