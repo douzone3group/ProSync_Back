@@ -24,7 +24,7 @@ public interface TaskStatusMapper {
 
     @Select("SELECT task_status_id, color, task_status, seq, project_id " +
             "FROM task_status " +
-            "WHERE task_status_id=#{taskStatusId} AND is_deleted IS NULL")
+            "WHERE task_status_id=#{taskStatusId} AND is_deleted IS false")
     Optional<TaskStatusDto.GetResponseDto> findTaskStatus(Long taskStatusId);
 
     int findExistsTaskStatus(Long taskStatusId);

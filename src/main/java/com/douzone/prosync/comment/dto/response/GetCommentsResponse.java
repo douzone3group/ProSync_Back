@@ -3,14 +3,12 @@ package com.douzone.prosync.comment.dto.response;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @ApiModel("[RESPONSE] COMMENT LIST - GET")
 public class GetCommentsResponse {
     @ApiModelProperty(value = "댓글 식별자", example = "1")

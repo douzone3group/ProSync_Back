@@ -174,6 +174,7 @@ public class ProjectServiceImpl implements ProjectService {
     // 프로젝트 리스트 조회
     public PageResponseDto<GetProjectsResponse> findAll(ProjectSearchCond searchCond, Pageable pageable) {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
+
         PageHelper.startPage(pageNum, pageable.getPageSize());
 
         List<GetProjectsResponse> projectList = projectMapper.findAll(searchCond);
