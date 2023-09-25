@@ -67,13 +67,13 @@ public class LogController {
     @GetMapping("/projectlog/{project-id}")
     public ResponseEntity<PageResponseDto<LogResponse>> getLogList(@Parameter(example = "1", description = "프로젝트 식별자", required = true)
                                                                     @PathVariable("project-id") Long projectId,
-                                                                    @RequestParam(required = false) LogCode logCode,
+                                                                    @RequestParam(required = false) LogCode code,
                                                                    @RequestParam(required = false) LocalDateTime startDate,
                                                                    @RequestParam(required = false) LocalDateTime endDate,
                                                                    @RequestParam(required = false) String content,
                                                                    @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable){
 
-        LogSearchCondition condition = new LogSearchCondition(projectId, logCode, startDate, endDate, content);
+        LogSearchCondition condition = new LogSearchCondition(projectId, code, startDate, endDate, content);
 
         PageResponseDto<LogResponse> logPageList = logService.getLogPageList(condition, pageable);
 
