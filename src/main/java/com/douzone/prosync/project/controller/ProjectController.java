@@ -133,7 +133,6 @@ public class ProjectController {
             @RequestParam(required = false) Boolean bookmark,
             @RequestParam(required = false) String sort,
             Principal principal) {
-
         Long memberId = principal != null ? Long.parseLong(principal.getName()) : null;
         ProjectSearchCond searchCond = new ProjectSearchCond(search, bookmark, sort, memberId);
         PageResponseDto<GetProjectsResponse> response = projectService.findAll(searchCond, pageable);
