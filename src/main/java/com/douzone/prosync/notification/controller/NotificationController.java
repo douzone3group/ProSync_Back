@@ -59,8 +59,8 @@ public class NotificationController {
             @ApiResponse(code = 503, message = "server connection error")
     })
     @Transactional
-    public SseEmitter subscribe(Principal principal) {
-        return notificationService.subscribe(Long.parseLong(principal.getName()));
+    public SseEmitter subscribe(@PathVariable("id") Long memberId) {
+        return notificationService.subscribe(memberId);
     }
 
 
@@ -78,14 +78,14 @@ public class NotificationController {
     })
     @Transactional(readOnly = true)
     public ResponseEntity<PageResponseDto<NotificationResponse>> notificationPageList(
-            @RequestParam(required = false) NotificationCode notiCode,
+            @RequestParam(required = false) NotificationCode code,
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam(required = false) String content,
             @Parameter(hidden = true) Principal principal,
             @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable) {
 
-        NotificationListRequestDto requestDto = new NotificationListRequestDto(notiCode, startDate, endDate, content);
+        NotificationListRequestDto requestDto = new NotificationListRequestDto(code, startDate, endDate, content);
         PageResponseDto<NotificationResponse> notificationPageList = notificationService.getNotificationPageList(requestDto, pageable, principal);
 
         return new ResponseEntity<>(notificationPageList, HttpStatus.OK);
@@ -156,6 +156,36 @@ public class NotificationController {
     public ResponseEntity deleteAllNotification(@Parameter(hidden = true) Principal principal) {
         mapper.deleteAllTarget(Long.parseLong(principal.getName()));
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    /**
+     * 모든 알림 읽기 처리
+     */
+    // 알림 읽음 처리 로직
+    @PatchMapping("/notification/allRead")
+    @Operation(summary = "모든 알림 읽음 처리", description = "사용자의 모든 알림을 읽음으로 업데이트합니다.", tags = "notification")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successfully retrieved"),
+            @ApiResponse(code = 400, message = "notification cant update"),
+    })
+    public ResponseEntity updateAllNotificationListIsRead(@Parameter(hidden = true) Principal principal) {
+
+        mapper.updateAllNotificationIsRead(Long.parseLong(principal.getName()));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+
+
+    /**
+     * 안읽은 알림 갯수 조회
+     */
+    @Operation(summary = "안읽은 알림 갯수 조회", description = "안읽은 알림 갯수를 조회함", tags = "notification")
+    @GetMapping("/notification/count")
+    public ResponseEntity getNotificationCountIsReadFalse(@Parameter(hidden = true) Principal principal){
+
+        Integer count = mapper.getNotificationCountIsReadFalse(Long.parseLong(principal.getName()));
+        return new ResponseEntity<>(count, HttpStatus.OK);
     }
 
 

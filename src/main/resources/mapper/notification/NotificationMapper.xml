@@ -64,6 +64,12 @@
         </if>
     </update>
 
+    <update id="updateAllNotificationIsRead">
+        update notification_target
+        set is_read = true
+        where member_id = #{memberId}
+    </update>
+
 
     <update id="update">
         update notification
@@ -145,6 +151,12 @@
         <foreach collection="targetIds" item="targetId" open="(" close=")" separator=",">
         #{targetId}
         </foreach>
+    </select>
+
+    <select id="getNotificationCountIsReadFalse" resultType="int">
+        select count(*)
+        from notification_target
+        where member_id= #{memberId} and is_read is false;
     </select>
 
     <delete id="deleteNotificationTarget">
