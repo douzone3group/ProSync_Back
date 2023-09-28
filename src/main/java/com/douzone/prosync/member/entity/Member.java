@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -33,16 +35,19 @@ public class Member {
     private String name;
 
     @ApiModelProperty(value = "생성일자", example = "2023-01-23")
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @ApiModelProperty(value = "수정일자", example = "2023-12-31")
-    private Timestamp modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @ApiModelProperty(value = "탈퇴 여부", example = "false")
     private boolean isDeleted;
 
     @ApiModelProperty(value = "회원 소개글", example = "hi")
     private String intro;
+
+    @ApiModelProperty(value = "닉네임(이메일)", example = "hee(abcd@naver.com)")
+    private String nameEmail;
 
 
 

@@ -78,9 +78,9 @@ public class MemberServiceImpl implements MemberService{
      */
     public Member signup(MemberPostDto memberDto) {
         // 중복검사
-        if (duplicateInspection(memberDto.getEmail())) {
-            throw new ApplicationException(ErrorCode.DUPLICATED_USER_ID);
-        }
+//        if (duplicateInspection(memberDto.getEmail())) {
+//            throw new ApplicationException(ErrorCode.DUPLICATED_USER_ID);
+//        }
         MemberDto member = memberDto.of(passwordEncoder.encode(memberDto.getPassword()));
         return memberRepository.save(member);
     }

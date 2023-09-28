@@ -14,6 +14,7 @@ import com.douzone.prosync.file.entity.File;
 import com.douzone.prosync.file.entity.FileInfo;
 import com.douzone.prosync.file.service.FileService;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
+import com.douzone.prosync.member_project.dto.MemberProjectSearchCond;
 import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.notification.dto.NotificationConditionDto;
@@ -174,6 +175,7 @@ public class ProjectServiceImpl implements ProjectService {
     // 프로젝트 리스트 조회
     public PageResponseDto<GetProjectsResponse> findAll(ProjectSearchCond searchCond, Pageable pageable) {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
+
         PageHelper.startPage(pageNum, pageable.getPageSize());
 
         List<GetProjectsResponse> projectList = projectMapper.findAll(searchCond);
@@ -194,7 +196,8 @@ public class ProjectServiceImpl implements ProjectService {
         PageInfo<GetProjectsResponse> pageInfo = new PageInfo<>(projects);
 
         projects.forEach(project -> {
-            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(project.getProjectId());
+            MemberProjectSearchCond searchCond = new MemberProjectSearchCond(project.getProjectId(), null);
+            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(searchCond);
             project.setProjectMembers(projectMembers);
         });
 
@@ -203,15 +206,11 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 내 프로젝트 중 관리자인 프로젝트만 조회
     @Override
-    public PageInfo<GetProjectsResponse> findMyProjectsPartOfAdmin(Long memberId, Pageable pageable) {
+    public PageResponseDto<GetProjectsResponse> findMyProjectsPartOfAdmin(Long memberId, Pageable pageable) {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
         PageHelper.startPage(pageNum, pageable.getPageSize());
         List<GetProjectsResponse> myProjects = projectMapper.findByMemberIdPartOfAdmin(memberId);
-        myProjects = myProjects.stream().map(project -> {
-            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(project.getProjectId());
-            project.setProjectMembers(projectMembers);
-            return project;
-        }).collect(Collectors.toList());
-        return new PageInfo<>(myProjects);
+        PageInfo<GetProjectsResponse> pageInfo = new PageInfo<>(myProjects);
+        return new PageResponseDto<>(pageInfo);
     }
 }

@@ -12,16 +12,9 @@ import com.douzone.prosync.log.dto.response.LogSimpleResponse;
 import com.douzone.prosync.log.repository.LogRepository;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
-import com.douzone.prosync.member_project.entity.MemberProject;
-import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.notification.dto.ContentUrlContainer;
-import com.douzone.prosync.notification.dto.response.NotificationResponse;
-import com.douzone.prosync.project.dto.request.ProjectPatchDto;
-import com.douzone.prosync.project.dto.response.GetProjectResponse;
 import com.douzone.prosync.project.entity.Project;
-import com.douzone.prosync.project.service.ProjectService;
 import com.douzone.prosync.searchcondition.LogSearchCondition;
-import com.douzone.prosync.searchcondition.NotificationSearchCondition;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -58,36 +51,36 @@ public class LogServiceImpl implements LogService {
         ContentUrlContainer container = new ContentUrlContainer();
 
         LocalDateTime date = LocalDateTime.now();
-        container.setDate(date);
+
 
         Member fromMember = memberRepository.findById(dto.getFromMemberId()).orElse(null);
 
         switch (code) {
             case "업무삭제": {
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무를 삭제하셨습니다.");
-                container.setUrl("/notificationList/projects/" +dto.getProjectId());
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무를 삭제하셨습니다.");
+                container.setUrl("/notification/projects/" +dto.getProjectId());
             }
             break;
             case "업무지정": {
 
                 List<Member> memberList = memberRepository.getMemberList(dto.getMemberIds());
 
-                StringBuffer membersName = null;
+                StringBuffer membersName = new StringBuffer();
 
                 for (int i = 0; i < memberList.size(); i++) {
                     if (i == 0) {
-                        membersName.append(memberList.get(i).getName());
+                        membersName.append(memberList.get(i).getNameEmail());
                     } else {
-                        membersName.append(", " + memberList.get(i).getName());
+                        membersName.append(", " + memberList.get(i).getNameEmail());
                     }
                 }
 
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + membersName.toString() + " ] 님을 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무로 배정하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + membersName + " ] 님을 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무로 배정하셨습니다.");
                 container.setUrl("/projects/" +dto.getProjectId()+"/tasks/" + dto.getTaskId());
             }
             break;
             case "업무수정": {
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무를 수정하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무를 수정하셨습니다.");
                 container.setUrl("/projects/"+dto.getProjectId()+"/tasks/" + dto.getTaskId());
             }
             break;
@@ -95,65 +88,64 @@ public class LogServiceImpl implements LogService {
 
                 List<Member> memberList = memberRepository.getMemberList(dto.getMemberIds());
 
-                StringBuffer membersName = null;
+                StringBuffer membersName = new StringBuffer();;
 
                 for (int i = 0; i < memberList.size(); i++) {
                     if (i == 0) {
-                        membersName.append(memberList.get(i).getName());
+                        membersName.append(memberList.get(i).getNameEmail());
                     } else {
-                        membersName.append(", " + memberList.get(i).getName());
+                        membersName.append(", " + memberList.get(i).getNameEmail());
                     }
                 }
 
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + membersName.toString() + " ] 님을 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무에서 제외하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + membersName + " ] 님을 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무에서 제외하셨습니다.");
                 container.setUrl("/projects/"+dto.getProjectId()+"/tasks/" + dto.getTaskId());
             }
             break;
             case "프로젝트지정": {
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트의 구성원으로 수락하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트의 구성원으로 수락하셨습니다.");
                 container.setUrl("/projects/" + dto.getProjectId());
             }
             break;
             case "프로젝트제외": {
-
-
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + dto.getMemberId() + " ] 님을 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트의 구성원에서 제외하셨습니다.");
+                Member member= memberRepository.findById(dto.getMemberId()).get();
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + member.getNameEmail() + " ] 님을 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트의 구성원에서 제외하셨습니다.");
                 container.setUrl("/projects/" + dto.getProjectId());
             }
             break;
             case "프로젝트탈퇴": {
 
 
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트를 탈퇴하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트를 탈퇴하셨습니다.");
                 container.setUrl("/projects/" + dto.getProjectId());
             }
             break;
             case "프로젝트수정": {
 
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트에 대한 정보를 수정하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트에 대한 정보를 수정하셨습니다.");
                 container.setUrl("/projects/" + dto.getProjectId());
             }
             break;
             case "프로젝트삭제": {
 
-                container.setContent("[ "+fromMember.getName() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트를 삭제하셨습니다.");
-                container.setUrl("/notificationList/projects/" +dto.getProjectId());
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트를 삭제하셨습니다.");
+                container.setUrl("/notification/projects/" +dto.getProjectId());
             }
             break;
             case "댓글추가": {
-                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 추가하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 추가하셨습니다.");
                 container.setUrl("/projects/"+dto.getProjectId()+"/tasks/"+dto.getTaskId());
             }
             break;
             case "댓글삭제": {
 
-                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 삭제하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 삭제하셨습니다.");
                 container.setUrl("/projects/"+dto.getProjectId()+"/tasks/"+dto.getTaskId());
             }
             break;
             case "댓글수정": {
 
-                container.setContent("[ "+fromMember.getName()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 수정하셨습니다.");
+                container.setContent("[ "+fromMember.getNameEmail()+" ] 님이 [ "+ dto.getSubject()+" ] 업무에 댓글을 수정하셨습니다.");
                 container.setUrl("/projects/"+dto.getProjectId()+"/tasks/"+dto.getTaskId());
             }
             break;
@@ -163,10 +155,10 @@ public class LogServiceImpl implements LogService {
                 Member member = memberRepository.findById(dto.getMemberId()).orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
                 if (dto.getAuthority().name().equals("ADMIN")) {
-                    container.setContent("프로젝트의 관리자가 "+"[ "+fromMember.getName()+" ] 님에서 [ "+member.getName()+ "] 님으로 변경되었습니다.");
+                    container.setContent("프로젝트의 관리자가 "+"[ "+fromMember.getNameEmail()+" ] 님에서 [ "+member.getNameEmail()+ "] 님으로 변경되었습니다.");
                     container.setUrl("/projects/" + dto.getProjectId());
                 } else {
-                    container.setContent("[ "+member.getName()+" ] 님의 권한이 [ "+ dto.getAuthority().name()+" ] 으로 변경되었습니다.");
+                    container.setContent("[ "+member.getNameEmail()+" ] 님의 권한이 [ "+ dto.getAuthority().name()+" ] 으로 변경되었습니다.");
                     container.setUrl("/projects/" + dto.getProjectId());
                 }
             }
@@ -176,11 +168,11 @@ public class LogServiceImpl implements LogService {
 
         Long logId = logRepository.saveLog(LogDto.builder()
                 .logCode(dto.getCode())
-                .createdAt(container.getDate())
+                .createdAt(date)
                 .content(container.getContent())
                 .isDeleted(false)
                 .projectId(dto.getProjectId())
-                .modifiedAt(container.getDate())
+                .modifiedAt(date)
                 .url(container.getUrl()).build());
 
 
@@ -217,6 +209,7 @@ public class LogServiceImpl implements LogService {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
 
         PageHelper.startPage(pageNum, pageable.getPageSize());
+        System.out.println("로그 페이지 리스트 검색");
 
         List<LogResponse> logResponseList = logRepository.getLogList(condition);
 

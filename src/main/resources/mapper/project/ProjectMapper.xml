@@ -39,11 +39,14 @@
     </update>
 
     <select id="findAll">
-        select p.project_id, p.title, p.start_date, p.end_date, p.created_at, p.project_image, m.member_id, m.name, m.profile_image
+        select p.project_id, p.title, p.start_date, p.end_date, p.created_at, p.project_image, m.member_id, m.name, m.profile_image, b.bookmark_id
         from project p
         join member_project mp on mp.project_id = p.project_id
         join member m on mp.member_id = m.member_id
         join project_authority pa on mp.authority_id = pa.authority_id
+        <if test="bookmark ==null or bookmark ==''">
+            left join bookmark b on b.project_id = p.project_id
+        </if>
         <if test="bookmark != null and bookmark == true">
             join bookmark b on b.project_id = p.project_id
         </if>
@@ -83,19 +86,52 @@
     </select>
 
     <select id="findByMemberIdPartOfAdmin">
-        select p.project_id, p.title, p.start_date, p.end_date, p.progress, p.created_at, p.project_image, m.member_id, m.name, m.profile_image
+        select p.project_id, p.title, p.start_date, p.end_date, p.created_at, p.project_image, m.member_id, m.name, m.profile_image
         from project p
                  join member_project mp on mp.project_id = p.project_id
                  join member m on mp.member_id = m.member_id
                  join project_authority pa on mp.authority_id = pa.authority_id
-        where pa.authority = 'ADMIN' and p.project_id in (select project_id from member_project where member_id = #{memberId}) and m.member_id = #{memberId}
-        order by p.project_id desc
+        where pa.authority = 'ADMIN' and p.project_id in (select project_id from member_project where member_id = #{memberId}) and mp.status='ACTIVE' and p.is_deleted=false order by p.title asc
     </select>
 
     <select id="findMembersInProject">
         select member_id
         from member_project
         where project_id = #{projectId} and status = 'ACTIVE'
+    </select>
+
+    <select id="findProjectWithBookmarkAll">
+        select p.project_id, p.title, p.start_date, p.end_date, p.project_image, m.member_id, m.name, m.profile_image, b.bookmark_id
+        from project p
+        join member_project mp on mp.project_id = p.project_id
+        join member m on mp.member_id = m.member_id
+        join project_authority pa on mp.authority_id = pa.authority_id
+
+        left join bookmark b on b.project_id = p.project_id
+
+        <where>
+            (mp.member_id = #{memberId} or p.is_public = true)
+            and (p.is_deleted is false and pa.authority = 'ADMIN')
+            <if test="search != null and search != ''">
+                and ((p.title like concat('%', #{search}, '%'))
+                or (m.name like concat('%', #{search}, '%') and pa.authority = 'admin'))
+            </if>
+            <if test="bookmark != null and bookmark == true">
+                and b.member_id = #{memberId}
+            </if>
+
+            <if test="sort != null and sort == 'endDate'">
+                and STR_TO_DATE(end_date, '%Y-%m-%d') >= CURRENT_DATE
+            </if>
+        </where>
+        <choose>
+            <when test="sort == 'endDate'">
+                order by ABS(DATEDIFF(CURRENT_DATE, STR_TO_DATE(end_date, '%Y-%m-%d')))
+            </when>
+            <otherwise>
+                order by project_id desc
+            </otherwise>
+        </choose>
     </select>
 
 

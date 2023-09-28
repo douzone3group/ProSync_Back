@@ -40,7 +40,20 @@ public interface NotificationMapper {
 
     Integer getNotificationListCount(Long memberId);
 
-    List<NotificationTarget> getNotificationTagetListByNotificationId(Long notificationId);
+    List<NotificationTarget> getNotificationTargetListByNotificationId(Long notificationId);
 
     void deleteSchedulingTarget(Integer durationDate);
+
+    void updateTargetListIsRead(List<Long> targetIds);
+
+    void updateAllNotificationIsRead(Long memberId);
+
+    void deleteTargetList(List<Long> targetIds);
+
+    Integer getNotificationTargetListCount(@Param("targetIds") List<Long> targetIds,@Param("memberId")Long memberId);
+
+    Integer getNotificationCountIsReadFalse(Long memberId);
+
+    void deleteAllTarget(Long memberId);
+
 }

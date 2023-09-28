@@ -59,6 +59,10 @@ public enum ErrorCode {
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Notification not founded"),
     NOTIFICATION_CANT_READ(HttpStatus.FORBIDDEN, "Notification not read"),
 
+    NOTIFICATION_CANT_UPDATE(HttpStatus.BAD_REQUEST, "Notification cant update"),
+
+    NOTIFICATION_CANT_DELETE(HttpStatus.BAD_REQUEST, "Notification cant delete"),
+
 
     // LOG
 
