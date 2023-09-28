@@ -20,4 +20,11 @@
         order by p.created_at DESC
     </select>
 
+    <select id="findById">
+        select b.*
+        from bookmark b
+        inner join project p on b.project_id = p.project_id
+        where b.project_id = #{projectId} and b.member_id=#{memberId}
+    </select>
+
 </mapper>

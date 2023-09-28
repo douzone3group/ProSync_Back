@@ -40,6 +40,9 @@ public class GetProjectsResponse {
     @ApiModelProperty(example = "프로젝트 admin 프로필이미지")
     private String profileImage;
 
+    @ApiModelProperty(example = "북마크 아이디")
+    private Long bookmarkId;
+
     private List<MemberProjectResponseDto> projectMembers;
 
     public void setProjectMembers(List<MemberProjectResponseDto> projectMembers) {
