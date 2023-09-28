@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .mvcMatchers("/api/v1/members","/api/v1/login", "/api/v1/send_verification","/api/v1/verify_code", "/api/v1/idcheck").permitAll()
                 .mvcMatchers("/v2/api-docs","/favicon.ico","/swagger-ui/index.html").permitAll()
                 .mvcMatchers("/**/*.css", "/**/*.js", "/**/*.png","/swagger-ui/**","/swagger-resources/**").permitAll()
-                .mvcMatchers("/api/v1/subscribe/**", "/api/v1/bookmark/**").permitAll()
+                .mvcMatchers("/api/v1/subscribe/**", "/api/v1/bookmark/**", "/api/v1/bookmark-list/**").permitAll()
                 .anyRequest().authenticated();
 
         http

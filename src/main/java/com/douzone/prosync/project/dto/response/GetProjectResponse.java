@@ -17,7 +17,7 @@ public class GetProjectResponse{
     private Long projectId;
 
     @ApiModelProperty(example = "프로젝트 이름")
-    private String name;
+    private String title;
 
     @ApiModelProperty(example = "프로젝트 인트로")
     private String intro;
@@ -43,7 +43,7 @@ public class GetProjectResponse{
     public static GetProjectResponse of(Project project) {
         return GetProjectResponse.builder()
                 .projectId(project.getProjectId())
-                .name(project.getTitle())
+                .title(project.getTitle())
                 .intro(project.getIntro())
                 .createdAt(project.getCreatedAt().toString())
                 .startDate(project.getStartDate())

@@ -1,15 +1,21 @@
 package com.douzone.prosync.member_project.controller;
 
+import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.common.SingleResponseDto;
 import com.douzone.prosync.member_project.dto.MemberProjectRequestDto;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
+import com.douzone.prosync.member_project.dto.MemberProjectSearchCond;
 import com.douzone.prosync.member_project.service.MemberProjectService;
+import com.douzone.prosync.project.dto.request.ProjectSearchCond;
+import com.douzone.prosync.project.dto.response.GetProjectsResponse;
 import com.douzone.prosync.project.dto.response.ProjectInviteDto;
 import com.douzone.prosync.project.dto.response.ProjectSimpleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +25,8 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+
+import static com.douzone.prosync.constant.ConstantPool.DEFAULT_PAGE_SIZE;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,13 +38,23 @@ public class MemberProjectController {
     private final MemberProjectService memberProjectService;
 
     /**
-     * 프로젝트 초대 코드 생성 및 조회
+     * 프로젝트 초대 코드 생성
      * ADMIN
      */
-    @GetMapping("/projects/{project-id}/invitation")
-    @Operation(summary = "초대 링크 조회", description = "프로젝트 회원으로 등록을 위한 초대 링크를 조회합니다.", tags = "member_project")
+    @PostMapping("/projects/{project-id}/invitation")
+    @Operation(summary = "초대 링크 조회", description = "프로젝트 회원으로 등록을 위한 초대 링크를 생합니다.", tags = "member_project")
     public ResponseEntity<SingleResponseDto<ProjectInviteDto>> createInviteLink(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId) {
         String inviteCode = memberProjectService.createInviteLink(projectId);
+        return new ResponseEntity(new SingleResponseDto<>(new ProjectInviteDto(projectId, inviteCode)), HttpStatus.OK);
+    }
+
+    /**
+     * 프로젝트 초대 코드 조회
+     */
+    @GetMapping("/projects/{project-id}/invitation")
+    @Operation(summary = "초대 링크 조회", description = "프로젝트 회원으로 등록을 위한 초대 링크를 생성합니다.", tags = "member_project")
+    public ResponseEntity<SingleResponseDto<ProjectInviteDto>> getInviteLink(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId) {
+        String inviteCode = memberProjectService.findInviteLink(projectId);
         return new ResponseEntity(new SingleResponseDto<>(new ProjectInviteDto(projectId, inviteCode)), HttpStatus.OK);
     }
 
@@ -47,7 +65,7 @@ public class MemberProjectController {
     @PostMapping("/invitation/{invite-code}")
     @Operation(summary = "프로젝트 회원 등록", description = "초대 코드를 확인하여 해당 프로젝트 회원으로 등록합니다 (기본권한 : READER)", tags = "member_project")
     public ResponseEntity<SingleResponseDto<ProjectSimpleResponse>> postProjectMember(@Parameter(description = "초대코드", required = true, example = "83029ab18150488998bfdf07e4ec4d42") @PathVariable("invite-code") String inviteCode,
-                                            @Parameter(hidden = true) @ApiIgnore Principal principal) {
+                                                                                      @Parameter(hidden = true) @ApiIgnore Principal principal) {
         Long projectId = memberProjectService.createProjectMember(Long.parseLong(principal.getName()), inviteCode);
         return new ResponseEntity(new SingleResponseDto<>(new ProjectSimpleResponse(projectId)), HttpStatus.OK);
     }
@@ -84,7 +102,7 @@ public class MemberProjectController {
     @GetMapping("/projects/{project-id}/members/{member-id}")
     @Operation(summary = "프로젝트 회원 조회", description = "프로젝트 회원을 조회합니다.", tags = "member_project")
     public ResponseEntity<MemberProjectResponseDto> getProjectMember(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId,
-                                           @Parameter(description = "회원식별자", required = true, example = "1") @PathVariable("member-id") Long memberId) {
+                                                                     @Parameter(description = "회원식별자", required = true, example = "1") @PathVariable("member-id") Long memberId) {
         MemberProjectResponseDto response = memberProjectService.findProjectMember(projectId, memberId);
         return new ResponseEntity(response, HttpStatus.OK);
     }
@@ -95,9 +113,16 @@ public class MemberProjectController {
      */
     @GetMapping("/projects/{project-id}/members")
     @Operation(summary = "프로젝트 회원 목록 조회", description = "프로젝트 회원이 프로젝트 회원 목록을 조회합니다.", tags = "member_project")
-    public ResponseEntity<SingleResponseDto<List<MemberProjectResponseDto>>> getProjectMembers(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId) {
-        List<MemberProjectResponseDto> projectMembers = memberProjectService.findProjectMembers(projectId);
-        return new ResponseEntity(new SingleResponseDto<>(projectMembers), HttpStatus.OK);
+    public ResponseEntity<PageResponseDto<GetProjectsResponse>> getProjectMembers(
+            @PathVariable("project-id") Long projectId,
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable,
+            @RequestParam(required = false) String search
+
+    ) {
+
+        MemberProjectSearchCond searchCond = new MemberProjectSearchCond(projectId, search);
+        PageResponseDto<MemberProjectResponseDto> response = memberProjectService.findProjectMembers(searchCond,pageable);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     /**
@@ -108,6 +133,7 @@ public class MemberProjectController {
     @Operation(summary = "프로젝트에서 나가기", description = "프로젝트 회원이 프로젝트에서 나갑니다. admin일 경우 금지되며, 권한 위임 후 나갈 수 있습니다.", tags = "member_project")
     public ResponseEntity deleteProjectMemberBySelf(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId,
                                                     @Parameter(hidden = true) @ApiIgnore Principal principal) {
+
         memberProjectService.exitProjectMember(projectId, getMemberId(principal));
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
