@@ -112,6 +112,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
                     .code(LogCode.CHANGE_AUTHORITY)
                     .projectId(findProjectId)
                     .memberId(memberId)
+                    .authority(ProjectMemberAuthority.READER)
                     .build());
 
         } else {
@@ -198,7 +199,6 @@ public class MemberProjectServiceImpl implements MemberProjectService {
                     .authority(ProjectMemberAuthority.WRITER).build());
 
 
-
             // 로그 저장
             logService.saveLog(LogConditionDto.builder()
                     .fromMemberId(memberId)
@@ -228,7 +228,6 @@ public class MemberProjectServiceImpl implements MemberProjectService {
                     .projectId(memberProject.getProjectId())
                     .authority(dto.getAuthority()).build());
         }
-
 
 
     }

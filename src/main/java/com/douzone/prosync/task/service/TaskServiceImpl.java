@@ -97,15 +97,17 @@ public class TaskServiceImpl implements TaskService {
                     .map(TaskMemberResponseDto::getMemberId)
                     .collect(Collectors.toList());
 
-            // 알림 저장 및 전달
-            notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                    .fromMemberId(memberId)
-                    .code(NotificationCode.TASK_MODIFICATION)
-                    .memberIds(memberIds)
-                    .projectId(findTask.getProjectId())
-                    .taskId(taskId)
-                    .subject(findTask)
-                    .build());
+            if (memberIds.size()>0) {
+                // 알림 저장 및 전달
+                notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                        .fromMemberId(memberId)
+                        .code(NotificationCode.TASK_MODIFICATION)
+                        .memberIds(memberIds)
+                        .projectId(findTask.getProjectId())
+                        .taskId(taskId)
+                        .subject(findTask)
+                        .build());
+            }
         }
 
 

@@ -1,7 +1,7 @@
 package com.douzone.prosync.config;
 
 import com.douzone.prosync.authorization.filter.CustomAuthorizationFilter;
-import com.douzone.prosync.redis.RedisService;
+import com.douzone.prosync.security.redis.RedisService;
 import com.douzone.prosync.security.jwt.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

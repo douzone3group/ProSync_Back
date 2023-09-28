@@ -116,14 +116,16 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<Long> memberIds = projectMapper.findMembersInProject(project.getProjectId());
 
+        if (memberIds.size() > 0) {
+            // 알림 저장 및 전달
+            notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                    .fromMemberId(memberId)
+                    .code(NotificationCode.PROJECT_MODIFICATION)
+                    .memberIds(memberIds)
+                    .projectId(dto.getProjectId())
+                    .subject(project).build());
+        }
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.PROJECT_MODIFICATION)
-                .memberIds(memberIds)
-                .projectId(dto.getProjectId())
-                .subject(project).build());
 
         // 로그 저장
         logService.saveLog(LogConditionDto.builder()
@@ -137,7 +139,7 @@ public class ProjectServiceImpl implements ProjectService {
     // 프로젝트 삭제 (소프트)
     public void delete(Long projectId, Long memberId) {
 
-        Project project = projectMapper.findById(projectId).orElseThrow(()-> new ApplicationException(ErrorCode.PROJECT_NOT_FOUND));
+        Project project = projectMapper.findById(projectId).orElseThrow(() -> new ApplicationException(ErrorCode.PROJECT_NOT_FOUND));
         List<Long> memberIds = projectMapper.findMembersInProject(project.getProjectId());
 
         Integer row = projectMapper.deleteProject(projectId);
@@ -147,13 +149,15 @@ public class ProjectServiceImpl implements ProjectService {
         }
         fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.PROJECT, projectId));
 
+        if (memberIds.size() > 0) {
+            // 알림 저장 및 전달
+            notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                    .fromMemberId(memberId)
+                    .code(NotificationCode.PROJECT_REMOVE)
+                    .memberIds(memberIds)
+                    .subject(project).build());
+        }
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.PROJECT_REMOVE)
-                .memberIds(memberIds)
-                .subject(project).build());
 
         // 로그 저장
         logService.saveLog(LogConditionDto.builder()
