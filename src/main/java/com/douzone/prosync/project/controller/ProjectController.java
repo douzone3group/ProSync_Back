@@ -8,6 +8,7 @@ import com.douzone.prosync.project.dto.response.GetProjectResponse;
 import com.douzone.prosync.project.dto.response.GetProjectsResponse;
 import com.douzone.prosync.project.dto.response.ProjectSimpleResponse;
 import com.douzone.prosync.project.entity.Project;
+import com.douzone.prosync.project.entity.ProjectWithBookmark;
 import com.douzone.prosync.project.service.ProjectService;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -156,6 +157,8 @@ public class ProjectController {
         PageResponseDto<GetProjectsResponse> response = projectService.findMyProjects(Long.parseLong(principal.getName()), pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
 
     private Long getMemberId(Principal principal) {
         return Optional.ofNullable(principal)

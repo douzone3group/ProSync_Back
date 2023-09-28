@@ -20,15 +20,15 @@ spring:
   redis:
     host: localhost
     port: 6379
-#    password:
+  #    password:
 
 
 
   datasource:
-    url: ENC(4o/6rgp0QjJoDKpp2zOxPNr80QdA79UgfkkBk9WQD+DCX0YdAIhxLbMbCGb8k1yRnBLHHo1hi4lOkB6oUlm/P102mZmLFmL0Bszghc+N848326UOVuON5Ub/f2f9frGcZ72GpWRmpvacivgoscnNJ+WfQHTLUrFUnj/i3d2M8qc7WxhFSTbUAf9EBhuKwyZK)
+    url: ENC(IxrqhNvnYdVreIqHQng0V01j1D1d0B/q9v6qXaR7JDbkpcZtH0Dkf4c8PjnlFLrmjWhS2YnO4TIL4ppj2mKskrJZbVGL6McAu1WBAK6Iszv9MBldkBm2XqQVJehnpau/4gu5T5rz3ia9zfJAvKX8Is/ubwQi4guT4Mxt9gKi+3Id83S4CS1MhQ==)
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ENC(JW+1Ds7HWn/ge0FVTQ8IeA==)
-    password: ENC(K+Bqh7pBmpmTm0g+mWGTwG+S5oylxSDe)
+    password: ENC(oNm+ZM3M/5zfyPN4u996lYUjevsy4u25)
     schema:
       classpath: schema.sql
   sql:

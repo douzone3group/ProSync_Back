@@ -14,6 +14,7 @@ import com.douzone.prosync.file.entity.File;
 import com.douzone.prosync.file.entity.FileInfo;
 import com.douzone.prosync.file.service.FileService;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
+import com.douzone.prosync.member_project.dto.MemberProjectSearchCond;
 import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.notification.dto.NotificationConditionDto;
@@ -195,7 +196,8 @@ public class ProjectServiceImpl implements ProjectService {
         PageInfo<GetProjectsResponse> pageInfo = new PageInfo<>(projects);
 
         projects.forEach(project -> {
-            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(project.getProjectId());
+            MemberProjectSearchCond searchCond = new MemberProjectSearchCond(project.getProjectId(), null);
+            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(searchCond);
             project.setProjectMembers(projectMembers);
         });
 

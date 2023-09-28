@@ -5,6 +5,7 @@ import com.douzone.prosync.project.dto.request.ProjectPostDto;
 import com.douzone.prosync.project.dto.request.ProjectSearchCond;
 import com.douzone.prosync.project.dto.response.GetProjectsResponse;
 import com.douzone.prosync.project.entity.Project;
+import com.douzone.prosync.project.entity.ProjectWithBookmark;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -32,5 +33,6 @@ public interface ProjectMapper {
     List<GetProjectsResponse> findByMemberIdPartOfAdmin(Long memberId);
 
     List<Long> findMembersInProject(Long projectId);
+
 
 }
