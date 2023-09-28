@@ -72,19 +72,24 @@ public class CommentServiceImpl implements CommentService {
 
         // 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
         List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskDto.getTaskId());
-        List<Long> memberIds = taskMembers.stream()
-                .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProject.MemberProjectStatus.ACTIVE))
-                .map(TaskMemberResponseDto::getMemberId)
-                .collect(Collectors.toList());
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(dto.getMemberId())
-                .code(COMMENT_ADD)
-                .memberIds(memberIds)
-                .projectId(projectId)
-                .taskId(taskDto.getTaskId())
-                .subject(taskDto.getTitle()).build());
+        if (taskMembers.size() > 0) {
+            List<Long> memberIds = taskMembers.stream()
+                    .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProject.MemberProjectStatus.ACTIVE))
+                    .map(TaskMemberResponseDto::getMemberId)
+                    .collect(Collectors.toList());
+
+            if (memberIds.size() > 0) {
+                // 알림 저장 및 전달
+                notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                        .fromMemberId(dto.getMemberId())
+                        .code(COMMENT_ADD)
+                        .memberIds(memberIds)
+                        .projectId(projectId)
+                        .taskId(taskDto.getTaskId())
+                        .subject(taskDto.getTitle()).build());
+            }
+        }
 
 
         // 로그 저장
@@ -115,19 +120,24 @@ public class CommentServiceImpl implements CommentService {
 
         // 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
         List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskDto.getTaskId());
-        List<Long> memberIds = taskMembers.stream()
-                .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProject.MemberProjectStatus.ACTIVE))
-                .map(TaskMemberResponseDto::getMemberId)
-                .collect(Collectors.toList());
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.COMMENT_MODIFICATION)
-                .memberIds(memberIds)
-                .taskId(taskDto.getTaskId())
-                .projectId(taskDto.getProjectId())
-                .subject(taskDto.getTitle()).build());
+        if (taskMembers.size() > 0) {
+            List<Long> memberIds = taskMembers.stream()
+                    .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProject.MemberProjectStatus.ACTIVE))
+                    .map(TaskMemberResponseDto::getMemberId)
+                    .collect(Collectors.toList());
+
+            if (memberIds.size() > 0) {
+                // 알림 저장 및 전달
+                notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                        .fromMemberId(memberId)
+                        .code(NotificationCode.COMMENT_MODIFICATION)
+                        .memberIds(memberIds)
+                        .taskId(taskDto.getTaskId())
+                        .projectId(taskDto.getProjectId())
+                        .subject(taskDto.getTitle()).build());
+            }
+        }
 
 
         // 로그 저장
@@ -154,19 +164,26 @@ public class CommentServiceImpl implements CommentService {
 
         // 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
         List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskDto.getTaskId());
-        List<Long> memberIds = taskMembers.stream()
-                .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProject.MemberProjectStatus.ACTIVE))
-                .map(TaskMemberResponseDto::getMemberId)
-                .collect(Collectors.toList());
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.COMMENT_REMOVE)
-                .memberIds(memberIds)
-                .taskId(taskDto.getTaskId())
-                .projectId(taskDto.getProjectId())
-                .subject(taskDto.getTitle()).build());
+        if (taskMembers.size() > 0) {
+            List<Long> memberIds = taskMembers.stream()
+                    .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProject.MemberProjectStatus.ACTIVE))
+                    .map(TaskMemberResponseDto::getMemberId)
+                    .collect(Collectors.toList());
+
+            if (memberIds.size() > 0) {
+                // 알림 저장 및 전달
+                notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                        .fromMemberId(memberId)
+                        .code(NotificationCode.COMMENT_REMOVE)
+                        .memberIds(memberIds)
+                        .taskId(taskDto.getTaskId())
+                        .projectId(taskDto.getProjectId())
+                        .subject(taskDto.getTitle()).build());
+            }
+
+
+        }
 
 
         // 로그 저장

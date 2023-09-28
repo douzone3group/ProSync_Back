@@ -1,6 +1,6 @@
 package com.douzone.prosync.config;
 
-import com.douzone.prosync.redis.RedisService;
+import com.douzone.prosync.security.redis.RedisService;
 import com.douzone.prosync.security.jwt.HmacAndBase64;
 import com.douzone.prosync.security.jwt.JwtFilter;
 import com.douzone.prosync.security.jwt.RefreshTokenProvider;

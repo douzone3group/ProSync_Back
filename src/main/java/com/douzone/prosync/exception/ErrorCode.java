@@ -55,7 +55,7 @@ public enum ErrorCode {
     FILE_INFO_EXISTS(HttpStatus.CONFLICT, "File Info exists"),
 
     // NOTIFICATION
-    CONNECTION_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "Sse Connection is failed"),
+    CONNECTION_ERROR(HttpStatus.OK, "Sse Connection is failed"),
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Notification not founded"),
     NOTIFICATION_CANT_READ(HttpStatus.FORBIDDEN, "Notification not read"),
 
