@@ -20,7 +20,7 @@ import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
 import com.douzone.prosync.member_project.service.MemberProjectService;
-import com.douzone.prosync.redis.RedisService;
+import com.douzone.prosync.security.redis.RedisService;
 import com.douzone.prosync.security.jwt.HmacAndBase64;
 import com.douzone.prosync.security.jwt.RefreshTokenProvider;
 import com.douzone.prosync.security.jwt.TokenProvider;

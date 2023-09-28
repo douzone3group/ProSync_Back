@@ -10,9 +10,7 @@ import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.member.dto.response.MemberSimpleResponseDto;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.service.MemberService;
-import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
-import com.douzone.prosync.member_project.service.MemberProjectService;
-import com.douzone.prosync.redis.TokenStorageService;
+import com.douzone.prosync.security.redis.TokenStorageService;
 import com.douzone.prosync.security.jwt.HmacAndBase64;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,8 +33,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.util.List;
-import java.util.Map;
 
 
 @RestController
