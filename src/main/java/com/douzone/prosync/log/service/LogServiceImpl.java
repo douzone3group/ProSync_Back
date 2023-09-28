@@ -12,16 +12,9 @@ import com.douzone.prosync.log.dto.response.LogSimpleResponse;
 import com.douzone.prosync.log.repository.LogRepository;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
-import com.douzone.prosync.member_project.entity.MemberProject;
-import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.notification.dto.ContentUrlContainer;
-import com.douzone.prosync.notification.dto.response.NotificationResponse;
-import com.douzone.prosync.project.dto.request.ProjectPatchDto;
-import com.douzone.prosync.project.dto.response.GetProjectResponse;
 import com.douzone.prosync.project.entity.Project;
-import com.douzone.prosync.project.service.ProjectService;
 import com.douzone.prosync.searchcondition.LogSearchCondition;
-import com.douzone.prosync.searchcondition.NotificationSearchCondition;
 import com.douzone.prosync.task.dto.response.GetTaskResponse;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -32,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static com.douzone.prosync.constant.ConstantPool.*;
 

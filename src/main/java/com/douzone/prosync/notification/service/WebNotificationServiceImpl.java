@@ -84,10 +84,11 @@ public class WebNotificationServiceImpl implements NotificationService{
         emitter.onTimeout(() -> emitterRepositoryrepository.deleteById(memberId));
         emitter.onError((e) -> emitterRepositoryrepository.deleteById(memberId));
 
-        Integer count = notificationRepository.getNotificationListCount(memberId);
+        Integer count = mapper.getNotificationCountIsReadFalse(memberId);
+        System.out.println(count);
 
         try {
-            sendToClient(emitter,new NotificationData("안읽으신 "+count+"개의 메시지가 있습니다.",FRONT_SERVER_HOST+"/notifications"));
+            sendToClient(emitter,new NotificationData("안읽으신 "+count+"개의 메시지가 있습니다.",FRONT_SERVER_HOST+"/notification"));
             notificationRepository.updateIsTransmittedbyMemberId(true,memberId);
         } catch (RuntimeException e){
             throw new ApplicationException(ErrorCode.CONNECTION_ERROR);
@@ -247,6 +248,8 @@ public class WebNotificationServiceImpl implements NotificationService{
                     target.isRead(), container.getContent(), code, container.getDate().toString(), container.getUrl());
 
             try {
+                System.out.println("알림 실험");
+                System.out.println(notification.getContent());
                 send((target.getMemberId()),new NotificationData(notification));
                 notificationRepository.updateIsTransmittedbyTagetId(true,target.getNotificationTargetId());
             } catch(NoEmitterException e) {

@@ -5,6 +5,8 @@ import com.douzone.prosync.member_project.status.ProjectMemberAuthority;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class MemberProjectResponseDto {
 
@@ -31,4 +33,6 @@ public class MemberProjectResponseDto {
 
     @ApiModelProperty(value = "프로젝트회원 상태", example = "QUIT/ACTIVE")
     private MemberProject.MemberProjectStatus status;
+
+
 }
