@@ -21,7 +21,6 @@ public class BookmarkServiceImpl implements BookmarkService{
     private final BookmarkMapper mapper;
     @Override
     public void bookMarkCheck(Long projectId, Long memberId) {
-
         bookmarkRepository.bookMarkCheck(projectId, memberId);
     }
 

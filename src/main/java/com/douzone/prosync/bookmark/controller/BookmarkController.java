@@ -21,13 +21,13 @@ public class BookmarkController {
 
 
     @PostMapping("/bookmark/{project-id}")
-    void bookmark(@PathVariable("project-id") Long projectId, Principal principal){
+    void bookmark(@PathVariable("project-id") Long projectId, Principal principal) {
         Long memberId = Long.parseLong(principal.getName());
         service.bookMarkCheck(projectId, memberId);
     }
 
     @DeleteMapping("/bookmark/{project-id}")
-    void bookmarkRemove(@PathVariable("project-id") Long projectId, Principal principal){
+    void bookmarkRemove(@PathVariable("project-id") Long projectId, Principal principal) {
         Long memberId = Long.parseLong(principal.getName());
         service.bookMarkRemove(projectId, memberId);
     }
@@ -38,4 +38,6 @@ public class BookmarkController {
         PageResponseDto<BookmarkResponseDto> responseDto = service.findAll(pageable, memberId);
         return responseDto;
     }
+
+
 }

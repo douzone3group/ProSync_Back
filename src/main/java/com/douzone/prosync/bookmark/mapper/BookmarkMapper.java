@@ -12,4 +12,5 @@ public interface BookmarkMapper {
     void bookMarkRemove(@Param("projectId") Long projectId, @Param("memberId") Long memberId);
 
     List<BookmarkResponseDto> findAll(Long memberId);
+
 }
