@@ -3,6 +3,7 @@ package com.douzone.prosync.file.controller;
 import com.douzone.prosync.common.SingleResponseDto;
 import com.douzone.prosync.file.dto.FileRequestDto;
 import com.douzone.prosync.file.dto.FileResponseDto;
+import com.douzone.prosync.file.entity.FileInfo;
 import com.douzone.prosync.file.service.FileService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -16,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.util.List;
 
 
@@ -60,8 +60,9 @@ public class FileController {
             @ApiResponse(code = 500, message = "server error"),
     })
     @GetMapping
-    public ResponseEntity<SingleResponseDto<List<FileResponseDto>>> findFileList(@RequestBody @Valid FileRequestDto dto) {
-        List<FileResponseDto> response = fileService.findFilesByTableInfo(dto, true);
+    public ResponseEntity<SingleResponseDto<List<FileResponseDto>>> findFileList(@RequestParam("tableKey") Long tableKey,
+                                                                                 @RequestParam("tableName") String tableName) {
+        List<FileResponseDto> response = fileService.findFilesByTableInfo(FileRequestDto.create(FileInfo.FileTableName.valueOf(tableName), tableKey), true);
         return new ResponseEntity(new SingleResponseDto<>(response), HttpStatus.OK);
     }
 

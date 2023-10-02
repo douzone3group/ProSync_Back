@@ -25,8 +25,9 @@ import com.douzone.prosync.task.repository.TaskMapper;
 import com.douzone.prosync.task_status.service.TaskStatusService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -169,15 +170,17 @@ public class TaskServiceImpl implements TaskService {
      * 업무 리스트 조회
      */
     @Override
-    public PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Long projectId, Pageable pageable, String search, boolean isActive, String view, String status, Long memberId) {
-        int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
-        PageHelper.startPage(pageNum, pageable.getPageSize());
-
-        List<GetTasksResponse> tasks = taskMapper.findTasks(projectId, search, isActive);
-
-        // task member 세팅
+    public PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Long projectId, Integer page, Integer size, String search, boolean isActive, String view, String status, Long memberId) {
+        PageHelper.startPage(page, size);
+        List<GetTasksResponse> tasks = taskMapper.findTasks(projectId, search, isActive, view);
+        Gson gson = new Gson();
         tasks.forEach(task -> {
-            task.setTaskMembers(taskMapper.findTaskMembers(task.getTaskId()));
+            List<TaskMemberResponseDto> dto = gson.fromJson(task.getMembers(), new TypeToken<List<TaskMemberResponseDto>>() {
+            }.getType());
+            if (dto.get(0).getMemberId() != null) {
+                task.setTaskMembers(dto);
+            }
+            task.setMembers(null);
         });
 
         // 필터 - task status
