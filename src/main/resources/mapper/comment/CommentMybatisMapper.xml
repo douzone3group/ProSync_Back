@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.prosync.comment.repository.CommentMybatisMapper">
+    <insert id="createComment" useGeneratedKeys="true" keyProperty="commentId" >
+        insert into comment (content, created_at, modified_at, task_id, member_project_id)
+        values (#{content}, now(), now(), #{taskId}, #{memberProjectId});
+    </insert>
+
+    <update id="updateComment" >
+        update comment
+        set content=#{content},
+            modified_at=now()
+        where comment_id=#{commentId} and is_deleted is false
+    </update>
+
+    <update id="deleteComment">
+        update comment
+        set is_deleted=true, modified_at=now()
+        where comment_id=#{commentId} and is_deleted is false
+    </update>
+
+    <resultMap id="commentListMap" type="com.douzone.prosync.comment.dto.response.GetCommentsResponse">
+        <id property="commentId" column="comment_id" />
+        <result property="content" column="content" />
+        <result property="createdAt" column="created_at"/>
+        <result property="modifiedAt" column="modified_at" />
+        <result property="taskId" column="task_id"/>
+        <result property="memberInfo.memberProjectId" column="member_project_id"/>
+        <result property="memberInfo.memberId" column="member_id"/>
+        <result property="memberInfo.projectId" column="project_id"/>
+        <result property="memberInfo.authorityId" column="authority_id"/>
+        <result property="memberInfo.authority" column="authority"/>
+        <result property="memberInfo.name" column="name"/>
+        <result property="memberInfo.profileImage" column="profile_image"/>
+        <result property="memberInfo.status" column="status"/>
+        <result property="files" column="fileList"/>
+    </resultMap>
+
+    <select id="findAllComments" resultMap="commentListMap">
+        select c.*,
+        mp.member_id, mp.project_id, mp.authority_id,
+        pa.authority, m.name, m.profile_image, mp.status,
+       JSON_ARRAYAGG(
+               JSON_OBJECT(
+                       'fileId', f.file_id,
+                       'size', f.size,
+                       'path', f.path,
+                       'fileName', f.file_name,
+                       'createdAt', f.created_at,
+                        'fileInfoId', fi.file_info_id
+                   )
+           ) as fileList
+        from comment c
+        left join file_info fi on fi.table_name = 'COMMENT' and fi.table_key = c.comment_id and fi.deleted_at is null
+        left join file f on f.file_id = fi.file_id
+        left join member_project mp on c.member_project_id = mp.member_project_id
+        left join member m on mp.member_id = m.member_id
+        left join project_authority pa on pa.authority_id = mp.authority_id
+        where c.is_deleted is false and c.task_id = #{taskId}
+        group by c.comment_id
+        order by c.comment_id desc
+    </select>
+
+    <select id="findCommentMember">
+        select mp.member_project_id,
+               mp.member_id,
+               mp.project_id,
+               mp.authority_id,
+               pa.authority,
+               m.name,
+               m.profile_image,
+               mp.status
+        from comment c
+                 join member_project mp on c.member_project_id = mp.member_project_id
+                 join member m on mp.member_id = m.member_id
+                 join project_authority pa on pa.authority_id = mp.authority_id
+        where c.comment_id = #{commentId}
+          and c.is_deleted is false;
+    </select>
+</mapper>

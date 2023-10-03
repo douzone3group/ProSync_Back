@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.prosync.task.repository.TaskMapper">
+    <insert id="save" useGeneratedKeys="true" keyProperty="task.taskId">
+        INSERT INTO task(project_id, classification, title, detail, start_date, end_date, task_status_id, created_at, modified_at)
+        VALUE (#{projectId}, #{task.classification}, #{task.title}, #{task.detail}, #{task.startDate}, #{task.endDate}, #{task.taskStatusId}, now(), now())
+    </insert>
+
+    <select id="findById">
+        SELECT * FROM task t
+        LEFT JOIN task_status ts
+        ON t.task_status_id = ts.task_status_id
+        WHERE t.task_id=#{taskId} and t.is_deleted IS FALSE AND ts.is_deleted IS FALSE
+    </select>
+
+    <update id="update">
+        UPDATE task
+        <set>
+            modified_at=now(),
+            <if test="classification != null">
+                classification=#{classification},
+            </if>
+            <if test="title != null">
+                title=#{title},
+            </if>
+            <if test="detail != null">
+                detail=#{detail},
+            </if>
+           <if test="startDate != null">
+                start_date=#{startDate},
+            </if>
+            <if test="endDate != null">
+                end_date=#{endDate},
+            </if>
+            <if test="taskStatusId != null">
+                task_status_id=#{taskStatusId},
+            </if>
+        </set>
+        WHERE task_id = #{taskId}
+          AND is_deleted IS false
+    </update>
+
+    <resultMap id="getTasksResponseMap" type="GetTasksResponse">
+        <id property="taskId" column="task_id"/>
+        <result property="classification" column="classification"/>
+        <result property="title" column="title"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="modifiedAt" column="modified_at"/>
+        <result property="taskStatusId" column="task_status_id"/>
+        <result property="color" column="color"/>
+        <result property="taskStatus" column="task_status"/>
+        <result property="seq" column="seq"/>
+        <result property="members" column="members"/>
+    </resultMap>
+
+    <select id="findTasks" resultMap="getTasksResponseMap">
+        select t.task_id, t.classification, t.title, t.start_date, t.end_date, t.created_at, t.modified_at,
+        ts.task_status_id, ts.color, ts.task_status, ts.seq,
+        JSON_ARRAYAGG(
+        JSON_OBJECT(
+        'memberProjectId', mp.member_project_id,
+        'status', mp.status,
+        'memberId', m.member_id,
+        'profileImage', m.profile_image,
+        'name', m.name
+        )
+        ) as members
+        from task t
+        left join task_status ts on ts.task_status_id = t.task_status_id
+        left join member_project_task mpt on mpt.task_id = t.task_id
+        left join member_project mp on mp.member_project_id = mpt.member_project_id
+        left join member m on m.member_id = mp.member_id
+        <where>
+            and t.project_id = #{projectId} and t.is_deleted is false
+            <if test="search != null and search != ''">
+                and (t.title like concat('%', #{search}, '%') or
+                ts.task_status like concat('%', #{search}, '%') or
+                m.name like concat('%', #{search}, '%'))
+            </if>
+            <if test="isActive != null and isActive == true">
+                and not (ts.seq = 0 or ts.seq is false)
+            </if>
+        </where>
+        <if test="view != null and view.equals('board')">
+            group by t.task_id
+            order by ts.seq asc, t.task_id desc
+        </if>
+        <if test="view == null or !view.equals('board')">
+            group by t.task_id
+            order by t.task_id desc
+        </if>
+    </select>
+
+    <insert id="saveTaskMember">
+        INSERT INTO member_project_task(member_project_id, task_id)
+        VALUES
+        <foreach collection="projectMemberIds" item="projectMemberId" separator=",">
+            (#{projectMemberId}, #{taskId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteTaskMember">
+        DELETE FROM member_project_task
+        WHERE task_id = #{taskId} AND
+        <foreach collection="projectMemberIds" item="projectMemberId" separator="OR" open="(" close=")">
+            member_project_id = #{projectMemberId}
+        </foreach>
+    </delete>
+
+    <select id="findTaskMembers">
+        SELECT mp.member_project_id, mp.status, m.member_id, m.profile_image, m.name
+        FROM member_project_task mpt
+                 JOIN member_project mp ON mpt.member_project_id = mp.member_project_id
+                 JOIN member m ON m.member_id = mp.member_id
+                 JOIN task t on t.task_id = mpt.task_id
+        WHERE mpt.task_id = #{taskId} AND t.is_deleted IS false;
+    </select>
+
+    <select id="findTaskMembersDeleted">
+        SELECT mp.member_project_id, mp.status, m.member_id, m.profile_image, m.name
+        FROM member_project_task mpt
+                 JOIN member_project mp ON mpt.member_project_id = mp.member_project_id
+                 JOIN member m ON m.member_id = mp.member_id
+                 JOIN task t on t.task_id = mpt.task_id
+        WHERE mpt.task_id = #{taskId};
+    </select>
+</mapper>

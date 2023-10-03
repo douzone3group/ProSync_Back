@@ -1,0 +1,88 @@
+pagehelper:
+  auto-dialect: true
+  page-size-zero: false
+  reasonable: true
+  offset-as-page-num: false
+  row-bounds-with-count: false
+  auto-runtime-dialect: false
+  close-conn: true
+  default-count: true
+  helper-dialect: mysql
+
+spring:
+  messages:
+    basename: messages,errors
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  redis:
+    host: localhost
+    port: 6379
+  #    password:
+
+
+
+  datasource:
+    url: ENC(4o/6rgp0QjJoDKpp2zOxPNr80QdA79UgfkkBk9WQD+DCX0YdAIhxLbMbCGb8k1yRnBLHHo1hi4lOkB6oUlm/P102mZmLFmL0Bszghc+N848326UOVuON5Ub/f2f9frGcZ72GpWRmpvacivgoscnNJ+WfQHTLUrFUnj/i3d2M8qc7WxhFSTbUAf9EBhuKwyZK)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ENC(JW+1Ds7HWn/ge0FVTQ8IeA==)
+    password: ENC(K+Bqh7pBmpmTm0g+mWGTwG+S5oylxSDe)
+    schema:
+      classpath: schema.sql
+  sql:
+    init:
+      mode: always
+
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ENC(UXs1enO8ar4K6H+mkvTndB6ioA0LbB2f)
+    password: ENC(2uysE7+PtZFs5Y2CN2o6J5/kUDrBNVXB)
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.trust: smtp.naver.com
+
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.douzone.prosync
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: info
+    com:
+      douzone:
+        prosync: debug
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+
+# Todo : jwt 비밀키 수정해야합니다!
+jwt:
+  secret: ENC(60x2uchdWvw5j3q6dS1lezZUv8jGnbgk/Uwe45e96aPYbtModiEcQqG72yc/mYMaoOOmJi1bgFsRwQ/CrbS1muBThG5HwpcbL1v+lhGGPhC/XZ0NKwgTPUL+Xs51fel55tbUYyx5eQk=)
+  token-validity-in-seconds: 2592000  # 60 * 15 15분 -> 초
+  refresh-token-validity-in-seconds: 2592000 #1209600 # 60 * 60 * 24 * 30 30일 -> 초
+
+
+mail:
+  sender: ENC(YUA700a0yImvH49z0x6IffMPblHrkCNCj5q/JUbLjLc=)
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ENC(t8vzfc2BaRuUTBVRcSQ4mRPiHpmXY5RmMDRV463RDCY=)
+      secretKey: ENC(kABepy6v0S2NLGt8fgHoyzcja0qFE4UgCiwr6zcgAMaLWv+2Wb6cZdIVJF5T1XcF6ByiPmNHahI=)
+    s3:
+      bucket: prosync-image
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false

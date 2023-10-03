@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.prosync.notification.mapper.NotificationMapper">
+    <insert id="saveNotification" useGeneratedKeys="true" keyProperty="notificationId">
+        insert into notification (noti_code, from_member_id, created_at, content, url)
+        values (#{code}, #{fromMemberId}, #{createdAt}, #{content}, #{url});
+    </insert>
+    <insert id="saveNotificationTarget" useGeneratedKeys="true" keyProperty="notificationTargetId">
+        insert into notification_target (notification_id, member_id, platform, is_read, update_user_no, is_transmitted,
+                                         created_at)
+        values (#{notificationId}, #{memberId}, #{platform}, #{isRead}, #{updateUserId}, #{isTransmitted},
+                #{createdAt});
+    </insert>
+
+
+    <insert id="saveNotificationTargetList">
+        insert into notification_target (notification_id, member_id,platform, is_read, update_user_no,
+        is_transmitted,created_at) values
+        <foreach collection="dtoList" item="dto" separator=",">
+            (#{dto.notificationId}, #{dto.memberId}, #{dto.platform}, #{dto.isRead}, #{dto.updateUserId},
+            #{dto.isTransmitted}, #{dto.createdAt})
+        </foreach>
+    </insert>
+
+
+    <update id="updateIsRead">
+        update notification_target
+        set is_read =#{isRead}
+        where notification_target_id = #{targetId}
+    </update>
+
+    <update id="updateTargetListIsRead">
+        update notification_target
+        set is_read = true
+        where notification_target_id IN
+        <foreach collection="targetIds" item="targetId" open="(" close=")" separator=",">
+            #{targetId}
+        </foreach>
+    </update>
+
+    <update id="updateIsTransmittedbyTagetId">
+        update notification_target
+        set is_transmitted =#{isTransmitted}
+        where notification_target_id = #{targetId}
+        <if test="isTransmitted == true">
+            And is_transmitted =false
+        </if>
+        <if test="isTransmitted == false">
+            And is_transmitted =true
+        </if>
+    </update>
+
+
+    <update id="updateIsTransmittedbyMemberId">
+        update notification_target
+        set is_transmitted =#{isTransmitted}
+        where member_id = #{memberId}
+        <if test="isTransmitted == true">
+            And is_transmitted =false
+        </if>
+        <if test="isTransmitted == false">
+            And is_transmitted =true
+        </if>
+    </update>
+
+    <update id="updateAllNotificationIsRead">
+        update notification_target
+        set is_read = true
+        where member_id = #{memberId}
+    </update>
+
+
+    <update id="update">
+        update notification
+        set noti_code      =#{notiCode},
+            from_member_id = #{fromMemberId},
+            created_at     = #{createdAt},
+            content        = #{content},
+            url            = #{url}
+        where notification_id = #{notificationId}
+    </update>
+
+    <select id="findById" resultType="Notification">
+        select notification_id, noti_code, from_member_id, created_at, content, url
+        from notification
+        where notification_id = #{notificationId}
+    </select>
+
+    <select id="findTargetById" resultType="NotificationTarget">
+        select notification_target_id,
+               notification_id,
+               member_id,
+               platform,
+               is_read,
+               update_user_no,
+               is_transmitted,
+               created_at
+        from notification_target
+        where notification_target_id = #{targetId}
+    </select>
+
+    <select id="getNotificationTargetListByNotificationId" resultType="NotificationTarget">
+        select notification_target_id,
+               notification_id,
+               member_id,
+               platform,
+               is_read,
+               update_user_no,
+               is_transmitted,
+               created_at
+        from notification_target
+        where notification_id = #{notificationId}
+    </select>
+
+
+    <select id="getNotificationList" resultType="NotificationResponse">
+        select t.notification_target_id, t.is_read, n.content, n.noti_code, n.created_at, n.url
+        from notification_target t
+        JOIN notification n on t.notification_id = n.notification_id
+        <where>
+            t.member_id=#{condition.memberId} and t.platform='WEB'
+            <if test="condition.notiCode != null">
+                And n.noti_code = #{condition.notiCode}
+            </if>
+            <if test="condition.startDate != null">
+                AND n.created_at &gt;= #{condition.startDate}
+            </if>
+            <if test="condition.endDate != null">
+                AND n.created_at &lt;= #{condition.endDate}
+            </if>
+            <if test="condition.content != null and condition.content != '' ">
+                AND n.content like concat('%',#{condition.content},'%')
+            </if>
+        </where>
+        order by n.created_at desc
+    </select>
+
+    <select id="getNotificationListCount" resultType="int">
+        select count(*)
+        from notification_target
+        where member_id = #{memberId}
+          and is_transmitted = false;
+    </select>
+
+    <select id="getNotificationTargetListCount" resultType="int">
+        select count(*)
+        from notification_target
+        where member_id = #{memberId} and
+        notification_target_id IN
+        <foreach collection="targetIds" item="targetId" open="(" close=")" separator=",">
+        #{targetId}
+        </foreach>
+    </select>
+
+    <select id="getNotificationCountIsReadFalse" resultType="int">
+        select count(*)
+        from notification_target
+        where member_id= #{memberId} and is_read is false;
+    </select>
+
+    <delete id="deleteNotificationTarget">
+        delete
+        from notification_target
+        where notification_target_id = #{targetId}
+    </delete>
+
+    <delete id="deleteNotification">
+        delete
+        from notification
+        where notification_id = #{notificationId}
+    </delete>
+
+
+    <delete id="deleteSchedulingTarget">
+        delete
+        from notification_target
+        where timestampdiff(DAY, created_at, NOW()) &gt; #{durationDate}
+    </delete>
+
+    <delete id="deleteTargetList">
+        delete from notification_target
+        where notification_target_id IN
+        <foreach collection="targetIds" item="targetId" open="(" close=")" separator=",">
+            #{targetId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteAllTarget">
+        delete from notification_target where member_id = #{memberId}
+    </delete>
+</mapper>

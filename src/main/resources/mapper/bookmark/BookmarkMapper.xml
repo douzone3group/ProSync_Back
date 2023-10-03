@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.prosync.bookmark.mapper.BookmarkMapper">
+    <insert id="bookMarkCheck">
+        insert ignore into bookmark (project_id, member_id)
+        values (#{projectId}, #{memberId})
+    </insert>
+
+    <delete id="bookMarkRemove">
+        delete from bookmark
+        where project_id=#{projectId} and member_id=#{memberId}
+    </delete>
+
+    <select id="findAll">
+        select b.bookmark_id, p.project_id, p.title, p.created_at
+        from bookmark b
+        inner join project p on b.project_id = p.project_id
+        where b.member_id = #{memberId}
+        order by p.created_at DESC
+    </select>
+
+    <select id="findById">
+        select b.*
+        from bookmark b
+        inner join project p on b.project_id = p.project_id
+        where b.project_id = #{projectId} and b.member_id=#{memberId}
+    </select>
+
+</mapper>
