@@ -3,7 +3,6 @@ package com.douzone.prosync.comment.service;
 import com.douzone.prosync.comment.dto.request.CommentPatchDto;
 import com.douzone.prosync.comment.dto.request.CommentPostDto;
 import com.douzone.prosync.common.PageResponseDto;
-import org.springframework.data.domain.Pageable;
 
 
 public interface CommentService {
@@ -18,5 +17,5 @@ public interface CommentService {
     void delete(Long commentId, Long memberId);
 
     // 댓글 리스트 조회
-    PageResponseDto findCommentList(Long taskId, Pageable pageable);
+    PageResponseDto findCommentList(Long taskId, Integer page, Integer size);
 }

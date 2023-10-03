@@ -3,11 +3,13 @@ package com.douzone.prosync.member_project.dto;
 import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.status.ProjectMemberAuthority;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class MemberProjectResponseDto {
 
     @ApiModelProperty(value = "프로젝트 회원 식별자", example = "1")
