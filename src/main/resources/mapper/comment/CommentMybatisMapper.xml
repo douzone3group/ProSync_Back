@@ -52,12 +52,12 @@
                    )
            ) as fileList
         from comment c
-        left join file_info fi on fi.table_name = 'COMMENT' and fi.table_key = c.comment_id
+        left join file_info fi on fi.table_name = 'COMMENT' and fi.table_key = c.comment_id and fi.deleted_at is null
         left join file f on f.file_id = fi.file_id
         left join member_project mp on c.member_project_id = mp.member_project_id
         left join member m on mp.member_id = m.member_id
         left join project_authority pa on pa.authority_id = mp.authority_id
-        where c.is_deleted is false and c.task_id = #{taskId} and fi.deleted_at is null
+        where c.is_deleted is false and c.task_id = #{taskId}
         group by c.comment_id
         order by c.comment_id desc
     </select>
