@@ -145,7 +145,6 @@ public class MemberServiceImpl implements MemberService{
 
             memberProjectService.exitProjectMember(projectIds.get(i),memberId);
 
-            //Todo: 회원이 탈퇴하였다고 알려주기(본인이 나간거지만 탈퇴했다고 알려주기)
         }
 
         memberRepository.updateDeleted(memberId);
