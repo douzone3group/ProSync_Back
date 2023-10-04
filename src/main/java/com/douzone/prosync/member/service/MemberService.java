@@ -28,12 +28,14 @@ public interface MemberService {
      void updateMemberDelete(Long memberId, HttpServletRequest request);
 
 
-     boolean duplicateInspection(String email) ;
+     void duplicateInspection(String email) ;
 
      void invalidateInspectionAndSend(MailDto mail);
 
      void verifyCertificationNumber(CertificationCodeDto code);
 
      String loginProcess(MemberLoginDto loginDto,HttpHeaders httpHeaders, HttpServletRequest request);
+
+
 
 }
