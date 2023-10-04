@@ -24,7 +24,11 @@ public class BookmarkServiceImpl implements BookmarkService{
     private final BookmarkMapper mapper;
     @Override
     public void bookMarkCheck(Long projectId, Long memberId) {
-        bookmarkRepository.bookMarkCheck(projectId, memberId);
+        int duplicate = mapper.duplicateBookmark(projectId, memberId);
+        if (duplicate == 0) {
+            System.out.println("asdf");
+            mapper.bookMarkCheck(projectId, memberId);
+        }
     }
 
     @Override
