@@ -24,14 +24,8 @@ public class TaskStatusServiceImpl implements TaskStatusService {
 
     public void updateTaskStatus(Long taskStatusId, TaskStatusDto.PatchDto requestBody, Long memberId) {
         requestBody.setTaskStatusId(taskStatusId);
-        TaskStatusDto.GetResponseDto taskStatus = findTaskStatus(taskStatusId);
+        findTaskStatus(taskStatusId);
         taskStatusMapper.update(requestBody);
-
-        // 업무 상태 순서 변경하는 경우 - 뒷 상태 순서 일괄 변경
-        if (requestBody.getSeq() != null) {
-            taskStatusMapper.updateSeq(taskStatus.getProjectId(), requestBody.getSeq(), taskStatusId);
-        }
-
     }
 
     public void deleteTaskStatus(Long taskStatusId, Long memberId) {

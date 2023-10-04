@@ -16,11 +16,6 @@ public interface TaskStatusMapper {
 
     void update(TaskStatusDto.PatchDto dto);
 
-    @Update("UPDATE task_status " +
-            "SET seq = seq + 1 " +
-            "WHERE project_id = #{projectId} AND seq >= #{seq} AND seq < 100 AND is_deleted is false AND task_status_id != #{taskStatusId}")
-    void updateSeq(@Param("projectId") Long projectId, @Param("seq") Integer seq, @Param("taskStatusId") Long taskStatusId);
-
     //soft delete
     @Update("UPDATE task_status SET is_deleted=true, modified_at=now() WHERE task_status_id=#{taskStatusId}")
     void delete(Long taskStatusId);
