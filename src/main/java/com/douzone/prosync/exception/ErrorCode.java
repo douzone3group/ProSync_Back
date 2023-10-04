@@ -16,6 +16,13 @@ public enum ErrorCode {
     INVALID_ENUM_VALUE(HttpStatus.BAD_REQUEST, "Invalid enum value"),
 
     // MEMBER
+
+    INCORRECT_FORMAT_EMAIL(HttpStatus.UNPROCESSABLE_ENTITY, "Email format is Incorrect"),
+    INCORRECT_FORMAT_NAME(HttpStatus.UNPROCESSABLE_ENTITY, "Name format is Incorrect"),
+    INCORRECT_FORMAT_PASSWORD(HttpStatus.UNPROCESSABLE_ENTITY, "Password format is Incorrect"),
+
+    INCORRECT_FORMAT_INTRO(HttpStatus.UNPROCESSABLE_ENTITY, "Intro format is Incorrect"),
+
     DUPLICATED_USER_ID(HttpStatus.CONFLICT, "User ID is duplicated"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"User Authentication is failed"),
@@ -56,6 +63,7 @@ public enum ErrorCode {
 
     // NOTIFICATION
     CONNECTION_ERROR(HttpStatus.OK, "Sse Connection is failed"),
+
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Notification not founded"),
     NOTIFICATION_CANT_READ(HttpStatus.FORBIDDEN, "Notification not read"),
 
@@ -73,6 +81,10 @@ public enum ErrorCode {
     // AUTHORIZATION
     MEMBER_NOT_INCLUDED_IN_PROJECT(HttpStatus.FORBIDDEN,"Member not included in project"),
     INAPPROPRIATE_PERMISSION(HttpStatus.FORBIDDEN, "Unauthorized User");
+
+
+
+
 
     private HttpStatus status;
     private String message;
