@@ -41,7 +41,7 @@ public class BookmarkController {
     }
 
     @DeleteMapping("/bookmark/{project-id}")
-    void bookmarkRemove(@PathVariable("project-id") Long projectId, Principal principal){
+    void bookmarkRemove(@PathVariable("project-id") Long projectId, Principal principal) {
         Long memberId = Long.parseLong(principal.getName());
         service.bookMarkRemove(projectId, memberId);
     }
@@ -52,4 +52,6 @@ public class BookmarkController {
         PageResponseDto<BookmarkResponseDto> responseDto = service.findAll(pageable, memberId);
         return responseDto;
     }
+
+
 }

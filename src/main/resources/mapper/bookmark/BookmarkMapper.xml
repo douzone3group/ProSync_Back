@@ -2,8 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.douzone.prosync.bookmark.mapper.BookmarkMapper">
+
     <insert id="bookMarkCheck">
-        insert ignore into bookmark (project_id, member_id)
+        insert into bookmark (project_id, member_id)
         values (#{projectId}, #{memberId})
     </insert>
 
@@ -27,4 +28,10 @@
         where b.project_id = #{projectId} and b.member_id=#{memberId}
     </select>
 
+    <select id="duplicateBookmark" resultType="int">
+        select COUNT(b.project_id)
+        from bookmark b
+        inner join project p on b.project_id = p.project_id
+        where b.project_id =#{projectId} and b.member_id=#{memberId}
+    </select>
 </mapper>
