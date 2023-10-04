@@ -1,6 +1,7 @@
 package com.douzone.prosync.task.dto.response;
 
 import com.douzone.prosync.task.dto.request.TaskMemberResponseDto;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel("[RESPONSE] TASK LIST - GET")
 public class GetTasksResponse {
 
@@ -51,7 +53,10 @@ public class GetTasksResponse {
 
     @Setter
     @ApiModelProperty(value = "업무 담당자들")
-    List<TaskMemberResponseDto> taskMembers;
+    private List<TaskMemberResponseDto> taskMembers = new ArrayList<>();
+
+    @Setter
+    private String members;
 
 
     @Builder
@@ -81,7 +86,7 @@ public class GetTasksResponse {
 
                     // get list -> PerTaskResponse
                     List<GetTasksResponse> getTaskResponses = list.stream()
-                            .filter(one -> one.getTaskStatusId() == res.getTaskStatusId())
+                            .filter(one -> one.getTaskStatusId().equals(res.getTaskStatusId()))
                             .collect(Collectors.toList());
 
                     perTasksResponses.add(PerTasksResponse.builder()

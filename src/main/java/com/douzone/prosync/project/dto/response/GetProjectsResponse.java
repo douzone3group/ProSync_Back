@@ -43,9 +43,4 @@ public class GetProjectsResponse {
     @ApiModelProperty(example = "북마크 아이디")
     private Long bookmarkId;
 
-    private List<MemberProjectResponseDto> projectMembers;
-
-    public void setProjectMembers(List<MemberProjectResponseDto> projectMembers) {
-        this.projectMembers = projectMembers;
-    }
 }

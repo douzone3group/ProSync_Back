@@ -183,8 +183,7 @@ public class ProjectServiceImpl implements ProjectService {
         PageHelper.startPage(pageNum, pageable.getPageSize());
 
         List<GetProjectsResponse> projectList = projectMapper.findAll(searchCond);
-
-        return getGetProjectsResponsePageResponseDto(projectList);
+        return new PageResponseDto<>(new PageInfo<>(projectList));
     }
 
 
@@ -193,20 +192,9 @@ public class ProjectServiceImpl implements ProjectService {
         PageHelper.startPage(pageNum, pageable.getPageSize());
 
         List<GetProjectsResponse> myProjects = projectMapper.findByMemberId(memberId);
-        return getGetProjectsResponsePageResponseDto(myProjects);
+        return new PageResponseDto<>(new PageInfo<>(myProjects));
     }
 
-    private PageResponseDto<GetProjectsResponse> getGetProjectsResponsePageResponseDto(List<GetProjectsResponse> projects) {
-        PageInfo<GetProjectsResponse> pageInfo = new PageInfo<>(projects);
-
-        projects.forEach(project -> {
-            MemberProjectSearchCond searchCond = new MemberProjectSearchCond(project.getProjectId(), null);
-            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(searchCond);
-            project.setProjectMembers(projectMembers);
-        });
-
-        return new PageResponseDto<>(pageInfo);
-    }
 
     // 내 프로젝트 중 관리자인 프로젝트만 조회
     @Override

@@ -36,6 +36,7 @@ public class JavaMailService implements AuthenticateService {
                     + "<div style=\"background: #ffffff; padding: 30px; border-radius: 5px; max-width: 500px; margin: 0 auto; border: 5px solid #ff9d00; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\">"
                     + "<h1 style=\"font-size: 24px; color: #ff6c00; text-align: center; border-bottom: 2px solid #ff9d00;\">Prosync 인증 코드</h1>"
                     + "<p style=\"font-size: 16px; line-height: 1.5; color: #555; text-align: center; font-weight: bold\">아래 인증 코드를 입력하여 이메일 주소를 인증해 주세요.</p>"
+                    + "<p style=\"font-size: 16px; line-height: 1.5; color: #555; text-align: center; font-weight: bold\">인증번호의 유효기간은 10분입니다. 참고바랍니다.</p>"
                     + "<div style=\"background: #ff6c00; padding: 15px; border-radius: 5px; text-align: center; font-size: 32px; font-weight: bold; color: #ffffff; margin: 10px 0;\">" + number + "</div>"
                     + "<p style=\"font-size: 15px; color: #999; text-align: center; margin-top: 10px \">감사합니다.</p>"
                     + "</div>"

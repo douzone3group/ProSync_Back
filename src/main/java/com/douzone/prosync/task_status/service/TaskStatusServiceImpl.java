@@ -24,7 +24,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
 
     public void updateTaskStatus(Long taskStatusId, TaskStatusDto.PatchDto requestBody, Long memberId) {
         requestBody.setTaskStatusId(taskStatusId);
-        verifyExistTaskStatus(taskStatusId);
+        findTaskStatus(taskStatusId);
         taskStatusMapper.update(requestBody);
     }
 

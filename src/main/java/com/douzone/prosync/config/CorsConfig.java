@@ -40,7 +40,8 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern(FRONT_SERVER_HOST);
+        config.addAllowedOriginPattern("*");
+//        config.addAllowedOriginPattern(FRONT_SERVER_HOST);
         config.setExposedHeaders(List.of("Authorization", "Refresh"));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");

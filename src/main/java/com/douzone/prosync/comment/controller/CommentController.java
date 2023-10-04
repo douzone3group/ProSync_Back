@@ -12,9 +12,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,8 +22,6 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.security.Principal;
-
-import static com.douzone.prosync.constant.ConstantPool.DEFAULT_PAGE_SIZE;
 
 @Controller
 @RequiredArgsConstructor
@@ -78,13 +73,11 @@ public class CommentController {
     }
 
 
-
-
     //     댓글 조회
     @GetMapping("/tasks/{task-id}/comments")
-    @ApiOperation(value = "댓글 전체 조회",notes = "댓글을 전체 조회 한다",tags = "comment")
+    @ApiOperation(value = "댓글 전체 조회", notes = "댓글을 전체 조회 한다", tags = "comment")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successfully retrieved",response = GetCommentsResponse.class),
+            @ApiResponse(code = 200, message = "successfully retrieved", response = GetCommentsResponse.class),
             @ApiResponse(code = 404, message = "comment not found"),
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
@@ -92,10 +85,11 @@ public class CommentController {
             @ApiImplicitParam(name = "page", dataType = "integer", paramType = "query", value = "조회할 페이지 번호", defaultValue = "1", example = "1"),
             @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query", value = "한페이지에 보여질 요소 개수", defaultValue = "10", example = "20")})
     public ResponseEntity<PageResponseDto<GetCommentsResponse>> findAllComment(
-            @Parameter(description = "업무 식별자",required = true,example = "1") @PathVariable("task-id") Long taskId,
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size=DEFAULT_PAGE_SIZE, sort="commentId", direction = Sort.Direction.DESC) Pageable pageable){
+            @Parameter(description = "업무 식별자", required = true, example = "1") @PathVariable("task-id") Long taskId,
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
 
-        PageResponseDto<GetCommentsResponse> response = commentService.findCommentList(taskId, pageable);
+        PageResponseDto<GetCommentsResponse> response = commentService.findCommentList(taskId, page, size);
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
