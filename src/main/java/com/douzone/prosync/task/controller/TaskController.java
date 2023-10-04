@@ -122,13 +122,14 @@ public class TaskController {
             @ApiImplicitParam(name = "status", dataType = "string", paramType = "query", value = "업무상태", example = "todo")
     })
     public ResponseEntity<PageResponseDto<GetTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
-                                                                                          @RequestParam(required = false) String search,
-                                                                                          @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable,
-                                                                                          @RequestParam(required = false) boolean isActive,
-                                                                                          @RequestParam(required = false) String view,
-                                                                                          @RequestParam(required = false) String status,
-                                                                                          @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        PageResponseDto pageResponseDto = taskService.findTaskList(projectId, pageable, search, isActive, view, status, getMemberId(principal));
+                                                                         @RequestParam(required = false) String search,
+                                                                         @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                                         @RequestParam(required = false, defaultValue = "10") Integer size,
+                                                                         @RequestParam(required = false) boolean isActive,
+                                                                         @RequestParam(required = false) String view,
+                                                                         @RequestParam(required = false) String status,
+                                                                         @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        PageResponseDto pageResponseDto = taskService.findTaskList(projectId, page, size, search, isActive, view, status, getMemberId(principal));
         return new ResponseEntity<>(pageResponseDto, HttpStatus.OK);
     }
 

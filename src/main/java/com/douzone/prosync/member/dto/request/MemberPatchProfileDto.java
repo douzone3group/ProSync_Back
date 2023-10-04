@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Getter
 @NoArgsConstructor
@@ -13,11 +15,11 @@ public class MemberPatchProfileDto {
 
 
         @ApiModelProperty(value = "닉네임" ,example = "hee")
-        @NotNull @NotBlank
+        @Pattern(regexp = "^[가-힣]{1,7}$")
         private String name;
 
         @ApiModelProperty(value = "회원 소개글",example = "hi")
-        @NotNull @NotBlank
+        @Size(min = 20, max = 500)
         private String intro;
 
 
