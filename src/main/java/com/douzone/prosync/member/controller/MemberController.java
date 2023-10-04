@@ -46,7 +46,6 @@ public class MemberController {
 
     private final MemberService memberService;
 
-
     private final TokenStorageService redisService;
 
     private final HmacAndBase64 hmacAndBase64;
