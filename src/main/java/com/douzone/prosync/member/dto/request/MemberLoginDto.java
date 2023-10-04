@@ -19,8 +19,6 @@ public class MemberLoginDto {
         private String email;
 
         @ApiModelProperty(value = "비밀번호", example = "aaaaa")
-        @NotBlank
-        @NotNull
         private String password;
 
 
