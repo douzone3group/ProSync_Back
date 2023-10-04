@@ -18,4 +18,6 @@ public interface BookmarkMapper {
 
     Optional<BookmarkDto> findById(@Param("projectId") Long projectId, @Param("memberId") Long memberId);
     List<BookmarkResponseDto> findAll(Long memberId);
+
+    int duplicateBookmark(@Param("projectId") Long projectId, @Param("memberId") Long memberId);
 }
