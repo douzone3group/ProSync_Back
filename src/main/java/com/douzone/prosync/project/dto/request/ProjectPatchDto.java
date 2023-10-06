@@ -9,11 +9,10 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
 @Setter
+@NoArgsConstructor
 @ApiModel("[REQUEST] PROJECT - PATCH")
 public  class ProjectPatchDto {
 
@@ -47,4 +46,9 @@ public  class ProjectPatchDto {
 
     private String projectImage;
 
+    public ProjectPatchDto(Long projectId, Long fileId, String projectImage) {
+        this.projectId = projectId;
+        this.fileId = fileId;
+        this.projectImage = projectImage;
+    }
 }
