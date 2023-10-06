@@ -30,7 +30,16 @@ public class ConstantPool {
 
 
     //  NOTIFICATION SCHEDULING DURATION
-    public static final Integer NOTIFICATION_DEFAULT_DURATION = 30;
+
+    public static final Integer NOTIFICATION_EXPIRATION_DURATION = 30*6;
+
+
+
+
+    // LOG SCHEDULING DURATION
+    public static final Long LOG_SCHEDULING_TERM = 1L* 24 * 60 * 60 *1000;
+
+    public static final Integer LOG_EXPIRATION_DURATION = 365 * 3;
 
 
 }
