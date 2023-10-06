@@ -30,7 +30,7 @@ public interface FileMapper {
 
     void saveFileInfoList(List<FileInfo> fileInfoList);
 
-    @Select("SELECT * FROM file_info WHERE file_info_id = #{fileInfoId} AND deleted_at IS NULL")
+    @Select("SELECT * FROM file_info WHERE file_info_id = #{fileInfoId} AND deleted_at IS false")
     Optional<FileInfo> findFileInfo(Long fileInfoId);
 
     @Update("UPDATE file_info SET deleted_at = now() WHERE file_info_id = #{fileInfoId}")

@@ -4,17 +4,15 @@ package com.douzone.prosync.project.service;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
-import com.douzone.prosync.log.dto.LogConditionDto;
-import com.douzone.prosync.log.logenum.LogCode;
-import com.douzone.prosync.log.service.LogService;
 import com.douzone.prosync.file.basic.BasicImage;
 import com.douzone.prosync.file.dto.FileRequestDto;
 import com.douzone.prosync.file.dto.FileResponseDto;
 import com.douzone.prosync.file.entity.File;
 import com.douzone.prosync.file.entity.FileInfo;
 import com.douzone.prosync.file.service.FileService;
-import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
-import com.douzone.prosync.member_project.dto.MemberProjectSearchCond;
+import com.douzone.prosync.log.dto.LogConditionDto;
+import com.douzone.prosync.log.logenum.LogCode;
+import com.douzone.prosync.log.service.LogService;
 import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.notification.dto.NotificationConditionDto;
@@ -37,7 +35,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -68,9 +65,7 @@ public class ProjectServiceImpl implements ProjectService {
         if (dto.getFileId() != null) {
             File file = fileService.findFile(dto.getFileId());
             fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.PROJECT, projectId, file.getFileId()));
-            dto.setProjectImage(file.getPath());
-        } else { // 기본 프로젝트 이미지 세팅
-            dto.setProjectImage(BasicImage.BASIC_PROJECT_IMAGE.getPath());
+            projectMapper.updateProject(new ProjectPatchDto(dto.getProjectId(), dto.getFileId(), file.getPath()));
         }
 
         return projectId;
@@ -173,7 +168,11 @@ public class ProjectServiceImpl implements ProjectService {
     //프로젝트 조회
     public Project findProject(Long projectId) {
         Optional<Project> project = projectMapper.findById(projectId);
-        return project.orElseThrow(() -> new ApplicationException(ErrorCode.PROJECT_NOT_FOUND));
+        Project findProject = project.orElseThrow(() -> new ApplicationException(ErrorCode.PROJECT_NOT_FOUND));
+        if (findProject.getProjectImage() == null) {
+            findProject.setProjectImage(BasicImage.BASIC_PROJECT_IMAGE.getPath());
+        }
+        return findProject;
     }
 
     // 프로젝트 리스트 조회
@@ -183,6 +182,13 @@ public class ProjectServiceImpl implements ProjectService {
         PageHelper.startPage(pageNum, pageable.getPageSize());
 
         List<GetProjectsResponse> projectList = projectMapper.findAll(searchCond);
+
+        // 프로젝트 이미지가 없을 경우 기본 이미지 리턴
+        projectList.forEach(project -> {
+            if (project.getProjectImage() == null) {
+                project.setProjectImage(BasicImage.BASIC_PROJECT_IMAGE.getPath());
+            }
+        });
         return new PageResponseDto<>(new PageInfo<>(projectList));
     }
 
@@ -192,6 +198,11 @@ public class ProjectServiceImpl implements ProjectService {
         PageHelper.startPage(pageNum, pageable.getPageSize());
 
         List<GetProjectsResponse> myProjects = projectMapper.findByMemberId(memberId);
+        myProjects.forEach(project -> {
+            if (project.getProjectImage() == null) {
+                project.setProjectImage(BasicImage.BASIC_PROJECT_IMAGE.getPath());
+            }
+        });
         return new PageResponseDto<>(new PageInfo<>(myProjects));
     }
 
