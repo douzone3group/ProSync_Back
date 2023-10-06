@@ -9,13 +9,27 @@
 
     <update id="updateProject">
         update project
-        set title=#{title},
-            intro=#{intro},
-            start_date=#{startDate},
-            end_date=#{endDate},
+        <set>
             modified_at=now(),
-            is_public=#{isPublic},
-            project_image=#{projectImage}
+            <if test="title != null">
+                title=#{title},
+            </if>
+            <if test="intro != null">
+                intro=#{intro},
+            </if>
+            <if test="startDate != null">
+                start_date=#{startDate},
+            </if>
+            <if test="endDate != null">
+                end_date=#{endDate},
+            </if>
+            <if test="isPublic != null">
+                is_public=#{isPublic},
+            </if>
+            <if test="projectImage != null">
+                project_image=#{projectImage},
+            </if>
+        </set>
         where project_id=#{projectId} and is_deleted is false
     </update>
 
