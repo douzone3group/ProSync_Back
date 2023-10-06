@@ -30,7 +30,7 @@ public interface NotificationRepository {
     Notification findById(Long notificationId);
     List<NotificationResponse> getNotificationList(NotificationSearchCondition condition);
 
-    List<NotificationTarget> getNotificationTagetListByNotificationId(Long notificationId);
+    List<NotificationTarget> getNotificationTargetListByNotificationId(Long notificationId);
 
     NotificationTarget findTargetById(Long notificationTargetId);
 

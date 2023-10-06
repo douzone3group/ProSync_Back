@@ -1,6 +1,5 @@
-package com.douzone.prosync.redis;
+package com.douzone.prosync.security.redis;
 
-import com.douzone.prosync.constant.ConstantPool;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,7 +27,7 @@ public class RedisService implements TokenStorageService {
     }
 
 
-
+ 
     public void setRefreshToken(String key,String value){
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         values.set(key,value, Duration.ofSeconds(refreshTokenValidityInSeconds));

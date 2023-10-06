@@ -20,7 +20,7 @@ import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
 import com.douzone.prosync.member_project.service.MemberProjectService;
-import com.douzone.prosync.redis.RedisService;
+import com.douzone.prosync.security.redis.RedisService;
 import com.douzone.prosync.security.jwt.HmacAndBase64;
 import com.douzone.prosync.security.jwt.RefreshTokenProvider;
 import com.douzone.prosync.security.jwt.TokenProvider;
@@ -77,10 +77,6 @@ public class MemberServiceImpl implements MemberService{
      * 회원가입 로직
      */
     public Member signup(MemberPostDto memberDto) {
-        // 중복검사
-        if (duplicateInspection(memberDto.getEmail())) {
-            throw new ApplicationException(ErrorCode.DUPLICATED_USER_ID);
-        }
         MemberDto member = memberDto.of(passwordEncoder.encode(memberDto.getPassword()));
         return memberRepository.save(member);
     }
@@ -145,7 +141,6 @@ public class MemberServiceImpl implements MemberService{
 
             memberProjectService.exitProjectMember(projectIds.get(i),memberId);
 
-            //Todo: 회원이 탈퇴하였다고 알려주기(본인이 나간거지만 탈퇴했다고 알려주기)
         }
 
         memberRepository.updateDeleted(memberId);
@@ -164,8 +159,12 @@ public class MemberServiceImpl implements MemberService{
     /**
      * Email로 Member 중복검사하기
      */
-    public boolean duplicateInspection(String email) {
-        return !(memberRepository.findByEmail(email).orElse(null)==null);
+    public void duplicateInspection(String email) {
+
+       if (!(memberRepository.findByEmail(email).orElse(null)==null)) {
+           throw new ApplicationException(ErrorCode.DUPLICATED_USER_ID);
+       }
+
     }
 
 
@@ -175,9 +174,8 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void invalidateInspectionAndSend(MailDto mail) {
         // email이 DB에 등록되어 있는지 확인한다.
-        if (duplicateInspection(mail.getEmail())) {
-            throw new ApplicationException(ErrorCode.DUPLICATED_USER_ID);
-        }
+        duplicateInspection(mail.getEmail());
+
 
         String number = authenticateService.sendForAuthenticate(mail.getEmail());
 
@@ -235,4 +233,7 @@ public class MemberServiceImpl implements MemberService{
         return authentication.getName();
 
     }
+
+
+
 }

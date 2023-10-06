@@ -4,14 +4,13 @@ import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.mail.dto.CertificationCodeDto;
 import com.douzone.prosync.mail.dto.MailDto;
+import com.douzone.prosync.member.dto.MemberEmailDto;
 import com.douzone.prosync.member.dto.request.*;
 import com.douzone.prosync.member.dto.response.MemberGetResponse;
 import com.douzone.prosync.member.dto.response.MemberSimpleResponseDto;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.service.MemberService;
-import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
-import com.douzone.prosync.member_project.service.MemberProjectService;
-import com.douzone.prosync.redis.TokenStorageService;
+import com.douzone.prosync.security.redis.TokenStorageService;
 import com.douzone.prosync.security.jwt.HmacAndBase64;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,18 +22,19 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.util.List;
 
 
 @RestController
@@ -45,7 +45,6 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
-
 
     private final TokenStorageService redisService;
 
@@ -79,7 +78,7 @@ public class MemberController {
      * 회원가입 성공 로직
      */
 
-    @PostMapping("/members")
+    @PostMapping("/signup")
     @Operation(summary = "회원가입", description = "회원가입",tags = "member")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success", response = Member.class),
@@ -87,7 +86,23 @@ public class MemberController {
             @ApiResponse(code = 500, message = "server error")
     })
     @Transactional
-    public ResponseEntity<MemberSimpleResponseDto> signUp(@Valid @RequestBody MemberPostDto postDto) {
+    public ResponseEntity<MemberSimpleResponseDto> signUp(@Valid @RequestBody MemberPostDto postDto,BindingResult bindingResult) {
+        // 형식 검사
+        if (bindingResult.hasErrors()) {
+            if (bindingResult.hasFieldErrors("email")) {
+                throw new ApplicationException(ErrorCode.INCORRECT_FORMAT_EMAIL);
+            }
+
+            if (bindingResult.hasFieldErrors("password")) {
+                throw new ApplicationException(ErrorCode.INCORRECT_FORMAT_PASSWORD);
+
+            }
+
+            if (bindingResult.hasFieldErrors("name")) {
+                throw new ApplicationException(ErrorCode.INCORRECT_FORMAT_NAME);
+
+            }
+        }
         // 중복 검사
         Member member = memberService.signup(postDto);
 
@@ -108,7 +123,17 @@ public class MemberController {
     })
     @Transactional
     public ResponseEntity<MemberSimpleResponseDto> updateMemberProfile(@Parameter(hidden = true) @ApiIgnore Principal principal,
-                                                                       @Valid @RequestBody MemberPatchProfileDto dto) {
+                                                                       @Valid @RequestBody MemberPatchProfileDto dto,BindingResult bindingResult) {
+        // 형식 검사
+        if (bindingResult.hasErrors()) {
+            if (bindingResult.hasFieldErrors("name")) {
+                throw new ApplicationException(ErrorCode.INCORRECT_FORMAT_NAME);
+            }
+
+            if (bindingResult.hasFieldErrors("intro")) {
+                throw new ApplicationException(ErrorCode.INCORRECT_FORMAT_INTRO);
+            }
+        }
         Long memberId = Long.parseLong(principal.getName());
         memberService.updateMemberProfile(memberId, dto);
         return new ResponseEntity(new MemberSimpleResponseDto(memberId), HttpStatus.OK);
@@ -121,7 +146,10 @@ public class MemberController {
     @Operation(summary = "비밀번호 수정", description = "비밀번호 변경, 성공 시 상태코드 200",tags = "member")
     @Transactional
     public ResponseEntity updateMemberPassword(@Parameter(hidden = true) @ApiIgnore Principal principal,
-                                               @Valid @RequestBody MemberPatchPasswordDto dto) {
+                                               @Valid @RequestBody MemberPatchPasswordDto dto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ApplicationException(ErrorCode.INCORRECT_FORMAT_PASSWORD);
+        }
         Long memberId = Long.parseLong(principal.getName());
         memberService.updateMemberPassword(memberId, dto);
         return new ResponseEntity(new MemberSimpleResponseDto(memberId), HttpStatus.OK);
@@ -167,7 +195,10 @@ public class MemberController {
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "로그인, 성공 시 토큰과 상태코드 200", tags = "member")
     @Transactional
-    public ResponseEntity login(@Valid @RequestBody MemberLoginDto loginDto, HttpServletRequest request) {
+    public ResponseEntity login(@Valid @RequestBody MemberLoginDto loginDto,BindingResult bindingResult,HttpServletRequest request) {
+        if (bindingResult.hasFieldErrors("email")) {
+            throw new ApplicationException(ErrorCode.INCORRECT_FORMAT_EMAIL);
+        }
 
         HttpHeaders httpHeaders = new HttpHeaders();
         Long memberId = Long.parseLong(memberService.loginProcess(loginDto, httpHeaders, request));
@@ -192,6 +223,16 @@ public class MemberController {
         return new ResponseEntity(principal.getName() + " 삭제완료", HttpStatus.OK);
     }
 
+    // 이메일 형식 및 중복확인
+    @PostMapping("/idcheck")
+    public ResponseEntity idCheck(@Valid @RequestBody MemberEmailDto dto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ApplicationException(ErrorCode.INCORRECT_FORMAT_EMAIL);
+        }
+        String email = dto.getEmail();
+        memberService.duplicateInspection(email);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 
 }
 

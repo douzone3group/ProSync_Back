@@ -1,6 +1,7 @@
 package com.douzone.prosync.member_project.repository;
 
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
+import com.douzone.prosync.member_project.dto.MemberProjectSearchCond;
 import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.status.ProjectMemberAuthority;
 import org.apache.ibatis.annotations.*;
@@ -21,7 +22,7 @@ public interface MemberProjectMapper {
 
     Optional<MemberProjectResponseDto> findProjectMember(@Param("projectId") Long projectId, @Param("memberId") Long memberId);
 
-    List<MemberProjectResponseDto> findProjectMembers(Long projectId);
+    List<MemberProjectResponseDto> findProjectMembers(MemberProjectSearchCond searchCond);
 
     @Select("select * from member_project where member_project_id = #{projectMemberId}")
     Optional<MemberProject> findProjectMemberById(Long projectMemberId);

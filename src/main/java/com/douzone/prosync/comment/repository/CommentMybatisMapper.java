@@ -30,9 +30,6 @@ public interface CommentMybatisMapper {
     Long findProjectIdByTask(Long taskId);
 
     Optional<MemberProjectResponseDto> findCommentMember(Long commentId);
-
-    Comment findbyId(Long commentId);
-
     @Select("select t.task_id, t.title, t.project_id from comment c join task t on c.task_id=t.task_id where c.comment_id = #{commentId}")
     TaskSimpleDto findTaskbyId(Long commentId);
 }

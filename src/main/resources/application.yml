@@ -20,7 +20,7 @@ spring:
   redis:
     host: localhost
     port: 6379
-#    password:
+  #    password:
 
 
 
@@ -86,5 +86,3 @@ cloud:
       static: ap-northeast-2
     stack:
       auto: false
-
-

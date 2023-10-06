@@ -7,6 +7,7 @@ import com.douzone.prosync.comment.repository.CommentMybatisMapper;
 import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
+import com.douzone.prosync.file.dto.FileResponseDto;
 import com.douzone.prosync.log.dto.LogConditionDto;
 import com.douzone.prosync.log.logenum.LogCode;
 import com.douzone.prosync.log.service.LogService;
@@ -26,9 +27,10 @@ import com.douzone.prosync.task.repository.TaskMapper;
 import com.douzone.prosync.task.service.TaskServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -72,19 +74,24 @@ public class CommentServiceImpl implements CommentService {
 
         // 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
         List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskDto.getTaskId());
-        List<Long> memberIds = taskMembers.stream()
-                .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProject.MemberProjectStatus.ACTIVE))
-                .map(TaskMemberResponseDto::getMemberId)
-                .collect(Collectors.toList());
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(dto.getMemberId())
-                .code(COMMENT_ADD)
-                .memberIds(memberIds)
-                .projectId(projectId)
-                .taskId(taskDto.getTaskId())
-                .subject(taskDto.getTitle()).build());
+        if (taskMembers.size() > 0) {
+            List<Long> memberIds = taskMembers.stream()
+                    .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProject.MemberProjectStatus.ACTIVE))
+                    .map(TaskMemberResponseDto::getMemberId)
+                    .collect(Collectors.toList());
+
+            if (memberIds.size() > 0) {
+                // 알림 저장 및 전달
+                notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                        .fromMemberId(dto.getMemberId())
+                        .code(COMMENT_ADD)
+                        .memberIds(memberIds)
+                        .projectId(projectId)
+                        .taskId(taskDto.getTaskId())
+                        .subject(taskDto.getTitle()).build());
+            }
+        }
 
 
         // 로그 저장
@@ -115,19 +122,24 @@ public class CommentServiceImpl implements CommentService {
 
         // 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
         List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskDto.getTaskId());
-        List<Long> memberIds = taskMembers.stream()
-                .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProject.MemberProjectStatus.ACTIVE))
-                .map(TaskMemberResponseDto::getMemberId)
-                .collect(Collectors.toList());
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.COMMENT_MODIFICATION)
-                .memberIds(memberIds)
-                .taskId(taskDto.getTaskId())
-                .projectId(taskDto.getProjectId())
-                .subject(taskDto.getTitle()).build());
+        if (taskMembers.size() > 0) {
+            List<Long> memberIds = taskMembers.stream()
+                    .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProject.MemberProjectStatus.ACTIVE))
+                    .map(TaskMemberResponseDto::getMemberId)
+                    .collect(Collectors.toList());
+
+            if (memberIds.size() > 0) {
+                // 알림 저장 및 전달
+                notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                        .fromMemberId(memberId)
+                        .code(NotificationCode.COMMENT_MODIFICATION)
+                        .memberIds(memberIds)
+                        .taskId(taskDto.getTaskId())
+                        .projectId(taskDto.getProjectId())
+                        .subject(taskDto.getTitle()).build());
+            }
+        }
 
 
         // 로그 저장
@@ -154,19 +166,26 @@ public class CommentServiceImpl implements CommentService {
 
         // 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
         List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskDto.getTaskId());
-        List<Long> memberIds = taskMembers.stream()
-                .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProject.MemberProjectStatus.ACTIVE))
-                .map(TaskMemberResponseDto::getMemberId)
-                .collect(Collectors.toList());
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.COMMENT_REMOVE)
-                .memberIds(memberIds)
-                .taskId(taskDto.getTaskId())
-                .projectId(taskDto.getProjectId())
-                .subject(taskDto.getTitle()).build());
+        if (taskMembers.size() > 0) {
+            List<Long> memberIds = taskMembers.stream()
+                    .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProject.MemberProjectStatus.ACTIVE))
+                    .map(TaskMemberResponseDto::getMemberId)
+                    .collect(Collectors.toList());
+
+            if (memberIds.size() > 0) {
+                // 알림 저장 및 전달
+                notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                        .fromMemberId(memberId)
+                        .code(NotificationCode.COMMENT_REMOVE)
+                        .memberIds(memberIds)
+                        .taskId(taskDto.getTaskId())
+                        .projectId(taskDto.getProjectId())
+                        .subject(taskDto.getTitle()).build());
+            }
+
+
+        }
 
 
         // 로그 저장
@@ -181,14 +200,18 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public PageResponseDto<GetCommentsResponse> findCommentList(Long taskId, Pageable pageable) {
-        int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
-        PageHelper.startPage(pageNum, pageable.getPageSize());
-
+    public PageResponseDto<GetCommentsResponse> findCommentList(Long taskId, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
         List<GetCommentsResponse> comments = commentMybatisMapper.findAllComments(taskId);
+        Gson gson = new Gson();
+        comments.forEach(comment -> {
+            List<FileResponseDto> dto = gson.fromJson(comment.getFiles(), new TypeToken<List<FileResponseDto>>() {}.getType());
+            if (dto.get(0).getFileId() != null) {
+                comment.setFileList(dto);
+            }
+            comment.setFiles(null);
+        });
         PageInfo<GetCommentsResponse> pageInfo = new PageInfo<>(comments);
-
-        comments.forEach(comment -> comment.setMemberInfo(findCommentMember(comment.getCommentId())));
 
         return new PageResponseDto<>(pageInfo);
     }

@@ -1,5 +1,6 @@
 package com.douzone.prosync.member_project.service;
 
+import com.douzone.prosync.common.PageResponseDto;
 import com.douzone.prosync.exception.ApplicationException;
 import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.log.dto.LogConditionDto;
@@ -7,6 +8,7 @@ import com.douzone.prosync.log.logenum.LogCode;
 import com.douzone.prosync.log.service.LogService;
 import com.douzone.prosync.member_project.dto.MemberProjectRequestDto;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
+import com.douzone.prosync.member_project.dto.MemberProjectSearchCond;
 import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.member_project.status.ProjectMemberAuthority;
@@ -15,7 +17,10 @@ import com.douzone.prosync.notification.notienum.NotificationCode;
 import com.douzone.prosync.notification.service.NotificationService;
 import com.douzone.prosync.project.entity.Project;
 import com.douzone.prosync.project.repository.ProjectMapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -46,9 +51,19 @@ public class MemberProjectServiceImpl implements MemberProjectService {
     // 프로젝트 초대 링크 생성
     @Override
     public String createInviteLink(Long projectId) {
+        return createInviteCodeForProject(projectId);
+    }
+
+    // 프로젝트 초대 링크 조회
+    @Override
+    public String findInviteLink(Long projectId) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
-        String result = values.get("invite_project:" + projectId);
-        return result != null ? result : createInviteCodeForProject(projectId);
+        String inviteCode = values.get("invite_project:" + projectId);
+
+        if (inviteCode == null) {
+            throw new ApplicationException(ErrorCode.PROJECT_INVITE_CODE_NOT_FOUND);
+        }
+        return inviteCode;
     }
 
     // 프로젝트_회원 저장
@@ -112,6 +127,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
                     .code(LogCode.CHANGE_AUTHORITY)
                     .projectId(findProjectId)
                     .memberId(memberId)
+                    .authority(ProjectMemberAuthority.READER)
                     .build());
 
         } else {
@@ -198,7 +214,6 @@ public class MemberProjectServiceImpl implements MemberProjectService {
                     .authority(ProjectMemberAuthority.WRITER).build());
 
 
-
             // 로그 저장
             logService.saveLog(LogConditionDto.builder()
                     .fromMemberId(memberId)
@@ -230,7 +245,6 @@ public class MemberProjectServiceImpl implements MemberProjectService {
         }
 
 
-
     }
 
     // 프로젝트 회원 조회
@@ -241,9 +255,16 @@ public class MemberProjectServiceImpl implements MemberProjectService {
 
     // 프로젝트 회원 목록 조회
     @Override
-    public List<MemberProjectResponseDto> findProjectMembers(Long projectId) {
-        return projectMemberMapper.findProjectMembers(projectId);
+    public PageResponseDto<MemberProjectResponseDto> findProjectMembers(MemberProjectSearchCond searchCond, Pageable pageable) {
+        int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
+        PageHelper.startPage(pageNum, pageable.getPageSize());
+
+        List<MemberProjectResponseDto> memberList = projectMemberMapper.findProjectMembers(searchCond);
+        PageInfo<MemberProjectResponseDto> pageInfo = new PageInfo<>(memberList);
+
+        return new PageResponseDto<>(pageInfo);
     }
+
 
     // 회원에 해당하는 프로젝트 리스트 조회
     @Override
@@ -313,5 +334,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
 
         return invitationCode;
     }
+
+
 
 }

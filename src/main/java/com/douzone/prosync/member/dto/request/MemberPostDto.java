@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.sql.Timestamp;
 import java.time.Instant;
 
@@ -23,14 +24,12 @@ public class MemberPostDto {
         private String email;
 
         @ApiModelProperty(example = "1234")
-        @NotBlank
-        @NotNull
+        @Pattern(regexp = "^(?=.*[!@#$%^&*()_+{}\\[\\]:;<>,.?~\\\\/-]).{8,15}$")
         private String password;
 
 
         @ApiModelProperty(example = "hong")
-        @NotNull
-        @NotBlank
+        @Pattern(regexp = "^[가-힣]{1,7}$")
         private String name;
 
         public MemberDto of(String modifiedPassword) {

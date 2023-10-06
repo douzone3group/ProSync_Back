@@ -9,6 +9,8 @@ import com.douzone.prosync.log.logenum.LogCode;
 import com.douzone.prosync.log.repository.LogRepository;
 import com.douzone.prosync.log.service.LogService;
 import com.douzone.prosync.notification.dto.response.NotificationResponse;
+import com.douzone.prosync.project.dto.response.GetProjectsResponse;
+import com.douzone.prosync.project.service.ProjectService;
 import com.douzone.prosync.searchcondition.LogSearchCondition;
 import com.github.pagehelper.PageInfo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 
 import static com.douzone.prosync.constant.ConstantPool.DEFAULT_PAGE_SIZE;
@@ -40,6 +43,8 @@ public class LogController {
     private final LogService logService;
 
     private final LogRepository logRepository;
+
+    private final ProjectService projectService;
 
     /**
      * 로그 삭제하기
@@ -62,13 +67,13 @@ public class LogController {
     @GetMapping("/projectlog/{project-id}")
     public ResponseEntity<PageResponseDto<LogResponse>> getLogList(@Parameter(example = "1", description = "프로젝트 식별자", required = true)
                                                                     @PathVariable("project-id") Long projectId,
-                                                                    @RequestParam(required = false) LogCode logCode,
+                                                                    @RequestParam(required = false) LogCode code,
                                                                    @RequestParam(required = false) LocalDateTime startDate,
                                                                    @RequestParam(required = false) LocalDateTime endDate,
                                                                    @RequestParam(required = false) String content,
                                                                    @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable){
 
-        LogSearchCondition condition = new LogSearchCondition(projectId, logCode, startDate, endDate, content);
+        LogSearchCondition condition = new LogSearchCondition(projectId, code, startDate, endDate, content);
 
         PageResponseDto<LogResponse> logPageList = logService.getLogPageList(condition, pageable);
 
@@ -99,4 +104,20 @@ public class LogController {
     public ResponseEntity getLogListCount(@Parameter(example = "1", description = "프로젝트 식별자", required = true) @PathVariable("project-id") Long projectId){
         return new ResponseEntity<>(logRepository.getLogListCount(projectId), HttpStatus.OK);
     }
+
+
+    /**
+     * ADMIN인 프로젝트 조회
+     */
+    @Operation(summary = "ADMIN인 프로젝트  조회", description = "ADMIN 권한을 가진 프로젝트들을 조회함", tags = "log")
+    @GetMapping("/projectlog/admin")
+    public ResponseEntity getMyProjectsPartOfAdmin(@PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable,
+                                                   @Parameter(hidden = true) Principal principal) {
+
+        PageResponseDto<GetProjectsResponse> projectPageList = projectService.findMyProjectsPartOfAdmin(Long.parseLong(principal.getName()), pageable);
+        return new ResponseEntity<>(projectPageList, HttpStatus.OK);
+
+    }
+
+
 }

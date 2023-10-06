@@ -14,6 +14,7 @@ import com.douzone.prosync.file.entity.File;
 import com.douzone.prosync.file.entity.FileInfo;
 import com.douzone.prosync.file.service.FileService;
 import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
+import com.douzone.prosync.member_project.dto.MemberProjectSearchCond;
 import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.notification.dto.NotificationConditionDto;
@@ -116,14 +117,16 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<Long> memberIds = projectMapper.findMembersInProject(project.getProjectId());
 
+        if (memberIds.size() > 0) {
+            // 알림 저장 및 전달
+            notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                    .fromMemberId(memberId)
+                    .code(NotificationCode.PROJECT_MODIFICATION)
+                    .memberIds(memberIds)
+                    .projectId(dto.getProjectId())
+                    .subject(project).build());
+        }
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.PROJECT_MODIFICATION)
-                .memberIds(memberIds)
-                .projectId(dto.getProjectId())
-                .subject(project).build());
 
         // 로그 저장
         logService.saveLog(LogConditionDto.builder()
@@ -137,7 +140,7 @@ public class ProjectServiceImpl implements ProjectService {
     // 프로젝트 삭제 (소프트)
     public void delete(Long projectId, Long memberId) {
 
-        Project project = projectMapper.findById(projectId).orElseThrow(()-> new ApplicationException(ErrorCode.PROJECT_NOT_FOUND));
+        Project project = projectMapper.findById(projectId).orElseThrow(() -> new ApplicationException(ErrorCode.PROJECT_NOT_FOUND));
         List<Long> memberIds = projectMapper.findMembersInProject(project.getProjectId());
 
         Integer row = projectMapper.deleteProject(projectId);
@@ -147,13 +150,15 @@ public class ProjectServiceImpl implements ProjectService {
         }
         fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.PROJECT, projectId));
 
+        if (memberIds.size() > 0) {
+            // 알림 저장 및 전달
+            notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                    .fromMemberId(memberId)
+                    .code(NotificationCode.PROJECT_REMOVE)
+                    .memberIds(memberIds)
+                    .subject(project).build());
+        }
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.PROJECT_REMOVE)
-                .memberIds(memberIds)
-                .subject(project).build());
 
         // 로그 저장
         logService.saveLog(LogConditionDto.builder()
@@ -174,11 +179,11 @@ public class ProjectServiceImpl implements ProjectService {
     // 프로젝트 리스트 조회
     public PageResponseDto<GetProjectsResponse> findAll(ProjectSearchCond searchCond, Pageable pageable) {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
+
         PageHelper.startPage(pageNum, pageable.getPageSize());
 
         List<GetProjectsResponse> projectList = projectMapper.findAll(searchCond);
-
-        return getGetProjectsResponsePageResponseDto(projectList);
+        return new PageResponseDto<>(new PageInfo<>(projectList));
     }
 
 
@@ -187,31 +192,17 @@ public class ProjectServiceImpl implements ProjectService {
         PageHelper.startPage(pageNum, pageable.getPageSize());
 
         List<GetProjectsResponse> myProjects = projectMapper.findByMemberId(memberId);
-        return getGetProjectsResponsePageResponseDto(myProjects);
+        return new PageResponseDto<>(new PageInfo<>(myProjects));
     }
 
-    private PageResponseDto<GetProjectsResponse> getGetProjectsResponsePageResponseDto(List<GetProjectsResponse> projects) {
-        PageInfo<GetProjectsResponse> pageInfo = new PageInfo<>(projects);
-
-        projects.forEach(project -> {
-            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(project.getProjectId());
-            project.setProjectMembers(projectMembers);
-        });
-
-        return new PageResponseDto<>(pageInfo);
-    }
 
     // 내 프로젝트 중 관리자인 프로젝트만 조회
     @Override
-    public PageInfo<GetProjectsResponse> findMyProjectsPartOfAdmin(Long memberId, Pageable pageable) {
+    public PageResponseDto<GetProjectsResponse> findMyProjectsPartOfAdmin(Long memberId, Pageable pageable) {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
         PageHelper.startPage(pageNum, pageable.getPageSize());
         List<GetProjectsResponse> myProjects = projectMapper.findByMemberIdPartOfAdmin(memberId);
-        myProjects = myProjects.stream().map(project -> {
-            List<MemberProjectResponseDto> projectMembers = memberProjectMapper.findProjectMembers(project.getProjectId());
-            project.setProjectMembers(projectMembers);
-            return project;
-        }).collect(Collectors.toList());
-        return new PageInfo<>(myProjects);
+        PageInfo<GetProjectsResponse> pageInfo = new PageInfo<>(myProjects);
+        return new PageResponseDto<>(pageInfo);
     }
 }
