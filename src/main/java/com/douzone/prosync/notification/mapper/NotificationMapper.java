@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -55,5 +56,9 @@ public interface NotificationMapper {
     Integer getNotificationCountIsReadFalse(Long memberId);
 
     void deleteAllTarget(Long memberId);
+
+    void cleanUpNotification(LocalDateTime duration);
+
+    void cleanUpNotificationTarget(LocalDateTime duration);
 
 }
