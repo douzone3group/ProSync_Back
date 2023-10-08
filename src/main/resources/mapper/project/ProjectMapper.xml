@@ -36,7 +36,6 @@
     <select id="findById" resultType="com.douzone.prosync.project.entity.Project">
         select * from project
         where project_id=#{projectId} and is_deleted is false
-
     </select>
 
     <select id="findAllProjects" resultType="com.douzone.prosync.project.entity.Project">
@@ -93,7 +92,7 @@
              join member m on mp.member_id = m.member_id
              join project_authority pa on mp.authority_id = pa.authority_id
              left join bookmark b on b.project_id = p.project_id and b.member_id = #{memberId}
-        where pa.authority = 'ADMIN' and p.project_id in (select project_id from member_project where member_id = #{memberId})
+        where pa.authority = 'ADMIN' and p.is_deleted = false and p.project_id in (select project_id from member_project where member_id = #{memberId})
         order by p.project_id desc
     </select>
 
