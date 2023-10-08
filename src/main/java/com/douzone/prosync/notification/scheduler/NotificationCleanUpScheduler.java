@@ -1,6 +1,7 @@
 package com.douzone.prosync.notification.scheduler;
 
 import com.douzone.prosync.notification.mapper.NotificationMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import static com.douzone.prosync.constant.ConstantPool.NOTIFICATION_EXPIRATION_DURATION;
 
 @Component
+@Slf4j
 public class NotificationCleanUpScheduler {
 
 
@@ -23,6 +25,6 @@ public class NotificationCleanUpScheduler {
         LocalDateTime daysAgo = LocalDateTime.now().minusDays(NOTIFICATION_EXPIRATION_DURATION);
         mapper.cleanUpNotificationTarget(daysAgo);
         mapper.cleanUpNotification(daysAgo);
-
+        log.info("{}  {}  알림 스케줄링 실행 완료  ",LocalDateTime.now(),Thread.currentThread());
     }
 }
