@@ -30,4 +30,8 @@ public class Project {
     private Boolean isPublic;
     private String projectImage;
     private Boolean isDeleted;
+
+    public void setProjectImage(String projectImage) {
+        this.projectImage = projectImage;
+    }
 }

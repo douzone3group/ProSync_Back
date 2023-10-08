@@ -46,4 +46,11 @@
         JOIN task t ON t.task_status_id = ts.task_status_id
         WHERE t.task_status_id = #{taskStatusId} AND ts.is_deleted IS false AND t.is_deleted IS false
     </select>
+    <update id="updateSeq">
+            UPDATE task_status
+            SET seq = #{taskStatusSeq.seq}
+            WHERE project_id = #{projectId}
+            AND task_status_id = #{taskStatusSeq.taskStatusId}
+            AND is_deleted is false;
+    </update>
 </mapper>

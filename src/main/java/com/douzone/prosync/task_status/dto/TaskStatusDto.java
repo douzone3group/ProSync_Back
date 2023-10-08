@@ -119,4 +119,11 @@ public class TaskStatusDto {
         @ApiModelProperty(value = "업무상태식별자", example = "1")
         private Long taskStatusId;
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class SeqRequestDto {
+        private Long taskStatusId;
+        private Integer seq;
+    }
 }

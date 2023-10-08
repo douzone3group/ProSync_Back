@@ -1,12 +1,9 @@
 package com.douzone.prosync.project.dto.response;
 
-import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -43,4 +40,7 @@ public class GetProjectsResponse {
     @ApiModelProperty(example = "북마크 아이디")
     private Long bookmarkId;
 
+    public void setProjectImage(String projectImage) {
+        this.projectImage = projectImage;
+    }
 }

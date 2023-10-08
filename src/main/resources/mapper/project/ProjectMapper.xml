@@ -9,23 +9,33 @@
 
     <update id="updateProject">
         update project
-        set title=#{title},
-            intro=#{intro},
-            start_date=#{startDate},
-            end_date=#{endDate},
+        <set>
             modified_at=now(),
-            is_public=#{isPublic},
-            project_image=#{projectImage}
-        where project_id = #{projectId}
-          and is_deleted is false
+            <if test="title != null">
+                title=#{title},
+            </if>
+            <if test="intro != null">
+                intro=#{intro},
+            </if>
+            <if test="startDate != null">
+                start_date=#{startDate},
+            </if>
+            <if test="endDate != null">
+                end_date=#{endDate},
+            </if>
+            <if test="isPublic != null">
+                is_public=#{isPublic},
+            </if>
+            <if test="projectImage != null">
+                project_image=#{projectImage},
+            </if>
+        </set>
+        where project_id=#{projectId} and is_deleted is false
     </update>
 
     <select id="findById" resultType="com.douzone.prosync.project.entity.Project">
-        select *
-        from project
-        where project_id = #{projectId}
-          and is_deleted is false
-
+        select * from project
+        where project_id=#{projectId} and is_deleted is false
     </select>
 
     <select id="findAllProjects" resultType="com.douzone.prosync.project.entity.Project">
@@ -37,15 +47,12 @@
 
     <update id="deleteProject">
         update project
-        set is_deleted= true,
-            modified_at=now()
-        where project_id = #{projectId}
-          and is_deleted is false
+        set is_deleted=true, modified_at=now()
+        where project_id=#{projectId} and is_deleted is false
     </update>
 
     <select id="findAll">
-        select p.project_id, p.title, p.start_date, p.end_date, p.created_at, p.project_image, m.member_id, m.name,
-        m.profile_image, b.bookmark_id
+        select p.project_id, p.title, p.start_date, p.end_date, p.created_at, p.project_image, m.member_id, m.name, m.profile_image, b.bookmark_id
         from project p
         join member_project mp on mp.project_id = p.project_id
         join member m on mp.member_id = m.member_id
@@ -79,23 +86,15 @@
     </select>
 
     <select id="findByMemberId">
-        select p.project_id,
-               p.title,
-               p.start_date,
-               p.end_date,
-               p.created_at,
-               p.project_image,
-               m.member_id,
-               m.name,
-               m.profile_image,
-               b.bookmark_id
+        select p.project_id, p.title, p.start_date, p.end_date, p.created_at, p.project_image, m.member_id, m.name, m.profile_image, b.bookmark_id
         from project p
-                 join member_project mp on mp.project_id = p.project_id
-                 join member m on mp.member_id = m.member_id
-                 join project_authority pa on mp.authority_id = pa.authority_id
-                 left join bookmark b on b.project_id = p.project_id and b.member_id = #{memberId}
+             join member_project mp on mp.project_id = p.project_id
+             join member m on mp.member_id = m.member_id
+             join project_authority pa on mp.authority_id = pa.authority_id
+             left join bookmark b on b.project_id = p.project_id and b.member_id = #{memberId}
         where pa.authority = 'ADMIN'
-          and p.project_id in (select project_id from member_project where member_id = #{memberId})
+          and p.is_deleted = false
+          and p.project_id in (select project_id from member_project where member_id = #{memberId} and status = 'ACTIVE')
         order by p.project_id desc
     </select>
 
@@ -124,13 +123,11 @@
     <select id="findMembersInProject">
         select member_id
         from member_project
-        where project_id = #{projectId}
-          and status = 'ACTIVE'
+        where project_id = #{projectId} and status = 'ACTIVE'
     </select>
 
     <select id="findProjectWithBookmarkAll">
-        select p.project_id, p.title, p.start_date, p.end_date, p.project_image, m.member_id, m.name, m.profile_image,
-        b.bookmark_id
+        select p.project_id, p.title, p.start_date, p.end_date, p.project_image, m.member_id, m.name, m.profile_image, b.bookmark_id
         from project p
         join member_project mp on mp.project_id = p.project_id
         join member m on mp.member_id = m.member_id
