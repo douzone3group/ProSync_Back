@@ -24,6 +24,7 @@ public class LogCleanUpScheduler {
         // 3년이 지난 로그들은 삭제 처리
         LocalDateTime daysAgo = LocalDateTime.now().minusDays(LOG_EXPIRATION_DURATION);
         mapper.cleanUpLog(daysAgo);
-        log.info("로그 스케줄링 실행 완료");
+        log.info("{}  {}  로그 스케줄링 실행 완료  ",LocalDateTime.now(),Thread.currentThread());
+
     }
 }

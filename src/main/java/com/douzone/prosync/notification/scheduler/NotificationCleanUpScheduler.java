@@ -25,6 +25,6 @@ public class NotificationCleanUpScheduler {
         LocalDateTime daysAgo = LocalDateTime.now().minusDays(NOTIFICATION_EXPIRATION_DURATION);
         mapper.cleanUpNotificationTarget(daysAgo);
         mapper.cleanUpNotification(daysAgo);
-        log.info("알림 스케줄링 실행 완료");
+        log.info("{}  {}  알림 스케줄링 실행 완료  ",LocalDateTime.now(),Thread.currentThread());
     }
 }
