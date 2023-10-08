@@ -78,7 +78,6 @@ public class TaskStatusDto {
         @ApiModelProperty(value = "업무상태", example = "TODO")
         private String taskStatus;
 
-
         @ApiModelProperty(value = "색상", example = "#000000")
         @Pattern(regexp = "^#\\w{6}$", message = "#6자리로 입력하세요. (예 : #000000)")
         private String color;
@@ -119,5 +118,12 @@ public class TaskStatusDto {
 
         @ApiModelProperty(value = "업무상태식별자", example = "1")
         private Long taskStatusId;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class SeqRequestDto {
+        private Long taskStatusId;
+        private Integer seq;
     }
 }

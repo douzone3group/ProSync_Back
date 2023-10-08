@@ -37,9 +37,6 @@ public class MemberDto {
     @ApiModelProperty(example = "멤버 소개글")
     private String intro;
 
-
-
-    // Todo: 파일 image 연결
     @ApiModelProperty(example = "프로필 이미지")
     private String profileImage;
 }

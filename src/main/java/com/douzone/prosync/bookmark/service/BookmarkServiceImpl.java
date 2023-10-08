@@ -45,7 +45,6 @@ public class BookmarkServiceImpl implements BookmarkService{
         PageHelper.startPage(pageNum, pageable.getPageSize());
 
         List<BookmarkResponseDto> bookmarkList = mapper.findAll(memberId);
-        System.out.println(bookmarkList);
         PageInfo<BookmarkResponseDto> pageInfo = new PageInfo<>(bookmarkList);
         return new PageResponseDto<>(pageInfo);
     }
