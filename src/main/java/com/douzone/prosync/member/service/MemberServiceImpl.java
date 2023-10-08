@@ -114,8 +114,8 @@ public class MemberServiceImpl implements MemberService{
                 fileService.delete(findProfileFile.getFileInfoId());
             }
 
-        } else {
-            dto.setProfileImage(member.getProfileImage());
+        } else if (dto.getProfileImage() == null) {
+             dto.setProfileImage(BasicImage.BASIC_USER_IMAGE.getPath());
         }
 
         memberRepository.updateProfile(memberId, dto);

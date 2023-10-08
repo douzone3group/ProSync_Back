@@ -54,6 +54,7 @@ public class ProjectServiceImpl implements ProjectService {
     // 프로젝트 생성
     public Long save(ProjectPostDto dto, Long memberId) {
 
+        dto.setProjectImage(BasicImage.BASIC_PROJECT_IMAGE.getPath());
         projectMapper.createProject(dto);
         Long projectId = dto.getProjectId();
 
@@ -98,10 +99,9 @@ public class ProjectServiceImpl implements ProjectService {
                 fileService.delete(findProjectImage.getFileInfoId());
             }
 
-        } else {
-            dto.setProjectImage(findProject.getProjectImage());
+        } else if (dto.getProjectImage() == null) {
+            dto.setProjectImage(BasicImage.BASIC_PROJECT_IMAGE.getPath());
         }
-
 
         Integer row = projectMapper.updateProject(dto);
         if (row < 1) {
@@ -168,11 +168,7 @@ public class ProjectServiceImpl implements ProjectService {
     //프로젝트 조회
     public Project findProject(Long projectId) {
         Optional<Project> project = projectMapper.findById(projectId);
-        Project findProject = project.orElseThrow(() -> new ApplicationException(ErrorCode.PROJECT_NOT_FOUND));
-        if (findProject.getProjectImage() == null) {
-            findProject.setProjectImage(BasicImage.BASIC_PROJECT_IMAGE.getPath());
-        }
-        return findProject;
+        return project.orElseThrow(() -> new ApplicationException(ErrorCode.PROJECT_NOT_FOUND));
     }
 
     // 프로젝트 리스트 조회
@@ -183,12 +179,6 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<GetProjectsResponse> projectList = projectMapper.findAll(searchCond);
 
-        // 프로젝트 이미지가 없을 경우 기본 이미지 리턴
-        projectList.forEach(project -> {
-            if (project.getProjectImage() == null) {
-                project.setProjectImage(BasicImage.BASIC_PROJECT_IMAGE.getPath());
-            }
-        });
         return new PageResponseDto<>(new PageInfo<>(projectList));
     }
 
@@ -198,11 +188,6 @@ public class ProjectServiceImpl implements ProjectService {
         PageHelper.startPage(pageNum, pageable.getPageSize());
 
         List<GetProjectsResponse> myProjects = projectMapper.findByMemberId(memberId);
-        myProjects.forEach(project -> {
-            if (project.getProjectImage() == null) {
-                project.setProjectImage(BasicImage.BASIC_PROJECT_IMAGE.getPath());
-            }
-        });
         return new PageResponseDto<>(new PageInfo<>(myProjects));
     }
 
