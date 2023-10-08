@@ -172,10 +172,12 @@
     </delete>
 
 
-    <delete id="deleteSchedulingTarget">
-        delete
-        from notification_target
-        where timestampdiff(DAY, created_at, NOW()) &gt; #{durationDate}
+    <delete id="cleanUpNotification">
+       delete from notification where created_at &lt; #{duration}
+    </delete>
+
+    <delete id="cleanUpNotificationTarget">
+        delete from notification_target where  created_at &lt; #{duration}
     </delete>
 
     <delete id="deleteTargetList">
