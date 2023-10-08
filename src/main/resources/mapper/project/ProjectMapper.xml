@@ -92,16 +92,18 @@
              join member m on mp.member_id = m.member_id
              join project_authority pa on mp.authority_id = pa.authority_id
              left join bookmark b on b.project_id = p.project_id and b.member_id = #{memberId}
-        where pa.authority = 'ADMIN' and p.is_deleted = false and p.project_id in (select project_id from member_project where member_id = #{memberId})
+        where pa.authority = 'ADMIN'
+          and p.is_deleted = false
+          and p.project_id in (select project_id from member_project where member_id = #{memberId} and status = 'ACTIVE')
         order by p.project_id desc
     </select>
 
     <select id="findByMemberIdPartOfAdmin">
         select p.project_id, p.title, p.start_date, p.end_date, p.created_at, p.project_image, m.member_id, m.name, m.profile_image
         from project p
-                 join member_project mp on mp.project_id = p.project_id
-                 join member m on mp.member_id = m.member_id
-                 join project_authority pa on mp.authority_id = pa.authority_id
+                 left join member_project mp on mp.project_id = p.project_id
+                 left join member m on mp.member_id = m.member_id
+                 left join project_authority pa on mp.authority_id = pa.authority_id
         where pa.authority = 'ADMIN' and p.project_id in (select project_id from member_project where member_id = #{memberId}) and mp.status='ACTIVE' and p.is_deleted=false order by p.title asc
     </select>
 
