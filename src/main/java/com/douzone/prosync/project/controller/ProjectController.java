@@ -152,9 +152,15 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity<PageResponseDto<GetProjectsResponse>> getMemberProjects(
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = DEFAULT_PAGE_SIZE) Pageable pageable,
-            @ApiIgnore Principal principal) {
-        PageResponseDto<GetProjectsResponse> response = projectService.findMyProjects(Long.parseLong(principal.getName()), pageable);
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = 9) Pageable pageable,
+            @ApiIgnore Principal principal,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Boolean bookmark,
+            @RequestParam(required = false) String sort
+            ) {
+        Long memberId = principal != null ? Long.parseLong(principal.getName()) : null;
+        ProjectSearchCond searchCond = new ProjectSearchCond(search, bookmark, sort, memberId);
+        PageResponseDto<GetProjectsResponse> response = projectService.findMyProjects(searchCond, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

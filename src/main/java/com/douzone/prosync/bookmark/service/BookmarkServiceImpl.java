@@ -28,6 +28,8 @@ public class BookmarkServiceImpl implements BookmarkService{
         if (duplicate == 0) {
             System.out.println("asdf");
             mapper.bookMarkCheck(projectId, memberId);
+        } else if (duplicate >0 ){
+            mapper.bookMarkRemove(projectId, memberId);
         }
     }
 
