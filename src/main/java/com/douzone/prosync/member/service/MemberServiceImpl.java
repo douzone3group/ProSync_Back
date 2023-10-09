@@ -17,9 +17,11 @@ import com.douzone.prosync.member.dto.request.MemberPatchPasswordDto;
 import com.douzone.prosync.member.dto.request.MemberPatchProfileDto;
 import com.douzone.prosync.member.dto.request.MemberPostDto;
 import com.douzone.prosync.member.dto.response.MemberGetResponse;
+import com.douzone.prosync.member.dto.response.ProfileWithAuthorityDto;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.repository.MemberRepository;
 import com.douzone.prosync.member_project.service.MemberProjectService;
+import com.douzone.prosync.project.repository.ProjectMapper;
 import com.douzone.prosync.security.redis.RedisService;
 import com.douzone.prosync.security.jwt.HmacAndBase64;
 import com.douzone.prosync.security.jwt.RefreshTokenProvider;
@@ -71,6 +73,8 @@ public class MemberServiceImpl implements MemberService{
     private final MemberProjectService memberProjectService;
 
     private final FileService fileService;
+
+    private final ProjectMapper projectMapper;
 
 
     /**
@@ -234,6 +238,26 @@ public class MemberServiceImpl implements MemberService{
 
     }
 
+    // 회원 정보 가져오기(With 프로필 권한)
+    @Override
+    public ProfileWithAuthorityDto getMemberOneWithAuthority(Long memberId, Long projectId) {
+
+        if (memberRepository.findById(memberId).isEmpty()) {
+            throw new ApplicationException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        if (projectMapper.findById(projectId).isEmpty()) {
+            throw new ApplicationException(ErrorCode.PROJECT_NOT_FOUND);
+        }
+
+        ProfileWithAuthorityDto memberProfileWithAuthority = memberRepository.getMemberProfileWithAuthority(memberId, projectId);
+
+        if (memberProfileWithAuthority==null) {
+            throw new ApplicationException(ErrorCode.PROJECT_MEMBER_NOT_FOUND);
+        }
+
+        return memberProfileWithAuthority;
+    }
 
 
 }

@@ -7,6 +7,7 @@ import com.douzone.prosync.member.dto.request.MemberPatchPasswordDto;
 import com.douzone.prosync.member.dto.request.MemberPatchProfileDto;
 import com.douzone.prosync.member.dto.request.MemberPostDto;
 import com.douzone.prosync.member.dto.response.MemberGetResponse;
+import com.douzone.prosync.member.dto.response.ProfileWithAuthorityDto;
 import com.douzone.prosync.member.entity.Member;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -37,5 +38,5 @@ public interface MemberService {
      String loginProcess(MemberLoginDto loginDto,HttpHeaders httpHeaders, HttpServletRequest request);
 
 
-
+     ProfileWithAuthorityDto getMemberOneWithAuthority(Long memberId, Long projectId);
 }

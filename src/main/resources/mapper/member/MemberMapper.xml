@@ -51,5 +51,13 @@
         </foreach> and is_deleted = false;
     </select>
 
+    <select id="getMemberProfileWithAuthority" resultType="ProfileWithAuthorityDto">
+        select m.created_at, m.intro, m.profile_image, m.name_email, pa.authority from member m
+            join member_project mp on mp.member_id = m.member_id
+            join project p on p.project_id = mp.project_id
+            join project_authority pa on pa.authority_id = mp.authority_id
+            where m.member_id = #{memberId} and mp.project_id = #{projectId} and mp.status='ACTIVE' and m.is_deleted=false and p.is_deleted=false
+    </select>
+
 
 </mapper>
