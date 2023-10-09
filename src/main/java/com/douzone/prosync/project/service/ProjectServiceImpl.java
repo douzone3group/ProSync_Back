@@ -187,7 +187,7 @@ public class ProjectServiceImpl implements ProjectService {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
         PageHelper.startPage(pageNum, pageable.getPageSize());
 
-        List<GetProjectsResponse> myProjects = projectMapper.findByMemberId(searchCond.getMemberId());
+        List<GetProjectsResponse> myProjects = projectMapper.findByMemberId(searchCond.getMemberId(), searchCond);
         return new PageResponseDto<>(new PageInfo<>(myProjects));
     }
 
