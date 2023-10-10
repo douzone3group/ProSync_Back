@@ -24,7 +24,7 @@ public class GlobalExceptionAdvice {
     public ResponseEntity<?> applicationHandler(ApplicationException e) {
         log.error("Error occurs {}", e.toString());
         if (e.getErrorCode().equals(ErrorCode.CONNECTION_ERROR)) {
-            String errorMsg = "data: {\"type\": \"error\", \"message\": \"" + e.getErrorCode().name() + "\"}\n\n";
+            String errorMsg = "data: {\"type\": \"error\", \"message\": \"" + e.getErrorCode().getMessage()+ "\"}\n\n";
             return ResponseEntity.status(e.getErrorCode().getStatus())
                     .contentType(MediaType.parseMediaType("text/event-stream"))
                     .body(errorMsg);
