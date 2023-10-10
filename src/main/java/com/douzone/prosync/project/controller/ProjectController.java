@@ -67,7 +67,7 @@ public class ProjectController {
             @ApiResponse(code = 404, message = "project not found"),
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
-    public ResponseEntity getProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
+    public ResponseEntity<GetProjectResponse> getProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
                                      @PathVariable("project-id") Long projectId) {
 
         Project project = projectService.findProject(projectId);

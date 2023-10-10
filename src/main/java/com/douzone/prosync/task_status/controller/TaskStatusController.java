@@ -125,6 +125,7 @@ public class TaskStatusController {
      * 업무 상태 순서 변경
      */
     @PatchMapping("/projects/{project-id}/task-status/sequence")
+    @Operation(summary = "업무 상태 순서 변경", description = "보드뷰에서 업무 상태 순서를 변경하기 위해 사용합니다. 업무상태리스트를 통해 상태 순서를 변경합니다.", tags = "task_status")
     public ResponseEntity patchSeqOfTaskStatus(@PathVariable("project-id") Long projectId,
                                                @RequestBody List<TaskStatusDto.SeqRequestDto> taskStatusSeqList,
                                                Principal principal) {
