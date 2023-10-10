@@ -67,7 +67,7 @@ public class ProjectController {
             @ApiResponse(code = 404, message = "project not found"),
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
-    public ResponseEntity getProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
+    public ResponseEntity<GetProjectResponse> getProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
                                      @PathVariable("project-id") Long projectId) {
 
         Project project = projectService.findProject(projectId);
@@ -137,6 +137,7 @@ public class ProjectController {
         Long memberId = principal != null ? Long.parseLong(principal.getName()) : null;
         ProjectSearchCond searchCond = new ProjectSearchCond(search, bookmark, sort, memberId);
         PageResponseDto<GetProjectsResponse> response = projectService.findAll(searchCond, pageable);
+        System.out.println("서치 " + search + "북마크 " +bookmark + "정렬 " + sort);
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
@@ -144,7 +145,7 @@ public class ProjectController {
      * 내 프로젝트 목록 조회
      * LOGIN USER
      */
-    @GetMapping("/my-projects")
+    @GetMapping("/user/myprojects")
     @ApiOperation(value = "내 프로젝트 조회", notes = "내가 속한 프로젝트를 조회합니다.", tags = "project")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = GetProjectsResponse.class),
@@ -161,6 +162,8 @@ public class ProjectController {
         Long memberId = principal != null ? Long.parseLong(principal.getName()) : null;
         ProjectSearchCond searchCond = new ProjectSearchCond(search, bookmark, sort, memberId);
         PageResponseDto<GetProjectsResponse> response = projectService.findMyProjects(searchCond, pageable);
+        System.out.println("서치 " + search + "북마크 " +bookmark + "정렬 " + sort);
+        System.out.println(response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

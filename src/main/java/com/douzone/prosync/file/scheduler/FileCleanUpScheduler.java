@@ -6,12 +6,14 @@ import com.douzone.prosync.file.entity.FileInfo;
 import com.douzone.prosync.file.repository.FileMapper;
 import com.douzone.prosync.file.service.FileService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class FileCleanUpScheduler {
@@ -35,11 +37,12 @@ public class FileCleanUpScheduler {
             // 저장소 삭제
             File findFile = fileService.findFile(fileInfo.getFileId());
             fileHandler.delete(findFile.getFileName());
+            log.info("파일 정기 삭제 - 삭제 후 30일 : fileId - {}, table name - {}, table key - {}", fileInfo.getFileId(), fileInfo.getTableName(), fileInfo.getTableKey());
         }
     }
 
-    // 3시간마다 파일정보에 없는 파일을 삭제
-    @Scheduled(cron = "0 0 0/3 * * ?")
+    // 매일 자정 파일정보에 없는 파일을 삭제
+    @Scheduled(cron = "0 0 0 * * ?")
     public void cleanupUnmatchedFile() {
 
         List<File> files = fileMapper.findFilesWithNoFileInfo();
@@ -47,7 +50,7 @@ public class FileCleanUpScheduler {
 
             fileMapper.deleteActualFile(file.getFileId());
             fileHandler.delete(file.getFileName());
-
+            log.info("매칭되지 않은 파일 삭제 : fileId - {}", file.getFileId());
         }
     }
 
