@@ -37,8 +37,6 @@ public class ConstantPool {
 
 
     // LOG SCHEDULING DURATION
-    public static final Long LOG_SCHEDULING_TERM = 1L* 24 * 60 * 60 *1000;
-
     public static final Integer LOG_EXPIRATION_DURATION = 365 * 3;
 
 
