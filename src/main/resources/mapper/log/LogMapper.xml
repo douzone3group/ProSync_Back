@@ -65,4 +65,8 @@
         where project_id = #{projectId}
           and is_deleted = false;
     </select>
+
+    <delete id="cleanUpLog">
+        delete from log where created_at &lt; #{duration}
+    </delete>
 </mapper>

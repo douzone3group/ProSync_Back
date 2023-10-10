@@ -121,6 +121,17 @@ public class TaskStatusController {
         return new ResponseEntity(new SingleResponseDto<>(response), HttpStatus.OK);
     }
 
+    /**
+     * 업무 상태 순서 변경
+     */
+    @PatchMapping("/projects/{project-id}/task-status/sequence")
+    public ResponseEntity patchSeqOfTaskStatus(@PathVariable("project-id") Long projectId,
+                                               @RequestBody List<TaskStatusDto.SeqRequestDto> taskStatusSeqList,
+                                               Principal principal) {
+        taskStatusService.updateSeq(projectId, taskStatusSeqList, Long.parseLong(principal.getName()));
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
 
     private Long getMemberId(Principal principal) {
         return Optional.ofNullable(principal)

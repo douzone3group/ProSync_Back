@@ -30,4 +30,6 @@ public interface TaskStatusMapper {
     int findExistsTaskStatus(Long taskStatusId);
 
     int findTaskByTaskStatus(Long taskStatusId);
+
+    void updateSeq(@Param("projectId") Long projectId, @Param("taskStatusSeq") TaskStatusDto.SeqRequestDto taskStatusSeq);
 }
