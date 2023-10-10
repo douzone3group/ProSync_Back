@@ -18,6 +18,7 @@
         from bookmark b
         inner join project p on b.project_id = p.project_id
         where b.member_id = #{memberId}
+        order by project_id desc
     </select>
 
     <select id="findById">
