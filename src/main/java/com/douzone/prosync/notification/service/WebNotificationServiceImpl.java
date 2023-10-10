@@ -50,7 +50,7 @@ import static com.douzone.prosync.constant.ConstantPool.*;
 @Service
 public class WebNotificationServiceImpl implements NotificationService{
 
-    private final MapEmitterRepository emitterRepositoryrepository;
+    private final MapEmitterRepository emitterRepository;
     private final MybatisNotificationRepository notificationRepository;
 
     private final MemberRepository memberRepository;
@@ -68,8 +68,8 @@ public class WebNotificationServiceImpl implements NotificationService{
                     .name("sse")
                     .data(data));
         } catch (IOException e) {
-            System.out.println("SSE 연결 에러 발생");
-            throw new RuntimeException("SSE 연결 오류 발생");
+            System.out.println("SSE 전송 오류 발생");
+            throw new ApplicationException(ErrorCode.CONNECTION_ERROR,"SSE 전송 오류 발생");
         }
     }
 
@@ -78,21 +78,32 @@ public class WebNotificationServiceImpl implements NotificationService{
      * pk에 해당하는 사용자와 서버 간의 구독
      */
     public SseEmitter subscribe(Long memberId) {
-        SseEmitter emitter = emitterRepositoryrepository.save(memberId, new SseEmitter(DEFAULT_TIMEOUT));
 
-        emitter.onCompletion(() -> emitterRepositoryrepository.deleteById(memberId));
-        emitter.onTimeout(() -> emitterRepositoryrepository.deleteById(memberId));
-        emitter.onError((e) -> emitterRepositoryrepository.deleteById(memberId));
+        if (memberRepository.findById(memberId).isEmpty()) {
+            throw new ApplicationException(ErrorCode.USER_NOT_FOUND);
+        }
 
-        Integer count = mapper.getNotificationCountIsReadFalse(memberId);
-        System.out.println(count);
+        SseEmitter emitter;
+        Integer count;
 
         try {
-            sendToClient(emitter,new NotificationData("안읽으신 "+count+"개의 메시지가 있습니다.",FRONT_SERVER_HOST+"/notification"));
-            notificationRepository.updateIsTransmittedbyMemberId(true,memberId);
-        } catch (RuntimeException e){
-            throw new ApplicationException(ErrorCode.CONNECTION_ERROR);
+            emitter = emitterRepository.save(memberId, new SseEmitter(DEFAULT_TIMEOUT));
+
+            emitter.onCompletion(() -> emitterRepository.deleteById(memberId));
+            emitter.onTimeout(() -> emitterRepository.deleteById(memberId));
+            emitter.onError((e) -> emitterRepository.deleteById(memberId));
+
+            count = mapper.getNotificationCountIsReadFalse(memberId);
+        } catch (RuntimeException e) {
+            System.out.println("SSE 구독 오류 발생");
+            throw new ApplicationException(ErrorCode.CONNECTION_ERROR, "SSE 구독 오류 발생");
         }
+
+
+        sendToClient(emitter,new NotificationData("안읽으신 "+count+"개의 메시지가 있습니다.",FRONT_SERVER_HOST+"/notification"));
+        notificationRepository.updateIsTransmittedbyMemberId(true,memberId);
+
+
 
         return emitter;
     }
@@ -103,7 +114,7 @@ public class WebNotificationServiceImpl implements NotificationService{
      */
     @Override
     public void send(Long memberId, Object data) {
-        SseEmitter emitter = emitterRepositoryrepository.findById(memberId);
+        SseEmitter emitter = emitterRepository.findById(memberId);
         if (emitter==null) {
             throw new NoEmitterException();
         }
