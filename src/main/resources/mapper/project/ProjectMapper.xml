@@ -85,7 +85,7 @@
         </choose>
     </select>
 
-    <select id="findByMemberId">
+    <select id="findByMemberId" parameterType="com.douzone.prosync.project.dto.request.ProjectSearchCond">
         select p.project_id, p.title, p.start_date, p.end_date, p.created_at, p.project_image, m.member_id, m.name, m.profile_image, b.bookmark_id
         from project p
                  join member_project mp on mp.project_id = p.project_id
@@ -100,8 +100,8 @@
                 <where>
                     pa.authority = 'ADMIN' and p.project_id in (select project_id from member_project where member_id = #{memberId})
                     <if test="search.search != null and search.search != ''">
-                        and ((p.title like concat('%', #{search}, '%'))
-                        or (m.name like concat('%', #{search}, '%') and pa.authority = 'admin'))
+                        and ((p.title like concat('%', #{search.search}, '%'))
+                        or (m.name like concat('%', #{search.search}, '%') and pa.authority = 'admin'))
                     </if>
                     <if test="search.sort != null and search.sort == 'endDate'">
                         and STR_TO_DATE(end_date, '%Y-%m-%d') >= CURRENT_DATE
