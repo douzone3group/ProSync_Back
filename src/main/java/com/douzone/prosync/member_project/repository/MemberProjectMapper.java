@@ -38,6 +38,8 @@ public interface MemberProjectMapper {
 
     List<Long> findMemberIdsListById(@Param("memberProjectsId")List<Long> memberProjects);
 
+    List<Long> findMemberIdsListByIdAll(@Param("memberProjectsId")List<Long> memberProjects);
+
     List<Long> findProjectIdsByMemberId(Long memberId);
 
 

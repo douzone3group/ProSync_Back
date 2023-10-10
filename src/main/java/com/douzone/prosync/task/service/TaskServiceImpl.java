@@ -252,20 +252,26 @@ public class TaskServiceImpl implements TaskService {
 
         List<Long> memberIds = memberProjectMapper.findMemberIdsListById(projectMemberIds);
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.TASK_EXCLUDED)
-                .memberIds(memberIds)
-                .taskId(task.getTaskId())
-                .projectId(task.getProjectId())
-                .subject(task).build());
+        List<Long> allMemberIds =memberProjectMapper.findMemberIdsListByIdAll(projectMemberIds);
+
+        if (memberIds.size()>0) {
+            // 알림 저장 및 전달
+            notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                    .fromMemberId(memberId)
+                    .code(NotificationCode.TASK_EXCLUDED)
+                    .memberIds(memberIds)
+                    .taskId(task.getTaskId())
+                    .projectId(task.getProjectId())
+                    .subject(task).build());
+        }
+
+
 
         // 로그 저장
         logService.saveLog(LogConditionDto.builder()
                 .fromMemberId(memberId)
                 .code(LogCode.TASK_EXCLUDED)
-                .memberIds(memberIds)
+                .memberIds(allMemberIds)
                 .projectId(task.getProjectId())
                 .taskId(task.getTaskId())
                 .subject(task).build());
