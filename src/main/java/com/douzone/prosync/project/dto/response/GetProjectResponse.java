@@ -13,31 +13,31 @@ import lombok.Getter;
 @ApiModel("GetProjectResponse")
 public class GetProjectResponse{
 
-    @ApiModelProperty(example = "프로젝트 아이디")
+    @ApiModelProperty(value = "프로젝트 아이디", example = "1")
     private Long projectId;
 
-    @ApiModelProperty(example = "프로젝트 이름")
+    @ApiModelProperty(value = "프로젝트 이름", example = "프로젝트 이름")
     private String title;
 
-    @ApiModelProperty(example = "프로젝트 인트로")
+    @ApiModelProperty(value = "프로젝트 인트로", example = "프로젝트를 소개합니다.")
     private String intro;
 
-    @ApiModelProperty(example = "프로젝트 생성 날짜")
+    @ApiModelProperty(value = "프로젝트 생성 날짜", example = "2023-10-09 23:06:57")
     private String createdAt;
 
-    @ApiModelProperty(example = "프로젝트 시작 날짜")
+    @ApiModelProperty(value = "프로젝트 시작 날짜", example = "2023-10-10")
     private String startDate;
 
-    @ApiModelProperty(example = "프로젝트 종료 날짜")
+    @ApiModelProperty(value = "프로젝트 종료 날짜", example = "2023-10-10")
     private String endDate;
 
-    @ApiModelProperty(example = "프로젝트 수정 날짜")
+    @ApiModelProperty(value = "프로젝트 수정 날짜", example = "2023-10-09 23:06:57")
     private String modifiedAt;
 
-    @ApiModelProperty(example = "프로젝트 공개여부")
+    @ApiModelProperty(value = "프로젝트 공개여부", example = "true/false")
     private Boolean isPublic;
 
-    @ApiModelProperty(example = "프로젝트 이미지")
+    @ApiModelProperty(value = "프로젝트 이미지", example = "https://~~")
     private String projectImage;
 
     public static GetProjectResponse of(Project project) {
