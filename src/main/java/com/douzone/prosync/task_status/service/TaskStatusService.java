@@ -16,4 +16,5 @@ public interface TaskStatusService {
 
     TaskStatusDto.GetResponseDto getTaskStatus(Long taskStatusId, Long memberId);
 
+    void updateSeq(Long projectId, List<TaskStatusDto.SeqRequestDto> taskStatusSeqList, Long memberId);
 }

@@ -37,13 +37,19 @@
         </foreach> and status = 'active';
     </select>
 
+    <select id="findMemberIdsListByIdAll">
+        select member_id from member_project
+        where member_project_id in
+        <foreach collection="memberProjectsId" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
     <select id="findProjectIdsByMemberId">
         select project_id from member_project
         where member_id = #{memberId}
         and status = 'active';
     </select>
-
-
 
 
 </mapper>

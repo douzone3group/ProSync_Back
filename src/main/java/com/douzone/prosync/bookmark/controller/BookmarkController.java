@@ -41,15 +41,17 @@ public class BookmarkController {
     }
 
     @DeleteMapping("/bookmark/{project-id}")
-    void bookmarkRemove(@PathVariable("project-id") Long projectId, Principal principal){
+    void bookmarkRemove(@PathVariable("project-id") Long projectId, Principal principal) {
         Long memberId = Long.parseLong(principal.getName());
         service.bookMarkRemove(projectId, memberId);
     }
 
     @GetMapping("/bookmark-list")
-    PageResponseDto<BookmarkResponseDto> bookmarkList(@PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable, Principal principal) {
+    PageResponseDto<BookmarkResponseDto> bookmarkList(@PageableDefault(size = 9) Pageable pageable, Principal principal) {
         Long memberId = Long.parseLong(principal.getName());
         PageResponseDto<BookmarkResponseDto> responseDto = service.findAll(pageable, memberId);
         return responseDto;
     }
+
+
 }

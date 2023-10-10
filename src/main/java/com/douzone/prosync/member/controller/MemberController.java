@@ -12,6 +12,7 @@ import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.service.MemberService;
 import com.douzone.prosync.security.redis.TokenStorageService;
 import com.douzone.prosync.security.jwt.HmacAndBase64;
+import com.douzone.prosync.task.dto.response.TaskSimpleResponse;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,7 +46,6 @@ import java.security.Principal;
 public class MemberController {
 
     private final MemberService memberService;
-
 
     private final TokenStorageService redisService;
 
@@ -233,6 +233,23 @@ public class MemberController {
         String email = dto.getEmail();
         memberService.duplicateInspection(email);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+
+    // 회원 프로필 정보 보기(프로젝트 권한까지 체킹)
+    @GetMapping("/members/{memberId}/projects/{projectId}")
+    @Operation(summary = "회원 프로필 정보 보기(With 프로필 권한)", description = "해당 프로젝트 관련 회원 프로필을 가져올 때 호출합니다.", tags = "member")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successfully retrieved", response = TaskSimpleResponse.class),
+            @ApiResponse(code = 404, message = "project or member not found"),
+            @ApiResponse(code = 500, message = "server error"),
+    })
+    public ResponseEntity getMemberOneWithAuthority(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("memberId") String memberId,
+                                                    @Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("projectId") String projectId) {
+
+
+        return new ResponseEntity(memberService.getMemberOneWithAuthority(Long.parseLong(memberId), Long.parseLong(projectId)),HttpStatus.OK);
+
     }
 
 }

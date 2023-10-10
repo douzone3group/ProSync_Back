@@ -29,6 +29,8 @@ public interface LogMapper {
 
     Integer getLogListCount(@Param("projectId") Long projectId);
 
+    void cleanUpLog(LocalDateTime duration);
+
 
 
 
