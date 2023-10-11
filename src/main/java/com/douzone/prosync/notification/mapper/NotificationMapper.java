@@ -53,7 +53,7 @@ public interface NotificationMapper {
 
     Integer getNotificationTargetListCount(@Param("targetIds") List<Long> targetIds,@Param("memberId")Long memberId);
 
-    Integer getNotificationCountIsReadFalse(Long memberId);
+    Integer getNotificationCountIsReadFalse(@Param("memberId") Long memberId);
 
     void deleteAllTarget(Long memberId);
 

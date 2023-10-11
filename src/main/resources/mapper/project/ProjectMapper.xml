@@ -98,7 +98,7 @@
                     join bookmark b on b.project_id = p.project_id and b.member_id = #{memberId}
                 </if>
                 <where>
-                    pa.authority = 'ADMIN' and p.project_id in (select project_id from member_project where member_id = #{memberId})
+                    pa.authority = 'ADMIN' and p.project_id in (select project_id from member_project where member_id = #{memberId} and status='ACTIVE') and p.is_deleted = false
                     <if test="search.search != null and search.search != ''">
                         and ((p.title like concat('%', #{search.search}, '%'))
                         or (m.name like concat('%', #{search.search}, '%') and pa.authority = 'admin'))
@@ -137,7 +137,7 @@
           and mp.status = 'ACTIVE'
           and p.is_deleted = false
           and m.is_deleted = false
-        order by p.title asc
+        order by p.title asc, p.project_id asc
     </select>
 
     <select id="findMembersInProject">
