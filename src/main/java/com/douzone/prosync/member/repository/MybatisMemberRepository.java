@@ -2,6 +2,7 @@ package com.douzone.prosync.member.repository;
 
 import com.douzone.prosync.member.dto.MemberDto;
 import com.douzone.prosync.member.dto.request.MemberPatchProfileDto;
+import com.douzone.prosync.member.dto.response.ProfileWithAuthorityDto;
 import com.douzone.prosync.member.entity.Member;
 import com.douzone.prosync.member.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
@@ -52,4 +53,7 @@ public class MybatisMemberRepository implements MemberRepository {
     // Todo: 멤버 관리 리스트에서 검색조건을 사용할 때 findAll을 작성한다.
     // List<Item> findAll(ItemSearchCond itemSearch);
 
+    public ProfileWithAuthorityDto getMemberProfileWithAuthority(Long memberId, Long projectId) {
+        return memberMapper.getMemberProfileWithAuthority( memberId, projectId);
+    }
 }

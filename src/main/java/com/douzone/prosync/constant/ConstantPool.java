@@ -14,7 +14,7 @@ public class ConstantPool {
     public static final long PROJECT_INVITE_LINK_DURATION = 1800L;
 
     // SSE TIMEOUT
-    public static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
+    public static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;  // 60분
 
 
     // page navigates(페이지 쪽수의 갯수)
@@ -30,7 +30,14 @@ public class ConstantPool {
 
 
     //  NOTIFICATION SCHEDULING DURATION
-    public static final Integer NOTIFICATION_DEFAULT_DURATION = 30;
+
+    public static final Integer NOTIFICATION_EXPIRATION_DURATION = 30*6;
+
+
+
+
+    // LOG SCHEDULING DURATION
+    public static final Integer LOG_EXPIRATION_DURATION = 365 * 3;
 
 
 }

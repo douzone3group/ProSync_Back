@@ -2,6 +2,7 @@ package com.douzone.prosync.member.repository;
 
 import com.douzone.prosync.member.dto.MemberDto;
 import com.douzone.prosync.member.dto.request.MemberPatchProfileDto;
+import com.douzone.prosync.member.dto.response.ProfileWithAuthorityDto;
 import com.douzone.prosync.member.entity.Member;
 
 import java.time.LocalDateTime;
@@ -23,4 +24,6 @@ public interface MemberRepository {
      Optional<Member> findByEmail(String email);
 
      List<Member> getMemberList(List<Long> memberIds);
+
+     ProfileWithAuthorityDto getMemberProfileWithAuthority(Long memberId, Long projectId);
 }
