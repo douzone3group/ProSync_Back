@@ -31,9 +31,14 @@ spring:
     password: ENC(K+Bqh7pBmpmTm0g+mWGTwG+S5oylxSDe)
     schema:
       classpath: schema.sql
+    hikari:
+      maximum-pool-size: 100
+      connection-timeout: 20000
+      minimum-idle: 5
   sql:
     init:
       mode: always
+
 
   mail:
     host: smtp.naver.com
@@ -86,3 +91,4 @@ cloud:
       static: ap-northeast-2
     stack:
       auto: false
+

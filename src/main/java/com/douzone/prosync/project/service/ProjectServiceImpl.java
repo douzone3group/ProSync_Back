@@ -196,8 +196,23 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public PageResponseDto<GetProjectsResponse> findMyProjectsPartOfAdmin(Long memberId, Pageable pageable) {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
+        System.out.println("pageNum :"+pageNum);
+        System.out.println("size :"+pageable.getPageSize());
         PageHelper.startPage(pageNum, pageable.getPageSize());
         List<GetProjectsResponse> myProjects = projectMapper.findByMemberIdPartOfAdmin(memberId);
+
+        System.out.println(myProjects);
+        System.out.println(myProjects.get(0).getProjectId());
+        System.out.println(myProjects.get(1).getProjectId());
+
+        System.out.println(myProjects.get(2).getProjectId());
+
+        System.out.println(myProjects.get(3).getProjectId());
+
+        System.out.println(myProjects.get(4).getProjectId());
+        System.out.println(myProjects.get(5).getProjectId());
+
+
         PageInfo<GetProjectsResponse> pageInfo = new PageInfo<>(myProjects);
         return new PageResponseDto<>(pageInfo);
     }
