@@ -45,7 +45,6 @@ public class CorsConfig {
         config.setExposedHeaders(List.of("Authorization", "Refresh"));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-        config.setExposedHeaders(List.of("Authorization","Refresh"));
 
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
