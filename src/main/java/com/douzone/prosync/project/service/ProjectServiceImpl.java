@@ -139,7 +139,6 @@ public class ProjectServiceImpl implements ProjectService {
         List<Long> memberIds = projectMapper.findMembersInProject(project.getProjectId());
 
         Integer row = projectMapper.deleteProject(projectId);
-
         if (row < 1) {
             throw new ApplicationException(ErrorCode.PROJECT_NOT_FOUND);
         }
