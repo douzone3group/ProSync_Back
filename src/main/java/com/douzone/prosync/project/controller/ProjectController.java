@@ -137,7 +137,6 @@ public class ProjectController {
         Long memberId = principal != null ? Long.parseLong(principal.getName()) : null;
         ProjectSearchCond searchCond = new ProjectSearchCond(search, bookmark, sort, memberId);
         PageResponseDto<GetProjectsResponse> response = projectService.findAll(searchCond, pageable);
-        System.out.println("서치 " + search + "북마크 " +bookmark + "정렬 " + sort);
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
@@ -153,7 +152,7 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity<PageResponseDto<GetProjectsResponse>> getMemberProjects(
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = 9) Pageable pageable,
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = DEFAULT_PAGE_SIZE) Pageable pageable,
             @ApiIgnore Principal principal,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean bookmark,
@@ -162,8 +161,6 @@ public class ProjectController {
         Long memberId = principal != null ? Long.parseLong(principal.getName()) : null;
         ProjectSearchCond searchCond = new ProjectSearchCond(search, bookmark, sort, memberId);
         PageResponseDto<GetProjectsResponse> response = projectService.findMyProjects(searchCond, pageable);
-        System.out.println("서치 " + search + "북마크 " +bookmark + "정렬 " + sort);
-        System.out.println(response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

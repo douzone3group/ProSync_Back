@@ -18,4 +18,6 @@ public class BookmarkResponseDto {
     private String title;
     private LocalDateTime created_at;
     private String projectImage;
+    private LocalDateTime start_date;
+    private LocalDateTime end_date;
 }
