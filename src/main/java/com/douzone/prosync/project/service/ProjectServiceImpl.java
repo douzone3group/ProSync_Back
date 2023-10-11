@@ -139,7 +139,6 @@ public class ProjectServiceImpl implements ProjectService {
         List<Long> memberIds = projectMapper.findMembersInProject(project.getProjectId());
 
         Integer row = projectMapper.deleteProject(projectId);
-
         if (row < 1) {
             throw new ApplicationException(ErrorCode.PROJECT_NOT_FOUND);
         }
@@ -186,8 +185,7 @@ public class ProjectServiceImpl implements ProjectService {
     public PageResponseDto<GetProjectsResponse> findMyProjects(ProjectSearchCond searchCond, Pageable pageable) {
         int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
         PageHelper.startPage(pageNum, pageable.getPageSize());
-
-        List<GetProjectsResponse> myProjects = projectMapper.findByMemberId(searchCond.getMemberId());
+        List<GetProjectsResponse> myProjects = projectMapper.findByMemberId(searchCond.getMemberId(), searchCond);
         return new PageResponseDto<>(new PageInfo<>(myProjects));
     }
 

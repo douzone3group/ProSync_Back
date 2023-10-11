@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -61,7 +62,8 @@ public class WebNotificationServiceImpl implements NotificationService{
     /**
      * 서버에서 클라이언트로 data 전송
      */
-    private void sendToClient(SseEmitter sseEmitter, Object data) {
+//    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void sendToClient(SseEmitter sseEmitter, Object data) {
 
         try {
             sseEmitter.send(SseEmitter.event()
@@ -113,6 +115,7 @@ public class WebNotificationServiceImpl implements NotificationService{
      * 사용자 pk에 해당하는 SseEmitter를 찾아서 data를 전송한다.
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void send(Long memberId, Object data) {
         SseEmitter emitter = emitterRepository.findById(memberId);
         if (emitter==null) {
