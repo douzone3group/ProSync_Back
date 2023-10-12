@@ -179,6 +179,10 @@ public class WebNotificationServiceImpl implements NotificationService{
                 container.setUrl("/notification");
             }
                 break;
+            case "프로젝트탈퇴": {
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트를 탈퇴하셨습니다.");
+                container.setUrl("/projects/" + dto.getProjectId());
+            }
             case "프로젝트수정":  {
                 container.setContent("[ "+fromMember.getNameEmail()+" ] 님이 [ "+ ((Project) dto.getSubject()).getTitle()+" ] 프로젝트에 대한 정보를 수정하셨습니다.");
                 container.setUrl("/projects/" + dto.getProjectId());

@@ -61,6 +61,11 @@ public class LogServiceImpl implements LogService {
                 container.setUrl("/notification/projects/" +dto.getProjectId());
             }
             break;
+            case "업무생성": {
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((GetTaskResponse) dto.getSubject()).getTitle() + " ] 업무를 생성하셨습니다.");
+                container.setUrl("/projects/" +dto.getProjectId()+"/tasks/" + dto.getTaskId());
+            }
+            break;
             case "업무지정": {
 
                 List<Member> memberList = memberRepository.getMemberList(dto.getMemberIds());
@@ -103,7 +108,8 @@ public class LogServiceImpl implements LogService {
             }
             break;
             case "프로젝트지정": {
-                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트의 구성원으로 수락하셨습니다.");
+                Member member= memberRepository.findById(dto.getMemberId()).get();
+                container.setContent("[ "+fromMember.getNameEmail() + " ] 님이 ["+member.getNameEmail()+" ] 님을 [ " + ((Project) dto.getSubject()).getTitle() + " ] 프로젝트의 구성원으로 수락하셨습니다.");
                 container.setUrl("/projects/" + dto.getProjectId());
             }
             break;
