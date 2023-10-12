@@ -12,7 +12,6 @@ public class LogDto {
 
     private Long logId;
 
-    private LocalDateTime createdAt;
 
     private String content;
 

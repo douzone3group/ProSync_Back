@@ -172,7 +172,6 @@ public class LogServiceImpl implements LogService {
 
         Long logId = logRepository.saveLog(LogDto.builder()
                 .logCode(dto.getCode())
-                .createdAt(date)
                 .content(container.getContent())
                 .isDeleted(false)
                 .projectId(dto.getProjectId())

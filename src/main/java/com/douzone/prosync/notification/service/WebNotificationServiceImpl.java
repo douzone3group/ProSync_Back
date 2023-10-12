@@ -137,12 +137,8 @@ public class WebNotificationServiceImpl implements NotificationService{
         // 람다식 사용을 위해 container에 속성값들을 매핑시켰다.
         ContentUrlContainer container = new ContentUrlContainer();
 
-        LocalDateTime date = LocalDateTime.now();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        String formattedDateTime = date.format(formatter);
-        container.setDate(formattedDateTime);
 
         Member fromMember = memberRepository.findById(dto.getFromMemberId()).orElse(null);
         NotificationCode code = dto.getCode();
@@ -231,7 +227,6 @@ public class WebNotificationServiceImpl implements NotificationService{
         Long notificationId = notificationRepository.saveNotification(NotificationDto.builder()
                 .code(code)
                 .fromMemberId(dto.getFromMemberId())
-                .createdAt(date)
                 .content(container.getContent())
                 .url(container.getUrl())
                 .build());
@@ -248,8 +243,7 @@ public class WebNotificationServiceImpl implements NotificationService{
                         .isRead(false)
                         .isTransmitted(false)
                         .platform(NotificationPlatform.WEB)
-                        .createdAt(date).
-                        updateUserId(dto.getFromMemberId())
+                        .updateUserId(dto.getFromMemberId())
                         .build()
 
         ));
@@ -264,7 +258,7 @@ public class WebNotificationServiceImpl implements NotificationService{
 
         notificationTargetList.stream().forEach((target) -> {
             NotificationResponse notification = new NotificationResponse(target.getNotificationId(),
-                    target.isRead(), container.getContent(), code, container.getDate().toString(), container.getUrl());
+                    target.isRead(), container.getContent(), code,null, container.getUrl());
 
             try {
                 System.out.println("알림 실험");
