@@ -16,7 +16,6 @@ public class NotificationTargetDto {
     private boolean isRead;
     private Long updateUserId;
     private boolean isTransmitted;
-    private LocalDateTime createdAt;
 
 
     private NotificationPlatform platform;
