@@ -13,7 +13,6 @@ import com.douzone.prosync.file.service.FileService;
 import com.douzone.prosync.log.dto.LogConditionDto;
 import com.douzone.prosync.log.logenum.LogCode;
 import com.douzone.prosync.log.service.LogService;
-import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.notification.dto.NotificationConditionDto;
 import com.douzone.prosync.notification.notienum.NotificationCode;
@@ -35,6 +34,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+
+import static com.douzone.prosync.member_project.entity.MemberProject.*;
 
 
 @Service
@@ -60,7 +61,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         createDefaultTaskStatus(projectId);
 
-        memberProjectMapper.saveProjectAdmin(dto.getProjectId(), memberId, MemberProject.MemberProjectStatus.ACTIVE);
+        memberProjectMapper.saveProjectAdmin(dto.getProjectId(), memberId, MemberProjectStatus.ACTIVE);
 
         // 프로젝트 이미지 - fileId 값이 있는 경우
         if (dto.getFileId() != null) {
@@ -139,10 +140,14 @@ public class ProjectServiceImpl implements ProjectService {
         List<Long> memberIds = projectMapper.findMembersInProject(project.getProjectId());
 
         Integer row = projectMapper.deleteProject(projectId);
-
         if (row < 1) {
             throw new ApplicationException(ErrorCode.PROJECT_NOT_FOUND);
         }
+
+        // 프로젝트 회원들 모두 QUIT 시키는 로직
+        memberProjectMapper.updateStatusOfProjectMemberList(projectId, MemberProjectStatus.QUIT);
+
+
         fileService.deleteFileList(FileRequestDto.create(FileInfo.FileTableName.PROJECT, projectId));
 
         if (memberIds.size() > 0) {

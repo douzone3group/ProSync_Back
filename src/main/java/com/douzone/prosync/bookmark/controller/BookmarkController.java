@@ -47,7 +47,7 @@ public class BookmarkController {
     }
 
     @GetMapping("/bookmark-list")
-    PageResponseDto<BookmarkResponseDto> bookmarkList(@PageableDefault(size = 9) Pageable pageable, Principal principal) {
+    PageResponseDto<BookmarkResponseDto> bookmarkList(@PageableDefault(size = 8) Pageable pageable, Principal principal) {
         Long memberId = Long.parseLong(principal.getName());
         PageResponseDto<BookmarkResponseDto> responseDto = service.findAll(pageable, memberId);
         return responseDto;

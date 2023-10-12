@@ -130,6 +130,7 @@ public class TaskController {
                                                                          @RequestParam(required = false) String status,
                                                                          @Parameter(hidden = true) @ApiIgnore Principal principal) {
         PageResponseDto pageResponseDto = taskService.findTaskList(projectId, page, size, search, isActive, view, status, getMemberId(principal));
+
         return new ResponseEntity<>(pageResponseDto, HttpStatus.OK);
     }
 
