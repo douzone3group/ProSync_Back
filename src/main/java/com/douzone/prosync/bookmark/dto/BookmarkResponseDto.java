@@ -16,6 +16,9 @@ public class BookmarkResponseDto {
     private Long bookmarkId;
     private Long projectId;
     private String title;
-    private LocalDateTime created_at;
+    private String createdAt;
     private String projectImage;
+    private String startDate;
+    private String endDate;
+    private String name;
 }

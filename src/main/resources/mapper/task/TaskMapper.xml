@@ -80,7 +80,7 @@
                 ts.task_status like concat('%', #{search}, '%') or
                 m.name like concat('%', #{search}, '%'))
             </if>
-            <if test="isActive != null and isActive == true">
+            <if test='isActive != null and isActive == "true"'>
                 and not (ts.seq = 0 or ts.seq is false)
             </if>
         </where>
