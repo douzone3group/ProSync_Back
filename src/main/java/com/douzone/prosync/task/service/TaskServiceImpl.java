@@ -68,6 +68,16 @@ public class TaskServiceImpl implements TaskService {
             fileService.saveFileInfoList(fileInfos);
         }
 
+        GetTaskResponse getTaskResponse = taskMapper.findById(taskId).orElseThrow(() -> new ApplicationException(ErrorCode.TASK_NOT_FOUND));
+
+        // 로그 생성
+        logService.saveLog(LogConditionDto.builder()
+                .fromMemberId(memberId)
+                .subject(getTaskResponse)
+                .projectId(projectId)
+                .taskId(taskId)
+                .code(LogCode.TASK_CREATE).build());
+
         return taskId;
     }
 
