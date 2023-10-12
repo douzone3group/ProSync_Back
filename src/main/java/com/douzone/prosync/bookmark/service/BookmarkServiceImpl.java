@@ -26,7 +26,6 @@ public class BookmarkServiceImpl implements BookmarkService{
     public void bookMarkCheck(Long projectId, Long memberId) {
         int duplicate = mapper.duplicateBookmark(projectId, memberId);
         if (duplicate == 0) {
-            System.out.println("asdf");
             mapper.bookMarkCheck(projectId, memberId);
         } else if (duplicate >0 ){
             mapper.bookMarkRemove(projectId, memberId);

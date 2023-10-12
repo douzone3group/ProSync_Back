@@ -14,9 +14,10 @@
     </delete>
 
     <select id="findAll">
-        select b.bookmark_id, p.project_id, p.title, p.created_at, p.project_image, p.start_date, p.end_date
+        select b.bookmark_id, p.project_id, p.title, p.created_at, p.project_image, p.start_date, p.end_date, m.name
         from bookmark b
         inner join project p on b.project_id = p.project_id
+        join member m on b.member_id = m.member_id
         where b.member_id = #{memberId}
         order by project_id desc
     </select>

@@ -152,7 +152,7 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity<PageResponseDto<GetProjectsResponse>> getMemberProjects(
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = DEFAULT_PAGE_SIZE) Pageable pageable,
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = 8) Pageable pageable,
             @ApiIgnore Principal principal,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean bookmark,
