@@ -4,13 +4,13 @@
 <mapper namespace="com.douzone.prosync.notification.mapper.NotificationMapper">
     <insert id="saveNotification" useGeneratedKeys="true" keyProperty="notificationId">
         insert into notification (noti_code, from_member_id, created_at, content, url)
-        values (#{code}, #{fromMemberId}, #{createdAt}, #{content}, #{url});
+        values (#{code}, #{fromMemberId}, now(), #{content}, #{url});
     </insert>
     <insert id="saveNotificationTarget" useGeneratedKeys="true" keyProperty="notificationTargetId">
         insert into notification_target (notification_id, member_id, platform, is_read, update_user_no, is_transmitted,
                                          created_at)
         values (#{notificationId}, #{memberId}, #{platform}, #{isRead}, #{updateUserId}, #{isTransmitted},
-                #{createdAt});
+                now());
     </insert>
 
 
@@ -19,7 +19,7 @@
         is_transmitted,created_at) values
         <foreach collection="dtoList" item="dto" separator=",">
             (#{dto.notificationId}, #{dto.memberId}, #{dto.platform}, #{dto.isRead}, #{dto.updateUserId},
-            #{dto.isTransmitted}, #{dto.createdAt})
+            #{dto.isTransmitted}, now())
         </foreach>
     </insert>
 
@@ -75,7 +75,7 @@
         update notification
         set noti_code      =#{notiCode},
             from_member_id = #{fromMemberId},
-            created_at     = #{createdAt},
+            created_at     = now(),
             content        = #{content},
             url            = #{url}
         where notification_id = #{notificationId}
