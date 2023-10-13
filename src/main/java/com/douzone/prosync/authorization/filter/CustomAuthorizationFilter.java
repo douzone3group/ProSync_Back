@@ -37,7 +37,6 @@ import static com.douzone.prosync.member_project.status.ProjectMemberAuthority.*
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-
     private final ProjectAuthorizationRepository authorizationRepository;
 
     private final ProjectMapper projectMapper;
@@ -94,7 +93,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         switch (httpMethod) {
 
             case "GET": {
-                if (requestUri.equals("my-projects") || requestUri.equals("projects") || requestUri.equals("projectlog/admin")) {
+                if (requestUri.equals("user/myprojects") || requestUri.equals("projects") || requestUri.equals("projectlog/admin")) {
                     log.debug("{}", "[GET] 1");
                     return;
                 }
@@ -340,5 +339,4 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             throw new ApplicationException(ErrorCode.INAPPROPRIATE_PERMISSION);
         }
     }
-
 }
