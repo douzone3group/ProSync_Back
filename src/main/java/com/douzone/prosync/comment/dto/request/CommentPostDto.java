@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class CommentPostDto {
 
     @NotBlank
     @ApiModelProperty(value = "댓글 내용", required = true, example = "댓글 내용")
+    @Length(max = 300, message = "댓글을 300자 이내여야 합니다")
     private String content;
 
     private Long memberId;
