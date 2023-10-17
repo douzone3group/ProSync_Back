@@ -8,6 +8,7 @@ import com.douzone.prosync.project.dto.response.GetProjectResponse;
 import com.douzone.prosync.project.dto.response.GetProjectsResponse;
 import com.douzone.prosync.project.dto.response.ProjectSimpleResponse;
 import com.douzone.prosync.project.entity.Project;
+import com.douzone.prosync.project.entity.ProjectWithBookmark;
 import com.douzone.prosync.project.service.ProjectService;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -66,7 +67,7 @@ public class ProjectController {
             @ApiResponse(code = 404, message = "project not found"),
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
-    public ResponseEntity getProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
+    public ResponseEntity<GetProjectResponse> getProject(@Parameter(description = "프로젝트 식별자", required = true, example = "1")
                                      @PathVariable("project-id") Long projectId) {
 
         Project project = projectService.findProject(projectId);
@@ -133,7 +134,6 @@ public class ProjectController {
             @RequestParam(required = false) Boolean bookmark,
             @RequestParam(required = false) String sort,
             Principal principal) {
-
         Long memberId = principal != null ? Long.parseLong(principal.getName()) : null;
         ProjectSearchCond searchCond = new ProjectSearchCond(search, bookmark, sort, memberId);
         PageResponseDto<GetProjectsResponse> response = projectService.findAll(searchCond, pageable);
@@ -144,7 +144,7 @@ public class ProjectController {
      * 내 프로젝트 목록 조회
      * LOGIN USER
      */
-    @GetMapping("/my-projects")
+    @GetMapping("/user/myprojects")
     @ApiOperation(value = "내 프로젝트 조회", notes = "내가 속한 프로젝트를 조회합니다.", tags = "project")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = GetProjectsResponse.class),
@@ -152,11 +152,19 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity<PageResponseDto<GetProjectsResponse>> getMemberProjects(
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = DEFAULT_PAGE_SIZE) Pageable pageable,
-            @ApiIgnore Principal principal) {
-        PageResponseDto<GetProjectsResponse> response = projectService.findMyProjects(Long.parseLong(principal.getName()), pageable);
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = 8) Pageable pageable,
+            @ApiIgnore Principal principal,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Boolean bookmark,
+            @RequestParam(required = false) String sort
+            ) {
+        Long memberId = principal != null ? Long.parseLong(principal.getName()) : null;
+        ProjectSearchCond searchCond = new ProjectSearchCond(search, bookmark, sort, memberId);
+        PageResponseDto<GetProjectsResponse> response = projectService.findMyProjects(searchCond, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
 
     private Long getMemberId(Principal principal) {
         return Optional.ofNullable(principal)

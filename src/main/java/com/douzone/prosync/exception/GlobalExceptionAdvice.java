@@ -2,6 +2,7 @@ package com.douzone.prosync.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mail.MailSendException;
@@ -22,6 +23,12 @@ public class GlobalExceptionAdvice {
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<?> applicationHandler(ApplicationException e) {
         log.error("Error occurs {}", e.toString());
+        if (e.getErrorCode().equals(ErrorCode.CONNECTION_ERROR)) {
+            String errorMsg = "data: {\"type\": \"error\", \"message\": \"" + e.getErrorCode().getMessage()+ "\"}\n\n";
+            return ResponseEntity.status(e.getErrorCode().getStatus())
+                    .contentType(MediaType.parseMediaType("text/event-stream"))
+                    .body(errorMsg);
+        }
         return ResponseEntity.status(e.getErrorCode().getStatus())
                 .body(ErrorResponse.of(e.getErrorCode().name()));
     }

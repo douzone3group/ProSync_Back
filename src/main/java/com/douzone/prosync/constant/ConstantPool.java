@@ -14,7 +14,7 @@ public class ConstantPool {
     public static final long PROJECT_INVITE_LINK_DURATION = 1800L;
 
     // SSE TIMEOUT
-    public static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
+    public static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;  // 60분
 
 
     // page navigates(페이지 쪽수의 갯수)
@@ -26,11 +26,19 @@ public class ConstantPool {
 
     // 프론트 서버 주소
 
-    public static final String FRONT_SERVER_HOST = "http://localhost:3000";
+    public static final String FRONT_SERVER_HOST = "http://prosyncfront.s3-website.ap-northeast-2.amazonaws.com";
+    public static final String FRONT_LOCAL_HOST = "http://localhost:3000";
 
 
     //  NOTIFICATION SCHEDULING DURATION
-    public static final Integer NOTIFICATION_DEFAULT_DURATION = 30;
+
+    public static final Integer NOTIFICATION_EXPIRATION_DURATION = 30*6;
+
+
+
+
+    // LOG SCHEDULING DURATION
+    public static final Integer LOG_EXPIRATION_DURATION = 365 * 3;
 
 
 }

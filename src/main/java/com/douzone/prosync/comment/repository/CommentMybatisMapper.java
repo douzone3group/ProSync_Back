@@ -26,13 +26,10 @@ public interface CommentMybatisMapper {
     // 댓글 삭제
     void deleteComment(Long commentId);
 
-    @Select("select project_id from task where task_id = #{taskId} and is_deleted is null")
+    @Select("select project_id from task where task_id = #{taskId} and is_deleted is false")
     Long findProjectIdByTask(Long taskId);
 
     Optional<MemberProjectResponseDto> findCommentMember(Long commentId);
-
-    Comment findbyId(Long commentId);
-
     @Select("select t.task_id, t.title, t.project_id from comment c join task t on c.task_id=t.task_id where c.comment_id = #{commentId}")
     TaskSimpleDto findTaskbyId(Long commentId);
 }

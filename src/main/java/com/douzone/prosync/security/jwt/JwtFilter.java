@@ -1,7 +1,7 @@
 package com.douzone.prosync.security.jwt;
 
 import com.douzone.prosync.exception.ApplicationException;
-import com.douzone.prosync.redis.RedisService;
+import com.douzone.prosync.security.redis.RedisService;
 import com.douzone.prosync.security.exception.ExpiredTokenException;
 import com.douzone.prosync.security.exception.NoJwtTokenException;
 import lombok.RequiredArgsConstructor;

@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper
 public interface LogMapper {
 
-    void saveLog(LogDto logDto);
+    void saveLog(@Param("logDto")LogDto logDto);
 
 
 
@@ -28,6 +28,8 @@ public interface LogMapper {
     List<LogResponse> getLogList(@Param("condition") LogSearchCondition condition);
 
     Integer getLogListCount(@Param("projectId") Long projectId);
+
+    void cleanUpLog(LocalDateTime duration);
 
 
 

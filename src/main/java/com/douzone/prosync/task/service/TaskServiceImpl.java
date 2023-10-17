@@ -9,7 +9,6 @@ import com.douzone.prosync.file.service.FileService;
 import com.douzone.prosync.log.dto.LogConditionDto;
 import com.douzone.prosync.log.logenum.LogCode;
 import com.douzone.prosync.log.service.LogServiceImpl;
-import com.douzone.prosync.member_project.entity.MemberProject;
 import com.douzone.prosync.member_project.entity.MemberProject.MemberProjectStatus;
 import com.douzone.prosync.member_project.repository.MemberProjectMapper;
 import com.douzone.prosync.notification.dto.NotificationConditionDto;
@@ -26,8 +25,9 @@ import com.douzone.prosync.task.repository.TaskMapper;
 import com.douzone.prosync.task_status.service.TaskStatusService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +68,16 @@ public class TaskServiceImpl implements TaskService {
             fileService.saveFileInfoList(fileInfos);
         }
 
+        GetTaskResponse getTaskResponse = taskMapper.findById(taskId).orElseThrow(() -> new ApplicationException(ErrorCode.TASK_NOT_FOUND));
+
+        // 로그 생성
+        logService.saveLog(LogConditionDto.builder()
+                .fromMemberId(memberId)
+                .subject(getTaskResponse)
+                .projectId(projectId)
+                .taskId(taskId)
+                .code(LogCode.TASK_CREATE).build());
+
         return taskId;
     }
 
@@ -91,19 +101,25 @@ public class TaskServiceImpl implements TaskService {
 
         // 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
         List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskId);
-        List<Long> memberIds  = taskMembers.stream()
-                .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProjectStatus.ACTIVE))
-                .map(TaskMemberResponseDto::getMemberId)
-                .collect(Collectors.toList());
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.TASK_MODIFICATION)
-                .memberIds(memberIds)
-                .taskId(taskId)
-                .subject(findTask)
-                .build());
+        if (taskMembers.size() > 0) {
+            List<Long> memberIds = taskMembers.stream()
+                    .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProjectStatus.ACTIVE))
+                    .map(TaskMemberResponseDto::getMemberId)
+                    .collect(Collectors.toList());
+
+            if (memberIds.size()>0) {
+                // 알림 저장 및 전달
+                notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                        .fromMemberId(memberId)
+                        .code(NotificationCode.TASK_MODIFICATION)
+                        .memberIds(memberIds)
+                        .projectId(findTask.getProjectId())
+                        .taskId(taskId)
+                        .subject(findTask)
+                        .build());
+            }
+        }
 
 
         // 로그 저장
@@ -122,21 +138,26 @@ public class TaskServiceImpl implements TaskService {
         //soft delete
         taskMapper.delete(taskId);
 
-
         // 해당 Task의 멤버들에게 알림을 전달하는 로직 작성
-        List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskId);
-        List<Long> memberIds  = taskMembers.stream()
-                .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProjectStatus.ACTIVE))
-                .map(TaskMemberResponseDto::getMemberId)
-                .collect(Collectors.toList());
+        List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembersDeleted(taskId);
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.TASK_REMOVE)
-                .memberIds(memberIds)
-                .subject(task)
-                .build());
+        if (taskMembers.size() > 0) {
+            List<Long> memberIds = taskMembers.stream()
+                    .filter((taskMemberResponseDto) -> taskMemberResponseDto.getStatus().equals(MemberProjectStatus.ACTIVE))
+                    .map(TaskMemberResponseDto::getMemberId)
+                    .collect(Collectors.toList());
+
+            System.out.println("memberIds : " + memberIds);
+
+            // 알림 저장 및 전달
+            notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                    .fromMemberId(memberId)
+                    .code(NotificationCode.TASK_REMOVE)
+                    .memberIds(memberIds)
+                    .subject(task)
+                    .build());
+        }
+
 
         // 로그 저장
         logService.saveLog(LogConditionDto.builder()
@@ -159,15 +180,17 @@ public class TaskServiceImpl implements TaskService {
      * 업무 리스트 조회
      */
     @Override
-    public PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Long projectId, Pageable pageable, String search, boolean isActive, String view, String status, Long memberId) {
-        int pageNum = pageable.getPageNumber() == 0 ? 1 : pageable.getPageNumber();
-        PageHelper.startPage(pageNum, pageable.getPageSize());
-
-        List<GetTasksResponse> tasks = taskMapper.findTasks(projectId, search, isActive);
-
-        // task member 세팅
+    public PageResponseDto<GetTasksResponse.PerTasksResponse> findTaskList(Long projectId, Integer page, Integer size, String search, boolean isActive, String view, String status, Long memberId) {
+        PageHelper.startPage(page, size);
+        List<GetTasksResponse> tasks = taskMapper.findTasks(projectId, search, isActive, view);
+        Gson gson = new Gson();
         tasks.forEach(task -> {
-            task.setTaskMembers(taskMapper.findTaskMembers(task.getTaskId()));
+            List<TaskMemberResponseDto> dto = gson.fromJson(task.getMembers(), new TypeToken<List<TaskMemberResponseDto>>() {
+            }.getType());
+            if (dto.get(0).getMemberId() != null) {
+                task.setTaskMembers(dto);
+            }
+            task.setMembers(null);
         });
 
         // 필터 - task status
@@ -194,7 +217,7 @@ public class TaskServiceImpl implements TaskService {
         // 이미 담당자로 지정되어있는 경우
         List<TaskMemberResponseDto> taskMembers = taskMapper.findTaskMembers(taskId);
         taskMembers = taskMembers.stream()
-                .filter(taskMemberResponseDto -> taskMemberResponseDto.getStatus().equals(MemberProjectStatus.ACTIVE) ).collect(Collectors.toList());
+                .filter(taskMemberResponseDto -> taskMemberResponseDto.getStatus().equals(MemberProjectStatus.ACTIVE)).collect(Collectors.toList());
 
         taskMembers.forEach(taskMember -> {
             if (projectMemberIds.contains(taskMember.getMemberProjectId())) {
@@ -213,6 +236,7 @@ public class TaskServiceImpl implements TaskService {
                 .code(NotificationCode.TASK_ASSIGNMENT)
                 .memberIds(memberIds)
                 .taskId(task.getTaskId())
+                .projectId(task.getProjectId())
                 .subject(task).build());
 
 
@@ -238,30 +262,35 @@ public class TaskServiceImpl implements TaskService {
 
         List<Long> memberIds = memberProjectMapper.findMemberIdsListById(projectMemberIds);
 
-        // 알림 저장 및 전달
-        notificationService.saveAndSendNotification(NotificationConditionDto.builder()
-                .fromMemberId(memberId)
-                .code(NotificationCode.TASK_EXCLUDED)
-                .memberIds(memberIds)
-                .taskId(task.getTaskId())
-                .subject(task).build());
+        List<Long> allMemberIds =memberProjectMapper.findMemberIdsListByIdAll(projectMemberIds);
+
+        if (memberIds.size()>0) {
+            // 알림 저장 및 전달
+            notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                    .fromMemberId(memberId)
+                    .code(NotificationCode.TASK_EXCLUDED)
+                    .memberIds(memberIds)
+                    .taskId(task.getTaskId())
+                    .projectId(task.getProjectId())
+                    .subject(task).build());
+        }
+
+
 
         // 로그 저장
         logService.saveLog(LogConditionDto.builder()
                 .fromMemberId(memberId)
                 .code(LogCode.TASK_EXCLUDED)
-                .memberIds(memberIds)
+                .memberIds(allMemberIds)
                 .projectId(task.getProjectId())
                 .taskId(task.getTaskId())
                 .subject(task).build());
 
 
-
-
     }
 
     @Override
-    public List<TaskMemberResponseDto> findTaskMembers(Long taskId, long memberId) {
+    public List<TaskMemberResponseDto> findTaskMembers(Long taskId, Long memberId) {
         return taskMapper.findTaskMembers(taskId);
     }
 
@@ -285,7 +314,7 @@ public class TaskServiceImpl implements TaskService {
     private void verifyTaskStatus(Long projectId, Long taskStatusId, Long memberId) {
         taskStatusService.getTaskStatusByProject(projectId, false, memberId)
                 .stream()
-                .filter(status -> status.getTaskStatusId() == taskStatusId).findFirst()
+                .filter(status -> status.getTaskStatusId().equals(taskStatusId)).findFirst()
                 .orElseThrow(() -> new ApplicationException(ErrorCode.TASK_STATUS_NOT_FOUND));
     }
 

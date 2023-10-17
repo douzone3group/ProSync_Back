@@ -1,4 +1,4 @@
-package com.douzone.prosync.redis;
+package com.douzone.prosync.security.redis;
 
 public interface TokenStorageService {
 

@@ -2,6 +2,7 @@ package com.douzone.prosync.member.mapper;
 
 import com.douzone.prosync.member.dto.MemberDto;
 import com.douzone.prosync.member.dto.request.MemberPatchProfileDto;
+import com.douzone.prosync.member.dto.response.ProfileWithAuthorityDto;
 import com.douzone.prosync.member.entity.Member;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -28,7 +29,7 @@ public interface MemberMapper {
 
     List<Member> getMemberList(@Param("memberIds")List<Long> memberIds);
 
-
+    ProfileWithAuthorityDto getMemberProfileWithAuthority(@Param("memberId") Long memberId, @Param("projectId") Long projectId);
 
 
     // Todo: 멤버 관리 리스트에서 검색조건을 사용할 때 findAll을 작성한다.

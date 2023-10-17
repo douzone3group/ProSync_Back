@@ -21,4 +21,7 @@ public interface NotificationService {
 
      PageResponseDto<NotificationResponse> getNotificationPageList(NotificationListRequestDto requestDto, Pageable pageable, Principal principal);
 
+    List<NotificationTargetSimpleResponse> updateTargetListIsRead(List<Long> notificationTargetIds, Long memberId);
+
+    List<NotificationTargetSimpleResponse> deleteTargetList(List<Long> notificationTargetIds, Long memberId);
 }

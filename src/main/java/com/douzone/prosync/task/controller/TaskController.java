@@ -121,14 +121,16 @@ public class TaskController {
             @ApiImplicitParam(name = "view", dataType = "string", paramType = "query", value = "보드뷰 - 업무상태별 응답 출력", example = "board"),
             @ApiImplicitParam(name = "status", dataType = "string", paramType = "query", value = "업무상태", example = "todo")
     })
-    public ResponseEntity<PageResponseDto<GetTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
-                                                                                          @RequestParam(required = false) String search,
-                                                                                          @Parameter(hidden = true) @ApiIgnore @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable,
-                                                                                          @RequestParam(required = false) boolean isActive,
-                                                                                          @RequestParam(required = false) String view,
-                                                                                          @RequestParam(required = false) String status,
-                                                                                          @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        PageResponseDto pageResponseDto = taskService.findTaskList(projectId, pageable, search, isActive, view, status, getMemberId(principal));
+    public ResponseEntity<PageResponseDto<GetTasksResponse.PerTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
+                                                                         @RequestParam(required = false) String search,
+                                                                         @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                                         @RequestParam(required = false, defaultValue = "10") Integer size,
+                                                                         @RequestParam(required = false) boolean isActive,
+                                                                         @RequestParam(required = false) String view,
+                                                                         @RequestParam(required = false) String status,
+                                                                         @Parameter(hidden = true) @ApiIgnore Principal principal) {
+        PageResponseDto pageResponseDto = taskService.findTaskList(projectId, page, size, search, isActive, view, status, getMemberId(principal));
+
         return new ResponseEntity<>(pageResponseDto, HttpStatus.OK);
     }
 
@@ -144,9 +146,12 @@ public class TaskController {
             @ApiResponse(code = 404, message = "task not found"),
             @ApiResponse(code = 500, message = "server error")
     })
-    public ResponseEntity<SingleResponseDto<GetTaskResponse>> getTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") Long taskId,
+    public ResponseEntity<GetTaskResponse.TaskMembersDto> getTask(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") Long taskId,
                                                                       @Parameter(hidden = true) @ApiIgnore Principal principal) {
-        return new ResponseEntity<>(new SingleResponseDto<>(taskService.findTask(taskId, getMemberId(principal))), HttpStatus.OK);
+        Long memberId = getMemberId(principal);
+        GetTaskResponse task = taskService.findTask(taskId, memberId);
+        List<TaskMemberResponseDto> taskMembers = taskService.findTaskMembers(taskId, memberId);
+        return new ResponseEntity<>(new GetTaskResponse.TaskMembersDto(task, taskMembers), HttpStatus.OK);
     }
 
     /**
@@ -182,7 +187,7 @@ public class TaskController {
      */
     @GetMapping("/tasks/{task-id}/members")
     @Operation(summary = "업무 담당자 목록 조회", description = "특정 업무에 대한 담당자를 전체 조회합니다.", tags = "task")
-    public ResponseEntity<SingleResponseDto<List<MemberGetResponse.SimpleResponse>>> getTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
+    public ResponseEntity<SingleResponseDto<List<TaskMemberResponseDto>>> getTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
                                                                                                    @Parameter(hidden = true) @ApiIgnore Principal principal) {
         List<TaskMemberResponseDto> res = taskService.findTaskMembers(taskId, getMemberId(principal));
         return new ResponseEntity(new SingleResponseDto<>(res), HttpStatus.OK);

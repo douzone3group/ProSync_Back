@@ -11,7 +11,7 @@
         SELECT * FROM task t
         LEFT JOIN task_status ts
         ON t.task_status_id = ts.task_status_id
-        WHERE t.task_id=#{taskId} and t.is_deleted IS NULL AND ts.is_deleted IS NULL
+        WHERE t.task_id=#{taskId} and t.is_deleted IS FALSE AND ts.is_deleted IS FALSE
     </select>
 
     <update id="update">
@@ -27,18 +27,18 @@
             <if test="detail != null">
                 detail=#{detail},
             </if>
-            <if test="startDate != null">
+           <if test="startDate != null">
                 start_date=#{startDate},
             </if>
             <if test="endDate != null">
                 end_date=#{endDate},
             </if>
             <if test="taskStatusId != null">
-                task_status=#{taskStatusId},
+                task_status_id=#{taskStatusId},
             </if>
         </set>
         WHERE task_id = #{taskId}
-          AND is_deleted IS NULL
+          AND is_deleted IS false
     </update>
 
     <resultMap id="getTasksResponseMap" type="GetTasksResponse">
@@ -53,23 +53,45 @@
         <result property="color" column="color"/>
         <result property="taskStatus" column="task_status"/>
         <result property="seq" column="seq"/>
+        <result property="members" column="members"/>
     </resultMap>
 
     <select id="findTasks" resultMap="getTasksResponseMap">
         select t.task_id, t.classification, t.title, t.start_date, t.end_date, t.created_at, t.modified_at,
-               ts.task_status_id, ts.color, ts.task_status, ts.seq from task t
-        join task_status ts on ts.task_status_id = t.task_status_id
+        ts.task_status_id, ts.color, ts.task_status, ts.seq,
+        JSON_ARRAYAGG(
+        JSON_OBJECT(
+        'memberProjectId', mp.member_project_id,
+        'status', mp.status,
+        'memberId', m.member_id,
+        'profileImage', m.profile_image,
+        'name', m.name
+        )
+        ) as members
+        from task t
+        left join task_status ts on ts.task_status_id = t.task_status_id
+        left join member_project_task mpt on mpt.task_id = t.task_id
+        left join member_project mp on mp.member_project_id = mpt.member_project_id
+        left join member m on m.member_id = mp.member_id
         <where>
-            and t.project_id = #{projectId} and t.is_deleted is null
+            and t.project_id = #{projectId} and t.is_deleted is false
             <if test="search != null and search != ''">
                 and (t.title like concat('%', #{search}, '%') or
-                ts.task_status like concat('%', #{search}, '%'))
+                ts.task_status like concat('%', #{search}, '%') or
+                m.name like concat('%', #{search}, '%'))
             </if>
-           <if test="isActive != null and isActive == true">
-               and not (ts.seq = 0 or ts.seq is null)
-           </if>
+            <if test='isActive != null and isActive == true'>
+                and not (ts.seq = 0 or ts.seq is false)
+            </if>
         </where>
-        order by t.task_id desc
+        <if test="view != null and view.equals('board')">
+            group by t.task_id
+            order by ts.seq asc, t.task_id desc
+        </if>
+        <if test="view == null or !view.equals('board')">
+            group by t.task_id
+            order by t.task_id desc
+        </if>
     </select>
 
     <insert id="saveTaskMember">
@@ -94,6 +116,15 @@
                  JOIN member_project mp ON mpt.member_project_id = mp.member_project_id
                  JOIN member m ON m.member_id = mp.member_id
                  JOIN task t on t.task_id = mpt.task_id
-        WHERE mpt.task_id = #{taskId} AND t.is_deleted IS NULL;
+        WHERE mpt.task_id = #{taskId} AND t.is_deleted IS false;
+    </select>
+
+    <select id="findTaskMembersDeleted">
+        SELECT mp.member_project_id, mp.status, m.member_id, m.profile_image, m.name
+        FROM member_project_task mpt
+                 JOIN member_project mp ON mpt.member_project_id = mp.member_project_id
+                 JOIN member m ON m.member_id = mp.member_id
+                 JOIN task t on t.task_id = mpt.task_id
+        WHERE mpt.task_id = #{taskId};
     </select>
 </mapper>

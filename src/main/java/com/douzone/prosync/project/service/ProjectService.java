@@ -21,8 +21,8 @@ public interface ProjectService {
 
     PageResponseDto<GetProjectsResponse> findAll(ProjectSearchCond searchCond, Pageable pageable);
 
-    PageResponseDto<GetProjectsResponse> findMyProjects(Long memberId, Pageable pageable);
+    PageResponseDto<GetProjectsResponse> findMyProjects(ProjectSearchCond searchCond, Pageable pageable);
 
-    PageInfo<GetProjectsResponse> findMyProjectsPartOfAdmin(Long memberId, Pageable pageable);
+    PageResponseDto<GetProjectsResponse>  findMyProjectsPartOfAdmin(Long memberId, Pageable pageable);
 
 }

@@ -16,6 +16,13 @@ public enum ErrorCode {
     INVALID_ENUM_VALUE(HttpStatus.BAD_REQUEST, "Invalid enum value"),
 
     // MEMBER
+
+    INCORRECT_FORMAT_EMAIL(HttpStatus.UNPROCESSABLE_ENTITY, "Email format is Incorrect"),
+    INCORRECT_FORMAT_NAME(HttpStatus.UNPROCESSABLE_ENTITY, "Name format is Incorrect"),
+    INCORRECT_FORMAT_PASSWORD(HttpStatus.UNPROCESSABLE_ENTITY, "Password format is Incorrect"),
+
+    INCORRECT_FORMAT_INTRO(HttpStatus.UNPROCESSABLE_ENTITY, "Intro format is Incorrect"),
+
     DUPLICATED_USER_ID(HttpStatus.CONFLICT, "User ID is duplicated"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"User Authentication is failed"),
@@ -36,6 +43,7 @@ public enum ErrorCode {
     // PROJECT_MEMBER
     PROJECT_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "Project Member not founded"),
     PROJECT_MEMBER_EXISTS(HttpStatus.CONFLICT, "Project Member exists"),
+    PROJECT_INVITE_CODE_NOT_FOUND(HttpStatus.NOT_FOUND, "Project code not founded"),
 
     // TASK
     TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "Task not founded"),
@@ -54,9 +62,14 @@ public enum ErrorCode {
     FILE_INFO_EXISTS(HttpStatus.CONFLICT, "File Info exists"),
 
     // NOTIFICATION
-    CONNECTION_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "Sse Connection is failed"),
+    CONNECTION_ERROR(HttpStatus.OK, "Sse Connection is failed"),
+
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Notification not founded"),
     NOTIFICATION_CANT_READ(HttpStatus.FORBIDDEN, "Notification not read"),
+
+    NOTIFICATION_CANT_UPDATE(HttpStatus.BAD_REQUEST, "Notification cant update"),
+
+    NOTIFICATION_CANT_DELETE(HttpStatus.BAD_REQUEST, "Notification cant delete"),
 
 
     // LOG
@@ -68,6 +81,10 @@ public enum ErrorCode {
     // AUTHORIZATION
     MEMBER_NOT_INCLUDED_IN_PROJECT(HttpStatus.FORBIDDEN,"Member not included in project"),
     INAPPROPRIATE_PERMISSION(HttpStatus.FORBIDDEN, "Unauthorized User");
+
+
+
+
 
     private HttpStatus status;
     private String message;

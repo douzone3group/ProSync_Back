@@ -24,12 +24,12 @@ public class TaskPostDto {
 
         @ApiModelProperty(value = "제목", required = true, example = "제목")
         @NotBlank
-        @Length(max = 200, message = "제목은 200자 이내여야 합니다")
+        @Length(max = 50, message = "제목은 50자 이내여야 합니다")
         private String title;
 
         @ApiModelProperty(value = "상세설명", example = "상세설명")
         @NotNull
-        @Length(max = 500, message = "프로젝트 상세는 500자 이내여야 합니다")
+        @Length(max = 1000, message = "프로젝트 상세는 1000자 이내여야 합니다")
         private String detail;
 
         @ApiModelProperty(value = "시작일자", required = true, example = "2023-10-01")

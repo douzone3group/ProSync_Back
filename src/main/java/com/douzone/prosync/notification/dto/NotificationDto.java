@@ -17,7 +17,6 @@ public class NotificationDto {
 
     private Long fromMemberId;
 
-    private LocalDateTime createdAt;
 
     private String content;
     private String url;

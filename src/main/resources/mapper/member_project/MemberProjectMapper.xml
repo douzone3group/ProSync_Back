@@ -14,7 +14,7 @@
         from member_project mp
                  left join project_authority pa on mp.authority_id = pa.authority_id
                  left join member m on mp.member_id = m.member_id
-        where mp.member_id = #{memberId} and mp.project_id = #{projectId}
+        where mp.member_id = #{memberId} and mp.project_id = #{projectId} and mp.status='ACTIVE'
     </select>
 
     <select id="findProjectMembers">
@@ -23,23 +23,33 @@
                  left join project_authority pa on mp.authority_id = pa.authority_id
                  left join member m on mp.member_id = m.member_id
         where mp.project_id = #{projectId}
+        <if test="search != null and search != ''">
+            and (lower(m.name) like lower(concat('%', #{search}, '%')))
+        </if>
     </select>
+
 
     <select id="findMemberIdsListById">
         select member_id from member_project
         where member_project_id in
         <foreach collection="memberProjectsId" item="id" open="(" separator="," close=")">
             #{id}
-        </foreach> and status = 'active';
+        </foreach> and status = 'ACTIVE';
+    </select>
+
+    <select id="findMemberIdsListByIdAll">
+        select member_id from member_project
+        where member_project_id in
+        <foreach collection="memberProjectsId" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </select>
 
     <select id="findProjectIdsByMemberId">
         select project_id from member_project
         where member_id = #{memberId}
-        and status = 'active';
+        and status = 'ACTIVE';
     </select>
-
-
 
 
 </mapper>

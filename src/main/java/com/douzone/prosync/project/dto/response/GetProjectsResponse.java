@@ -1,48 +1,46 @@
 package com.douzone.prosync.project.dto.response;
 
-import com.douzone.prosync.member_project.dto.MemberProjectResponseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @ApiModel("GetProjectsResponse")
 public class GetProjectsResponse {
 
-    @ApiModelProperty(example = "프로젝트 아이디")
+    @ApiModelProperty(value = "프로젝트 아이디", example = "1")
     private Long projectId;
 
-    @ApiModelProperty(example = "프로젝트 이름")
+    @ApiModelProperty(value = "프로젝트 이름", example = "프로젝트 이름")
     private String title;
 
-    @ApiModelProperty(example = "프로젝트 시작 날짜")
+    @ApiModelProperty(value = "프로젝트 시작 날짜", example = "2023-10-16")
     private String startDate;
 
-    @ApiModelProperty(example = "프로젝트 종료 날짜")
+    @ApiModelProperty(value = "프로젝트 종료 날짜", example = "2023-10-16")
     private String endDate;
 
-    @ApiModelProperty(example = "프로젝트 생성일")
+    @ApiModelProperty(value = "프로젝트 생성일", example = "2023-10-16 20:00:00")
     private String createdAt;
 
-    @ApiModelProperty(example = "프로젝트 이미지")
+    @ApiModelProperty(value = "프로젝트 이미지", example = "http://~")
     private String projectImage;
 
-    @ApiModelProperty(example = "프로젝트 admin 회원식별자")
+    @ApiModelProperty(value = "프로젝트 admin 회원식별자", example = "1")
     private Long memberId;
 
-    @ApiModelProperty(example = "프로젝트 admin 이름")
+    @ApiModelProperty(value = "프로젝트 admin 이름", example = "관리자 이름")
     private String name;
 
-    @ApiModelProperty(example = "프로젝트 admin 프로필이미지")
+    @ApiModelProperty(value = "프로젝트 admin 프로필이미지", example = "http://~")
     private String profileImage;
 
-    private List<MemberProjectResponseDto> projectMembers;
+    @ApiModelProperty(value = "북마크 아이디", example = "1")
+    private Long bookmarkId;
 
-    public void setProjectMembers(List<MemberProjectResponseDto> projectMembers) {
-        this.projectMembers = projectMembers;
+    public void setProjectImage(String projectImage) {
+        this.projectImage = projectImage;
     }
 }

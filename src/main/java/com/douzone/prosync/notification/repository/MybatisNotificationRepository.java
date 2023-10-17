@@ -79,8 +79,8 @@ public class MybatisNotificationRepository implements NotificationRepository{
     }
 
     @Override
-    public List<NotificationTarget> getNotificationTagetListByNotificationId(Long notificationId) {
-        return notificationMapper.getNotificationTagetListByNotificationId(notificationId);
+    public List<NotificationTarget> getNotificationTargetListByNotificationId(Long notificationId) {
+        return notificationMapper.getNotificationTargetListByNotificationId(notificationId);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.douzone.prosync.project.dto.request.ProjectSearchCond;
 import com.douzone.prosync.project.dto.response.GetProjectsResponse;
 import com.douzone.prosync.project.entity.Project;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,10 +28,10 @@ public interface ProjectMapper {
 
     List<GetProjectsResponse> findAll(ProjectSearchCond searchCond);
 
-    List<GetProjectsResponse> findByMemberId(Long memberId);
+    List<GetProjectsResponse> findByMemberId(@Param("memberId") Long memberId, @Param("search") ProjectSearchCond searchCond);
 
     List<GetProjectsResponse> findByMemberIdPartOfAdmin(Long memberId);
-
     List<Long> findMembersInProject(Long projectId);
+
 
 }

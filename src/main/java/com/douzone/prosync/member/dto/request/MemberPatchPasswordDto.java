@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Getter
 @NoArgsConstructor
@@ -12,6 +13,6 @@ import javax.validation.constraints.NotNull;
 public class MemberPatchPasswordDto {
 
     @ApiModelProperty(value = "비밀번호",example = "1234")
-    @NotNull @NotBlank
+    @Pattern(regexp = "^(?=.*[!@#$%^&*()_+{}\\[\\]:;<>,.?~\\\\/-]).{8,15}$")
     private String password;
 }
