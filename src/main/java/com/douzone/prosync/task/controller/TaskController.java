@@ -121,7 +121,7 @@ public class TaskController {
             @ApiImplicitParam(name = "view", dataType = "string", paramType = "query", value = "보드뷰 - 업무상태별 응답 출력", example = "board"),
             @ApiImplicitParam(name = "status", dataType = "string", paramType = "query", value = "업무상태", example = "todo")
     })
-    public ResponseEntity<PageResponseDto<GetTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
+    public ResponseEntity<PageResponseDto<GetTasksResponse.PerTasksResponse>> getTaskList(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("project-id") @Positive Long projectId,
                                                                          @RequestParam(required = false) String search,
                                                                          @RequestParam(required = false, defaultValue = "1") Integer page,
                                                                          @RequestParam(required = false, defaultValue = "10") Integer size,
@@ -187,7 +187,7 @@ public class TaskController {
      */
     @GetMapping("/tasks/{task-id}/members")
     @Operation(summary = "업무 담당자 목록 조회", description = "특정 업무에 대한 담당자를 전체 조회합니다.", tags = "task")
-    public ResponseEntity<SingleResponseDto<List<MemberGetResponse.SimpleResponse>>> getTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
+    public ResponseEntity<SingleResponseDto<List<TaskMemberResponseDto>>> getTaskMember(@Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
                                                                                                    @Parameter(hidden = true) @ApiIgnore Principal principal) {
         List<TaskMemberResponseDto> res = taskService.findTaskMembers(taskId, getMemberId(principal));
         return new ResponseEntity(new SingleResponseDto<>(res), HttpStatus.OK);

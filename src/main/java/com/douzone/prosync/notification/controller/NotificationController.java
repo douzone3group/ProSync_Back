@@ -1,6 +1,7 @@
 package com.douzone.prosync.notification.controller;
 
 import com.douzone.prosync.common.PageResponseDto;
+import com.douzone.prosync.exception.ErrorResponse;
 import com.douzone.prosync.notification.dto.request.NotificationListRequestDto;
 import com.douzone.prosync.notification.dto.request.NotificationTargetIdsDto;
 import com.douzone.prosync.notification.dto.response.NotificationResponse;
@@ -56,7 +57,8 @@ public class NotificationController {
     @Operation(summary = "SSE 연결 구독하기", description = "클라이언트와 서버 간의 SSE 연결을 하고 연결 성공 시 사용자가 안읽은 알림에 대한 갯수를 보내줍니다.", tags = "notification")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = SseEmitter.class),
-            @ApiResponse(code = 503, message = "server connection error")
+            @ApiResponse(code = 404, message = "user not founded", response = ErrorResponse.class),
+            @ApiResponse(code = 200, message = "sse Connection is failed", response = String.class)
     })
     @Transactional
     public SseEmitter subscribe(@PathVariable("id") Long memberId) {
@@ -103,7 +105,8 @@ public class NotificationController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = NotificationTargetSimpleResponse.class),
             @ApiResponse(code = 403, message = "notification cant read"),
-            @ApiResponse(code = 404, message = "notification not found")
+            @ApiResponse(code = 404, message = "notification not found"),
+            @ApiResponse(code = 500, message = "server error")
     })
     public ResponseEntity<NotificationTargetSimpleResponse> updateNotificationIsRead(@Parameter(name = "notificationTargetId", description = "알림 타겟 식별자", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id, @Parameter(hidden = true) Principal principal) {
         NotificationTargetSimpleResponse response = notificationService.updateNotificationIsRead(id, Long.parseLong(principal.getName()));
@@ -119,6 +122,7 @@ public class NotificationController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = List.class),
             @ApiResponse(code = 400, message = "notification cant update"),
+            @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity<List<NotificationTargetSimpleResponse>> updateNotificationListIsRead(@Parameter(name = "notificationTargetIds", description = "알림 타겟 식별자(복수)", required = true, in = ParameterIn.DEFAULT)
                                                                                          @RequestBody NotificationTargetIdsDto dto,
@@ -135,7 +139,8 @@ public class NotificationController {
     @Operation(summary = "선택 알림 삭제 처리", description = "사용자가 선택한 알림들을 삭제합니다.", tags = "notification")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = List.class),
-            @ApiResponse(code = 400, message = "notification cant delete")
+            @ApiResponse(code = 400, message = "notification cant delete"),
+            @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity<List<NotificationTargetSimpleResponse>> deleteNotificationList(@Parameter(name = "notificationTargetIds", description = "알림 타겟 식별자(복수)", required = true, in = ParameterIn.DEFAULT)
                                                                                          @RequestBody NotificationTargetIdsDto dto,
@@ -150,8 +155,8 @@ public class NotificationController {
     @DeleteMapping("/notification/deleteAll")
     @Operation(summary = "모든 알림 삭제 처리", description = "사용자의 모든 알림들을 삭제합니다.", tags = "notification")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successfully retrieved"),
-            @ApiResponse(code = 400, message = "notification cant delete")
+            @ApiResponse(code = 204, message = "successfully retrieved"),
+            @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity deleteAllNotification(@Parameter(hidden = true) Principal principal) {
         mapper.deleteAllTarget(Long.parseLong(principal.getName()));
@@ -165,8 +170,8 @@ public class NotificationController {
     @PatchMapping("/notification/allRead")
     @Operation(summary = "모든 알림 읽음 처리", description = "사용자의 모든 알림을 읽음으로 업데이트합니다.", tags = "notification")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successfully retrieved"),
-            @ApiResponse(code = 400, message = "notification cant update"),
+            @ApiResponse(code = 204, message = "successfully retrieved"),
+            @ApiResponse(code = 500, message = "server error"),
     })
     public ResponseEntity updateAllNotificationListIsRead(@Parameter(hidden = true) Principal principal) {
 
@@ -180,8 +185,12 @@ public class NotificationController {
     /**
      * 안읽은 알림 갯수 조회
      */
-    @Operation(summary = "안읽은 알림 갯수 조회", description = "안읽은 알림 갯수를 조회함", tags = "notification")
     @GetMapping("/notification/count")
+    @Operation(summary = "안읽은 알림 갯수 조회", description = "안읽은 알림 갯수를 조회함", tags = "notification")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successfully retrieved" ,response = Integer.class),
+            @ApiResponse(code = 500, message = "server error"),
+    })
     public ResponseEntity getNotificationCountIsReadFalse(@Parameter(hidden = true) Principal principal){
 
         Integer count = mapper.getNotificationCountIsReadFalse(Long.parseLong(principal.getName()));
