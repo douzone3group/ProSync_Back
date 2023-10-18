@@ -25,8 +25,7 @@ public class FileCleanUpScheduler {
     private final FileHandler fileHandler;
 
     // 매일 자정 사용자가 삭제후 30일 경과된 파일을 삭제 처리
-//    @Scheduled(cron = "0 0 0 * * ?")
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void cleanupExpiredFiles() {
 
         log.info("삭제후 30일 경과된 파일 정기 삭제 스케쥴러 실행");
