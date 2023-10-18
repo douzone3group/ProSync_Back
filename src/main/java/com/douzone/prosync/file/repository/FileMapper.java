@@ -6,7 +6,7 @@ import com.douzone.prosync.file.entity.File;
 import com.douzone.prosync.file.entity.FileInfo;
 import org.apache.ibatis.annotations.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +48,7 @@ public interface FileMapper {
     void deleteActualFileInfo(Long fileInfoId);
 
     @Select("SELECT * FROM file_info WHERE deleted_at <= #{dateTime}")
-    List<FileInfo> findDeletedFile(LocalDateTime dateTime);
+    List<FileInfo> findDeletedFile(LocalDate dateTime);
 
     List<File> findFilesWithNoFileInfo();
 
