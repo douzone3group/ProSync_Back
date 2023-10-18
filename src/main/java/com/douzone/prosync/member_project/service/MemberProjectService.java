@@ -18,7 +18,7 @@ public interface MemberProjectService {
 
     void updateProjectMember(Long projectMemberIdt, MemberProjectRequestDto authority, Long memberId);
 
-    MemberProjectResponseDto findProjectMember(Long projectId, Long memberId);
+    MemberProjectResponseDto findProjectMember(Long projectId, Long memberId, boolean active);
 
     PageResponseDto<MemberProjectResponseDto> findProjectMembers(MemberProjectSearchCond searchCond, Pageable pageable);
 

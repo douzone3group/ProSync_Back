@@ -14,7 +14,7 @@
         from member_project mp
                  left join project_authority pa on mp.authority_id = pa.authority_id
                  left join member m on mp.member_id = m.member_id
-        where mp.member_id = #{memberId} and mp.project_id = #{projectId} and mp.status='ACTIVE'
+        where mp.member_id = #{memberId} and mp.project_id = #{projectId}
     </select>
 
     <select id="findProjectMembers">
