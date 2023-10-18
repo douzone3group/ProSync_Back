@@ -9,13 +9,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Transactional
 public class FileCleanUpScheduler {
 
     private final FileService fileService;
@@ -23,21 +25,23 @@ public class FileCleanUpScheduler {
     private final FileHandler fileHandler;
 
     // 매일 자정 사용자가 삭제후 30일 경과된 파일을 삭제 처리
-    @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 * * * * ?")
     public void cleanupExpiredFiles() {
 
-        LocalDateTime dateTime = LocalDateTime.now().minusDays(30);
+        log.info("삭제후 30일 경과된 파일 정기 삭제 스케쥴러 실행");
+        LocalDate dateTime = LocalDate.now().minusDays(30);
         List<FileInfo> deletedFile = fileMapper.findDeletedFile(dateTime);
         for (FileInfo fileInfo : deletedFile) {
+
+            File findFile = fileService.findFile(fileInfo.getFileId());
 
             // 테이블 삭제
             fileMapper.deleteActualFileInfo(fileInfo.getFileInfoId());
             fileMapper.deleteActualFile(fileInfo.getFileId());
 
             // 저장소 삭제
-            File findFile = fileService.findFile(fileInfo.getFileId());
             fileHandler.delete(findFile.getFileName());
-            log.info("파일 정기 삭제 - 삭제 후 30일 : fileId - {}, table name - {}, table key - {}", fileInfo.getFileId(), fileInfo.getTableName(), fileInfo.getTableKey());
         }
     }
 
@@ -45,12 +49,12 @@ public class FileCleanUpScheduler {
     @Scheduled(cron = "0 0 0 * * ?")
     public void cleanupUnmatchedFile() {
 
+        log.info("파일 정기 삭제 스케쥴러 실행");
         List<File> files = fileMapper.findFilesWithNoFileInfo();
         for (File file : files) {
 
             fileMapper.deleteActualFile(file.getFileId());
             fileHandler.delete(file.getFileName());
-            log.info("매칭되지 않은 파일 삭제 : fileId - {}", file.getFileId());
         }
     }
 
