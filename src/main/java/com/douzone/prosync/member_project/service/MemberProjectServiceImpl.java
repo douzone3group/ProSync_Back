@@ -92,9 +92,10 @@ public class MemberProjectServiceImpl implements MemberProjectService {
             if (status.equals(MemberProject.MemberProjectStatus.ACTIVE)) {
                 throw new ApplicationException(ErrorCode.PROJECT_MEMBER_EXISTS, "projectId : " + findProjectId);
             }
+
+            // 프로젝트 나갔다 들어온 회원일 경우 - 상태 ACTIVE, 권한 READER
             projectMemberMapper.updateStatusOfProjectMember(findProjectId, memberId, MemberProject.MemberProjectStatus.ACTIVE);
-            MemberProjectResponseDto findProjectMember = findProjectMember(findProjectId, memberId);
-            projectMemberMapper.updateAuthorityOfProjectMember(findProjectMember.getMemberProjectId(), ProjectMemberAuthority.READER);
+            projectMemberMapper.updateAuthorityOfProjectMember(projectMember.get().getMemberProjectId(), ProjectMemberAuthority.READER);
 
             // 알림 저장 및 전달
             notificationService.saveAndSendNotification(NotificationConditionDto.builder()
@@ -119,6 +120,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
             logService.saveLog(LogConditionDto.builder()
                     .fromMemberId(fromMemberId)
                     .code(LogCode.PROJECT_ASSIGNMENT)
+                    .memberId(memberId)
                     .projectId(findProjectId)
                     .subject(project).build());
 
@@ -142,12 +144,31 @@ public class MemberProjectServiceImpl implements MemberProjectService {
                     .subject(project)
                     .build());
 
+            notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                    .memberId(memberId)
+                    .fromMemberId(fromMemberId)
+                    .code(NotificationCode.CHANGE_AUTHORITY)
+                    .memberIds(memberIds)
+                    .projectId(findProjectId)
+                    .authority(ProjectMemberAuthority.READER)
+                    .subject(project)
+                    .build());
+
             // 로그 저장
             logService.saveLog(LogConditionDto.builder()
                     .fromMemberId(fromMemberId)
+                    .memberId(memberId)
                     .code(LogCode.PROJECT_ASSIGNMENT)
                     .projectId(findProjectId)
                     .subject(project).build());
+
+            logService.saveLog(LogConditionDto.builder()
+                    .fromMemberId(fromMemberId)
+                    .code(LogCode.CHANGE_AUTHORITY)
+                    .projectId(findProjectId)
+                    .memberId(memberId)
+                    .authority(ProjectMemberAuthority.READER)
+                    .build());
         }
 
         return findProjectId;
@@ -198,7 +219,7 @@ public class MemberProjectServiceImpl implements MemberProjectService {
 
 
             Long projectId = projectMemberMapper.findProjectByProjectMemberId(projectMemberId);
-            Long memberProjectId = findProjectMember(projectId, memberId).getMemberProjectId();
+            Long memberProjectId = findProjectMember(projectId, memberId, true).getMemberProjectId();
             System.out.println(memberProjectId);
             projectMemberMapper.updateAuthorityOfProjectMember(memberProjectId, ProjectMemberAuthority.WRITER);
 
@@ -249,8 +270,12 @@ public class MemberProjectServiceImpl implements MemberProjectService {
 
     // 프로젝트 회원 조회
     @Override
-    public MemberProjectResponseDto findProjectMember(Long projectId, Long memberId) {
-        return projectMemberMapper.findProjectMember(projectId, memberId).orElseThrow(() -> new ApplicationException(ErrorCode.PROJECT_MEMBER_NOT_FOUND));
+    public MemberProjectResponseDto findProjectMember(Long projectId, Long memberId, boolean active) {
+        MemberProjectResponseDto projectMember = projectMemberMapper.findProjectMember(projectId, memberId).orElseThrow(() -> new ApplicationException(ErrorCode.PROJECT_MEMBER_NOT_FOUND));
+        if (active && projectMember.getStatus().equals(MemberProject.MemberProjectStatus.QUIT)) {
+            throw new ApplicationException(ErrorCode.PROJECT_MEMBER_NOT_FOUND);
+        }
+        return projectMember;
     }
 
     // 프로젝트 회원 목록 조회
@@ -306,13 +331,26 @@ public class MemberProjectServiceImpl implements MemberProjectService {
     // 프로젝트 나가기
     @Override
     public void exitProjectMember(Long projectId, Long memberId) {
-        MemberProjectResponseDto projectMember = findProjectMember(projectId, memberId);
+        MemberProjectResponseDto projectMember = findProjectMember(projectId, memberId, true);
         // admin일 경우 위임 후 나가기 가능
         if (projectMember.getAuthority().equals(ProjectMemberAuthority.ADMIN)) {
             throw new ApplicationException(ErrorCode.ACCESS_FORBIDDEN);
         }
         projectMemberMapper.updateStatusOfProjectMember(projectId, memberId, MemberProject.MemberProjectStatus.QUIT);
         Project project = projectMapper.findById(projectId).get();
+
+        List<Long> memberIds = projectMapper.findMembersInProject(project.getProjectId());
+
+        if (memberIds.size()>0) {
+            // 알림 저장
+            notificationService.saveAndSendNotification(NotificationConditionDto.builder()
+                    .fromMemberId(memberId)
+                    .code(NotificationCode.PROJECT_EXIT)
+                    .memberIds(memberIds)
+                    .projectId(projectId)
+                    .subject(project).build());
+        }
+
 
         // 로그 저장
         logService.saveLog(LogConditionDto.builder()

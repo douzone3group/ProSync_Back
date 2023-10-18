@@ -103,7 +103,7 @@ public class MemberProjectController {
     @Operation(summary = "프로젝트 회원 조회", description = "프로젝트 회원을 조회합니다.", tags = "member_project")
     public ResponseEntity<MemberProjectResponseDto> getProjectMember(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId,
                                                                      @Parameter(description = "회원식별자", required = true, example = "1") @PathVariable("member-id") Long memberId) {
-        MemberProjectResponseDto response = memberProjectService.findProjectMember(projectId, memberId);
+        MemberProjectResponseDto response = memberProjectService.findProjectMember(projectId, memberId, true);
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
@@ -113,7 +113,7 @@ public class MemberProjectController {
      */
     @GetMapping("/projects/{project-id}/members")
     @Operation(summary = "프로젝트 회원 목록 조회", description = "프로젝트 회원이 프로젝트 회원 목록을 조회합니다.", tags = "member_project")
-    public ResponseEntity<PageResponseDto<GetProjectsResponse>> getProjectMembers(
+    public ResponseEntity<PageResponseDto<MemberProjectResponseDto>> getProjectMembers(
             @PathVariable("project-id") Long projectId,
             @Parameter(hidden = true) @ApiIgnore @PageableDefault(size =5) Pageable pageable,
             @RequestParam(required = false) String search

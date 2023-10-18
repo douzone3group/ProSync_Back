@@ -21,7 +21,7 @@ public class GetTaskResponse {
         @ApiModelProperty(value = "분류", example = "분류")
         private String classification;
 
-        @ApiModelProperty(value = "상세설명")
+        @ApiModelProperty(value = "상세설명", example = "업무 내용")
         private String detail;
 
         @ApiModelProperty(value = "시작일자", example = "2023-10-01")

@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.mail.MessagingException;
 import javax.validation.ConstraintViolationException;
@@ -86,6 +87,13 @@ public class GlobalExceptionAdvice {
         log.error("Error occurs {}", e.toString());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(ErrorCode.INVALID_ENUM_VALUE.name()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        log.error("MaxUploadSizeExceededException {}", e.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(ErrorCode.MAX_FILE_SIZE_10MB.name()));
     }
 
 }

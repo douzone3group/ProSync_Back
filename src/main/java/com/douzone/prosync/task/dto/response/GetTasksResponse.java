@@ -56,12 +56,14 @@ public class GetTasksResponse {
     private List<TaskMemberResponseDto> taskMembers = new ArrayList<>();
 
     @Setter
+    @ApiModelProperty(hidden = true)
     private String members;
 
 
     @Builder
     @Getter
     public static class PerTasksResponse {
+
 
         @ApiModelProperty(value = "업무상태식별자", example = "1")
         private Long taskStatusId;

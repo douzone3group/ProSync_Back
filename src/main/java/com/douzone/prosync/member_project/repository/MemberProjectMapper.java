@@ -46,6 +46,6 @@ public interface MemberProjectMapper {
     @Select("select mp.member_id from member_project mp join project_authority pa on mp.authority_id = pa.authority_id where project_id = #{projectId} and pa.authority = 'ADMIN'")
     Long findAdminByProjectId(Long projectId);
 
-
-
+    @Update("update member_project set status = #{status} where project_id=#{projectId}")
+    void updateStatusOfProjectMemberList(@Param("projectId") Long projectId, @Param("status") MemberProject.MemberProjectStatus status);
 }

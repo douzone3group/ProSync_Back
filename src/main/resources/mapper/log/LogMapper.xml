@@ -4,7 +4,7 @@
 <mapper namespace="com.douzone.prosync.log.mapper.LogMapper">
     <insert id="saveLog" useGeneratedKeys="true" keyProperty="logId">
         insert into log (created_at, content, is_deleted, project_id, modified_at, log_code, url)
-        values (#{logDto.createdAt}, #{logDto.content}, #{logDto.isDeleted}, #{logDto.projectId}, #{logDto.modifiedAt},
+        values (now(), #{logDto.content}, #{logDto.isDeleted}, #{logDto.projectId}, now(),
                 #{logDto.logCode}, #{logDto.url})
     </insert>
 
@@ -18,7 +18,7 @@
         set content=#{logPatchDto.content},
             log_code=#{logPatchDto.logCode},
             url=#{logPatchDto.url},
-            modified_at=#{logPatchDto.modifiedAt}
+            modified_at=now()
         where log_id = #{logId}
     </update>
 
@@ -26,7 +26,7 @@
     <update id="deleteLog">
         update log
         set is_deleted= true,
-            modified_at=#{modifiedAt}
+            modified_at=now()
         where log_id = #{logId}
     </update>
 
@@ -56,7 +56,7 @@
                 AND content like concat('%',#{condition.content},'%')
             </if>
         </where>
-        order by created_at desc
+        order by created_at desc, log_id desc
     </select>
 
     <select id="getLogListCount" resultType="Integer">

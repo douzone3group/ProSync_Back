@@ -144,7 +144,7 @@ public class ProjectController {
      * 내 프로젝트 목록 조회
      * LOGIN USER
      */
-    @GetMapping("/my-projects")
+    @GetMapping("/user/myprojects")
     @ApiOperation(value = "내 프로젝트 조회", notes = "내가 속한 프로젝트를 조회합니다.", tags = "project")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved", response = GetProjectsResponse.class),
@@ -152,7 +152,7 @@ public class ProjectController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity<PageResponseDto<GetProjectsResponse>> getMemberProjects(
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = 9) Pageable pageable,
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault (size = 8) Pageable pageable,
             @ApiIgnore Principal principal,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean bookmark,

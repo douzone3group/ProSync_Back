@@ -27,6 +27,7 @@ public class ConstantPool {
     // 프론트 서버 주소
 
     public static final String FRONT_SERVER_HOST = "http://prosyncfront.s3-website.ap-northeast-2.amazonaws.com";
+    public static final String FRONT_LOCAL_HOST = "http://localhost:3000";
 
 
     //  NOTIFICATION SCHEDULING DURATION
@@ -37,8 +38,6 @@ public class ConstantPool {
 
 
     // LOG SCHEDULING DURATION
-    public static final Long LOG_SCHEDULING_TERM = 1L* 24 * 60 * 60 *1000;
-
     public static final Integer LOG_EXPIRATION_DURATION = 365 * 3;
 
 

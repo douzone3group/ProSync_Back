@@ -34,7 +34,7 @@
         where member_project_id in
         <foreach collection="memberProjectsId" item="id" open="(" separator="," close=")">
             #{id}
-        </foreach> and status = 'active';
+        </foreach> and status = 'ACTIVE';
     </select>
 
     <select id="findMemberIdsListByIdAll">
@@ -48,7 +48,7 @@
     <select id="findProjectIdsByMemberId">
         select project_id from member_project
         where member_id = #{memberId}
-        and status = 'active';
+        and status = 'ACTIVE';
     </select>
 
 
