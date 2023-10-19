@@ -115,7 +115,7 @@ public class MemberProjectController {
     @Operation(summary = "프로젝트 회원 목록 조회", description = "프로젝트 회원이 프로젝트 회원 목록을 조회합니다.", tags = "member_project")
     public ResponseEntity<PageResponseDto<MemberProjectResponseDto>> getProjectMembers(
             @PathVariable("project-id") Long projectId,
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault(size =5) Pageable pageable,
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault(size =1000) Pageable pageable,
             @RequestParam(required = false) String search
 
     ) {

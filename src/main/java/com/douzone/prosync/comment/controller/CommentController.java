@@ -39,7 +39,7 @@ public class CommentController {
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "successfully retrieved", response = CommentSimpleResponse.class),
             @ApiResponse(code = 404, message = "not found"),
-            @ApiResponse(code = 500, message = "server error"),
+            @ApiResponse(code = 500, message = "Internal server error"),
     })
     public ResponseEntity<CommentSimpleResponse> postComment(
             @Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
