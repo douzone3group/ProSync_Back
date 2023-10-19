@@ -40,7 +40,7 @@ public class MemberPostDto {
                        .name(name)
                        .modifiedAt(Timestamp.from(Instant.now()))
                        .createdAt(Timestamp.from(Instant.now()))
-                       .intro("본인에 대해 언급해주세요. 다른 사람들이 여러분의 모습을 보고 좋은 생각을 가질 겁니다 ")
+                       .intro("본인의 소개글을 20자 이상 입력해주세요.")
                        .isDeleted(false)
                        .build();
         }
