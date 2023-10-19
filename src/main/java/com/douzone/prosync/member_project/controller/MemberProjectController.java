@@ -103,7 +103,7 @@ public class MemberProjectController {
     @Operation(summary = "프로젝트 회원 조회", description = "프로젝트 회원을 조회합니다.", tags = "member_project")
     public ResponseEntity<MemberProjectResponseDto> getProjectMember(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId,
                                                                      @Parameter(description = "회원식별자", required = true, example = "1") @PathVariable("member-id") Long memberId) {
-        MemberProjectResponseDto response = memberProjectService.findProjectMember(projectId, memberId);
+        MemberProjectResponseDto response = memberProjectService.findProjectMember(projectId, memberId, true);
         return new ResponseEntity(response, HttpStatus.OK);
     }
 

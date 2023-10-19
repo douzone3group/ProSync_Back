@@ -64,7 +64,7 @@ public class CommentServiceImpl implements CommentService {
         findExistTask(dto);
 
         Long projectId = commentMybatisMapper.findProjectIdByTask(dto.getTaskId());
-        MemberProjectResponseDto projectMember = memberProjectService.findProjectMember(projectId, dto.getMemberId());
+        MemberProjectResponseDto projectMember = memberProjectService.findProjectMember(projectId, dto.getMemberId(), true);
         dto.setMemberProjectId(projectMember.getMemberProjectId());
         commentMybatisMapper.createComment(dto);
         Long commentId = dto.getCommentId();
