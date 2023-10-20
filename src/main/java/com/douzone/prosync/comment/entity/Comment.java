@@ -16,13 +16,19 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
+    @Column(nullable = false)
     private String content;
 
+    @Column(nullable = false)
     private Long taskId;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime modifiedAt;
 
+    @Column
     private Boolean isDeleted;
 
     @ManyToOne

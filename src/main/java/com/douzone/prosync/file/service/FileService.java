@@ -25,5 +25,7 @@ public interface FileService {
 
     File findFile(Long fileId);
 
+    void checkFileExtForProfile(String fileName);
+
 }
 
