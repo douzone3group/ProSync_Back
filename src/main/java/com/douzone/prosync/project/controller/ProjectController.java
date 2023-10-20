@@ -8,7 +8,6 @@ import com.douzone.prosync.project.dto.response.GetProjectResponse;
 import com.douzone.prosync.project.dto.response.GetProjectsResponse;
 import com.douzone.prosync.project.dto.response.ProjectSimpleResponse;
 import com.douzone.prosync.project.entity.Project;
-import com.douzone.prosync.project.entity.ProjectWithBookmark;
 import com.douzone.prosync.project.service.ProjectService;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -50,7 +49,8 @@ public class ProjectController {
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "successfully retrieved", response = ProjectSimpleResponse.class),
             @ApiResponse(code = 404, message = "project not found"),
-            @ApiResponse(code = 500, message = "server error"),
+            @ApiResponse(code = 409, message = "Project exists"),
+            @ApiResponse(code = 500, message = "Internal server error"),
     })
     public ResponseEntity createProject(@RequestBody @Valid ProjectPostDto dto, Principal principal) {
         Long projectId = projectService.save(dto, Long.parseLong(principal.getName()));
