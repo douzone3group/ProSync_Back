@@ -71,7 +71,7 @@ public class WebNotificationServiceImpl implements NotificationService{
                     .data(data));
         } catch (IOException e) {
             System.out.println("SSE 전송 오류 발생");
-            throw new ApplicationException(ErrorCode.CONNECTION_ERROR,"SSE 전송 오류 발생");
+//            throw new ApplicationException(ErrorCode.CONNECTION_ERROR,"SSE 전송 오류 발생");
         }
     }
 
@@ -268,7 +268,8 @@ public class WebNotificationServiceImpl implements NotificationService{
             } catch(NoEmitterException e) {
                 log.debug("{}",target.getMemberId()+"은 접속중이 아닙니다");
             }catch (RuntimeException e) {
-                throw new ApplicationException(ErrorCode.CONNECTION_ERROR);
+                log.debug("{}","sse 연결 시 Runtime error 발생");
+//                throw new ApplicationException(ErrorCode.CONNECTION_ERROR);
             }
         });
 
