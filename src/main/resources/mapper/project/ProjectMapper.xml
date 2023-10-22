@@ -56,7 +56,7 @@
         from project p
         join member_project mp on mp.project_id = p.project_id
         join member m on mp.member_id = m.member_id
-        join project_authority pa on mp.authority_id = pa.authority_id
+        join project_authority pa on mp.authority_id = pa.authority_id AND pa.authority = 'ADMIN'
         <if test="bookmark ==null or bookmark ==''">
             left join bookmark b on b.project_id = p.project_id and b.member_id = #{memberId}
         </if>
@@ -64,8 +64,8 @@
             join bookmark b on b.project_id = p.project_id and b.member_id = #{memberId}
         </if>
         <where>
-            (mp.member_id = #{memberId} or p.is_public = true)
-            and (p.is_deleted is false and pa.authority = 'ADMIN')
+            (p.is_public = true OR (p.is_public = false AND EXISTS (SELECT 1 FROM member_project WHERE member_id = #{memberId} AND project_id = p.project_id AND status = 'ACTIVE')))
+            AND p.is_deleted = false
             <if test="search != null and search != ''">
                 and ((p.title like concat('%', #{search}, '%'))
                 or (m.name like concat('%', #{search}, '%') and pa.authority = 'admin'))

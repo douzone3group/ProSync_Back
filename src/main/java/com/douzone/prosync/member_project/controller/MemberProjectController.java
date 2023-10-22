@@ -42,7 +42,7 @@ public class MemberProjectController {
      * ADMIN
      */
     @PostMapping("/projects/{project-id}/invitation")
-    @Operation(summary = "초대 링크 조회", description = "프로젝트 회원으로 등록을 위한 초대 링크를 생합니다.", tags = "member_project")
+    @Operation(summary = "초대 링크 조회", description = "프로젝트 회원으로 등록을 위한 초대 링크를 생성합니다.", tags = "member_project")
     public ResponseEntity<SingleResponseDto<ProjectInviteDto>> createInviteLink(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId) {
         String inviteCode = memberProjectService.createInviteLink(projectId);
         return new ResponseEntity(new SingleResponseDto<>(new ProjectInviteDto(projectId, inviteCode)), HttpStatus.OK);
@@ -52,7 +52,7 @@ public class MemberProjectController {
      * 프로젝트 초대 코드 조회
      */
     @GetMapping("/projects/{project-id}/invitation")
-    @Operation(summary = "초대 링크 조회", description = "프로젝트 회원으로 등록을 위한 초대 링크를 생성합니다.", tags = "member_project")
+    @Operation(summary = "초대 링크 조회", description = "프로젝트 회원으로 등록을 위한 초대 링크를 조회합니다.", tags = "member_project")
     public ResponseEntity<SingleResponseDto<ProjectInviteDto>> getInviteLink(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId) {
         String inviteCode = memberProjectService.findInviteLink(projectId);
         return new ResponseEntity(new SingleResponseDto<>(new ProjectInviteDto(projectId, inviteCode)), HttpStatus.OK);
