@@ -6,6 +6,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PresignedUrlDownloadRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.douzone.prosync.exception.ApplicationException;
+import com.douzone.prosync.exception.ErrorCode;
 import com.douzone.prosync.file.entity.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +44,7 @@ public class AwsFileHandler implements FileHandler {
                                     .withCannedAcl(CannedAccessControlList.PublicRead)
                     );
         } catch (SdkClientException | IOException e) {
-            throw new RuntimeException(e);
+            throw new ApplicationException(ErrorCode.FILE_STORAGE_ERROR);
         }
         String path = amazonS3Client.getUrl(bucket, newFileName).toString();
         return File.create(multipartFile.getSize(), path, newFileName);
@@ -55,7 +57,7 @@ public class AwsFileHandler implements FileHandler {
             amazonS3Client.download(new PresignedUrlDownloadRequest(new URL(fileName)), file);
             return file;
         } catch (SdkClientException | MalformedURLException e) {
-            throw new RuntimeException(e);
+            throw new ApplicationException(ErrorCode.FILE_STORAGE_ERROR);
         }
     }
 
