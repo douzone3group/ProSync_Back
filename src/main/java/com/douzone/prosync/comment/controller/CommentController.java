@@ -39,7 +39,7 @@ public class CommentController {
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "successfully retrieved", response = CommentSimpleResponse.class),
             @ApiResponse(code = 404, message = "not found"),
-            @ApiResponse(code = 500, message = "server error"),
+            @ApiResponse(code = 500, message = "Internal server error"),
     })
     public ResponseEntity<CommentSimpleResponse> postComment(
             @Parameter(description = "업무식별자", required = true, example = "1") @PathVariable("task-id") @Positive Long taskId,
@@ -101,7 +101,7 @@ public class CommentController {
     @ApiOperation(value = "댓글 삭제", notes = "댓글을 소프트 삭제 한다", tags = "comment")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "successfully retrieved", response = CommentSimpleResponse.class),
-            @ApiResponse(code = 404, message = "project not found"),
+            @ApiResponse(code = 404, message = "comment not found"),
             @ApiResponse(code = 500, message = "Internal Server Error"),
     })
     public ResponseEntity deleteComment(

@@ -26,7 +26,7 @@ public  class ProjectPatchDto {
 
     @NotNull
     @ApiModelProperty(value = "프로젝트 소개", required = true, example = "프로젝트 소개")
-    @Length(max = 500, message = "프로젝트 소개는 500자 이내여야 합니다")
+    @Length(max = 1000, message = "프로젝트 소개는 1000자 이내여야 합니다")
     private String intro;
 
     @NotBlank

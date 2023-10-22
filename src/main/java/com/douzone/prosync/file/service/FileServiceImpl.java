@@ -107,8 +107,21 @@ public class FileServiceImpl implements FileService {
     }
 
 
+    @Override
+    public void checkFileExtForProfile(String fileName) {
+        String ext = fileName.substring(fileName.lastIndexOf(".")+1, fileName.lastIndexOf("_"));
+        List<String> imageExtList = List.of("jpg", "jpeg", "gif", "png");
+
+        if (!imageExtList.contains(ext)) {
+            throw new ApplicationException(ErrorCode.INVALID_FILE_TYPE);
+        }
+    }
+
+
     private FileInfo findFileInfo(Long fileInfoId) {
         return fileMapper.findFileInfo(fileInfoId).orElseThrow(() -> new ApplicationException(ErrorCode.FILE_NOT_FOUND));
     }
+
+
 
 }

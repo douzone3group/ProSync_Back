@@ -66,6 +66,7 @@ public class ProjectServiceImpl implements ProjectService {
         // 프로젝트 이미지 - fileId 값이 있는 경우
         if (dto.getFileId() != null) {
             File file = fileService.findFile(dto.getFileId());
+            fileService.checkFileExtForProfile(file.getFileName());
             fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.PROJECT, projectId, file.getFileId()));
             projectMapper.updateProject(new ProjectPatchDto(dto.getProjectId(), dto.getFileId(), file.getPath()));
         }
@@ -90,6 +91,7 @@ public class ProjectServiceImpl implements ProjectService {
 
             // 프로젝트 이미지 세팅
             File file = fileService.findFile(dto.getFileId());
+            fileService.checkFileExtForProfile(file.getFileName());
             fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.PROJECT, dto.getProjectId(), file.getFileId()));
             dto.setProjectImage(file.getPath());
 
