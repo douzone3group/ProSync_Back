@@ -1,5 +1,6 @@
 package com.douzone.prosync.project.dto.request;
 
+import com.douzone.prosync.validator.HtmlTagExcluded;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
