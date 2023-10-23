@@ -1,5 +1,6 @@
 package com.douzone.prosync.task.dto.request;
 
+import com.douzone.prosync.validator.HtmlTagExcluded;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -29,7 +30,7 @@ public class TaskPostDto {
 
         @ApiModelProperty(value = "상세설명", example = "상세설명")
         @NotNull
-        @Length(max = 1000, message = "프로젝트 상세는 1000자 이내여야 합니다")
+        @HtmlTagExcluded(message = "업무 상세는 1 ~ 1000자 이내여야 합니다.")
         private String detail;
 
         @ApiModelProperty(value = "시작일자", required = true, example = "2023-10-01")
