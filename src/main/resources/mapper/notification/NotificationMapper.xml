@@ -133,7 +133,7 @@
                 AND n.content like concat('%',#{condition.content},'%')
             </if>
         </where>
-        order by n.created_at desc
+        order by n.notification_id desc
     </select>
 
     <select id="getNotificationListCount" resultType="int">

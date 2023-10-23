@@ -1,6 +1,5 @@
 package com.douzone.prosync.project.dto.request;
 
-import com.douzone.prosync.validator.HtmlTagExcluded;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -27,11 +26,7 @@ public  class ProjectPatchDto {
 
     @NotNull
     @ApiModelProperty(value = "프로젝트 소개", required = true, example = "프로젝트 소개")
-<<<<<<< Updated upstream
-    @Length(max = 500, message = "프로젝트 소개는 500자 이내여야 합니다")
-=======
-    @HtmlTagExcluded(message = "프로젝트 소개는 0 ~ 1000자 이내여야 합니다.")
->>>>>>> Stashed changes
+    @HtmlTagExcluded(message = "프로젝트 소개는 1 ~ 1000자 이내여야 합니다.")
     private String intro;
 
     @NotBlank

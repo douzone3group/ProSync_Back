@@ -60,6 +60,8 @@ public enum ErrorCode {
     INVALID_FILE_TYPE(HttpStatus.FORBIDDEN, "Invalid file type"),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not founded"),
     FILE_INFO_EXISTS(HttpStatus.CONFLICT, "File Info exists"),
+    MAX_FILE_SIZE_10MB(HttpStatus.BAD_REQUEST, "Max file size 10MB"),
+    FILE_STORAGE_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "File storage failed"),
 
     // NOTIFICATION
     CONNECTION_ERROR(HttpStatus.OK, "Sse Connection is failed"),

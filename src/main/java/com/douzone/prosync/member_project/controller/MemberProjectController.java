@@ -42,7 +42,7 @@ public class MemberProjectController {
      * ADMIN
      */
     @PostMapping("/projects/{project-id}/invitation")
-    @Operation(summary = "초대 링크 조회", description = "프로젝트 회원으로 등록을 위한 초대 링크를 생합니다.", tags = "member_project")
+    @Operation(summary = "초대 링크 조회", description = "프로젝트 회원으로 등록을 위한 초대 링크를 생성합니다.", tags = "member_project")
     public ResponseEntity<SingleResponseDto<ProjectInviteDto>> createInviteLink(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId) {
         String inviteCode = memberProjectService.createInviteLink(projectId);
         return new ResponseEntity(new SingleResponseDto<>(new ProjectInviteDto(projectId, inviteCode)), HttpStatus.OK);
@@ -52,7 +52,7 @@ public class MemberProjectController {
      * 프로젝트 초대 코드 조회
      */
     @GetMapping("/projects/{project-id}/invitation")
-    @Operation(summary = "초대 링크 조회", description = "프로젝트 회원으로 등록을 위한 초대 링크를 생성합니다.", tags = "member_project")
+    @Operation(summary = "초대 링크 조회", description = "프로젝트 회원으로 등록을 위한 초대 링크를 조회합니다.", tags = "member_project")
     public ResponseEntity<SingleResponseDto<ProjectInviteDto>> getInviteLink(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId) {
         String inviteCode = memberProjectService.findInviteLink(projectId);
         return new ResponseEntity(new SingleResponseDto<>(new ProjectInviteDto(projectId, inviteCode)), HttpStatus.OK);
@@ -103,7 +103,7 @@ public class MemberProjectController {
     @Operation(summary = "프로젝트 회원 조회", description = "프로젝트 회원을 조회합니다.", tags = "member_project")
     public ResponseEntity<MemberProjectResponseDto> getProjectMember(@Parameter(description = "프로젝트식별자", required = true, example = "1") @PathVariable("project-id") Long projectId,
                                                                      @Parameter(description = "회원식별자", required = true, example = "1") @PathVariable("member-id") Long memberId) {
-        MemberProjectResponseDto response = memberProjectService.findProjectMember(projectId, memberId);
+        MemberProjectResponseDto response = memberProjectService.findProjectMember(projectId, memberId, true);
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
@@ -115,7 +115,7 @@ public class MemberProjectController {
     @Operation(summary = "프로젝트 회원 목록 조회", description = "프로젝트 회원이 프로젝트 회원 목록을 조회합니다.", tags = "member_project")
     public ResponseEntity<PageResponseDto<MemberProjectResponseDto>> getProjectMembers(
             @PathVariable("project-id") Long projectId,
-            @Parameter(hidden = true) @ApiIgnore @PageableDefault(size =5) Pageable pageable,
+            @Parameter(hidden = true) @ApiIgnore @PageableDefault(size =1000) Pageable pageable,
             @RequestParam(required = false) String search
 
     ) {

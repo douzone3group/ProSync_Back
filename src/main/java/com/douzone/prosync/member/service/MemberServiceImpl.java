@@ -108,6 +108,7 @@ public class MemberServiceImpl implements MemberService{
 
             // 회원 이미지 세팅
             File file = fileService.findFile(dto.getFileId());
+            fileService.checkFileExtForProfile(file.getFileName());
             fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.MEMBER, memberId, file.getFileId()));
             dto.setProfileImage(file.getPath());
 
