@@ -13,7 +13,7 @@ public interface FileService {
 
     List<FileResponseDto> uploadFile(List<MultipartFile> multipartFiles);
 
-    void delete(Long fileInfoId);
+    void delete(Long fileId);
 
     List<FileResponseDto> findFilesByTableInfo(FileRequestDto dto, Boolean isResponse);
 

@@ -41,15 +41,15 @@ public class FileController {
         return new ResponseEntity(new SingleResponseDto<>(response), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{file-info-id}")
+    @DeleteMapping("/{file-id}")
     @Operation(summary = "파일 삭제", description = "파일을 삭제합니다.", tags = "file")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successfully retrieved"),
             @ApiResponse(code = 404, message = "file not found"),
             @ApiResponse(code = 500, message = "server error"),
     })
-    public ResponseEntity deleteFile(@Parameter(description = "파일식별자", required = true, example = "1") @PathVariable("file-info-id") Long fileInfoId) {
-        fileService.delete(fileInfoId);
+    public ResponseEntity deleteFile(@Parameter(description = "파일식별자", required = true, example = "1") @PathVariable("file-id") Long fileId) {
+        fileService.delete(fileId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 

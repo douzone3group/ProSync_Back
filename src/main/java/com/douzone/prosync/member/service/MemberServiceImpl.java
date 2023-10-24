@@ -109,18 +109,27 @@ public class MemberServiceImpl implements MemberService{
             // 회원 이미지 세팅
             File file = fileService.findFile(dto.getFileId());
             fileService.checkFileExtForProfile(file.getFileName());
-            fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.MEMBER, memberId, file.getFileId()));
-            dto.setProfileImage(file.getPath());
 
             // 기본이미지 아닐 경우 기존 file 삭제
             if (!member.getProfileImage().equals(BasicImage.BASIC_USER_IMAGE.getPath())) {
                 FileRequestDto profileImage = FileRequestDto.create(FileInfo.FileTableName.MEMBER, memberId);
                 FileResponseDto findProfileFile = fileService.findFilesByTableInfo(profileImage, false).get(0);
-                fileService.delete(findProfileFile.getFileInfoId());
+                fileService.delete(findProfileFile.getFileId());
             }
 
+            fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.MEMBER, memberId, file.getFileId()));
+            dto.setProfileImage(file.getPath());
+
         } else if (dto.getProfileImage() == null) {
-             dto.setProfileImage(BasicImage.BASIC_USER_IMAGE.getPath());
+            dto.setProfileImage(BasicImage.BASIC_USER_IMAGE.getPath());
+            FileRequestDto profileImage = FileRequestDto.create(FileInfo.FileTableName.MEMBER, memberId);
+            List<FileResponseDto> fileList = fileService.findFilesByTableInfo(profileImage, false);
+
+            if (fileList.size() > 0) {
+                FileResponseDto findProfileFile = fileList.get(0);
+                fileService.delete(findProfileFile.getFileId());
+            }
+
         }
 
         memberRepository.updateProfile(memberId, dto);
