@@ -1,5 +1,6 @@
 package com.douzone.prosync.project.dto.request;
 
+import com.douzone.prosync.validator.HtmlTagExcluded;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -9,7 +10,6 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -26,8 +26,8 @@ public  class ProjectPostDto {
     private String title;
 
     @NotNull
-    @Length(max = 1000, message = "프로젝트 소개는 1000자 이내여야 합니다")
-    @ApiModelProperty(value = "분류", required = true, example = "프로젝트 소개")
+    @ApiModelProperty(value = "프로젝트 소개", required = true, example = "프로젝트 소개")
+    @HtmlTagExcluded(message = "프로젝트 소개는 1 ~ 1000자 이내여야 합니다")
     private String intro;
 
     @NotBlank
