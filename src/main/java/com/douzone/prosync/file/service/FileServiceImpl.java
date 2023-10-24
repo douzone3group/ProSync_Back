@@ -43,8 +43,8 @@ public class FileServiceImpl implements FileService {
 
     // 파일 1건 삭제 (파일 정보 soft delete)
     @Override
-    public void delete(Long fileInfoId) {
-        FileInfo fileInfo = findFileInfo(fileInfoId);
+    public void delete(Long fileId) {
+        FileInfo fileInfo = findFileInfoByFileId(fileId);
         Integer row = fileMapper.deleteFileInfo(fileInfo.getFileInfoId());
         if (row < 1) {
             throw new ApplicationException(ErrorCode.FILE_NOT_FOUND);
@@ -118,8 +118,8 @@ public class FileServiceImpl implements FileService {
     }
 
 
-    private FileInfo findFileInfo(Long fileInfoId) {
-        return fileMapper.findFileInfo(fileInfoId).orElseThrow(() -> new ApplicationException(ErrorCode.FILE_NOT_FOUND));
+    private FileInfo findFileInfoByFileId(Long fileId) {
+        return fileMapper.findFileInfo(fileId).orElseThrow(() -> new ApplicationException(ErrorCode.FILE_NOT_FOUND));
     }
 
 

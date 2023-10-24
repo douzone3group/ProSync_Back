@@ -92,18 +92,27 @@ public class ProjectServiceImpl implements ProjectService {
             // 프로젝트 이미지 세팅
             File file = fileService.findFile(dto.getFileId());
             fileService.checkFileExtForProfile(file.getFileName());
-            fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.PROJECT, dto.getProjectId(), file.getFileId()));
-            dto.setProjectImage(file.getPath());
 
             // 기본 프로젝트 이미지가 아니면 기존 file 삭제
             if (!findProject.getProjectImage().equals(BasicImage.BASIC_PROJECT_IMAGE.getPath())) {
                 FileRequestDto projectImage = FileRequestDto.create(FileInfo.FileTableName.PROJECT, dto.getProjectId());
                 FileResponseDto findProjectImage = fileService.findFilesByTableInfo(projectImage, false).get(0);
-                fileService.delete(findProjectImage.getFileInfoId());
+                fileService.delete(findProjectImage.getFileId());
             }
+
+            fileService.saveFileInfo(FileInfo.createFileInfo(FileInfo.FileTableName.PROJECT, dto.getProjectId(), file.getFileId()));
+            dto.setProjectImage(file.getPath());
 
         } else if (dto.getProjectImage() == null) {
             dto.setProjectImage(BasicImage.BASIC_PROJECT_IMAGE.getPath());
+            FileRequestDto projectImage = FileRequestDto.create(FileInfo.FileTableName.PROJECT, dto.getProjectId());
+            List<FileResponseDto> fileList = fileService.findFilesByTableInfo(projectImage, false);
+
+            if (fileList.size() > 0) {
+                FileResponseDto findProjectImage = fileList.get(0);
+                fileService.delete(findProjectImage.getFileId());
+            }
+
         }
 
         Integer row = projectMapper.updateProject(dto);
